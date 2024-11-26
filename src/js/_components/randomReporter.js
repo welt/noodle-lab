@@ -13,7 +13,7 @@ export default class RandomReporter extends Reporter {
    * @param {Object} data - any API response data.
    */
   render(data) {
-    const { key, value } = randomProperty(data);
+    const [[key, value]] = Object.entries(randomProperty(data));
     this.classList.add(...styles);
     this.innerHTML = `
       <h2>Key = ${key}</h2>
