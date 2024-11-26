@@ -4,7 +4,6 @@
     <title>{{title}}</title>
     {% if (meta.env === 'production') %}
       <link rel="preload" href="/css/{{manifest['style.css']}}" as="style">
-      {% include 'gTagManagerScript.njk' %}
       <link rel="stylesheet" href="/css/{{manifest['style.css']}}" media="all">
     {% else %}
       <link rel="preload" href="/css/style.css" as="style">
@@ -19,9 +18,6 @@
     {% include 'openGraph.njk' %}
   </head>
   <body>
-    {% if (meta.env === 'production') %}
-      {% include 'gTagManagerNoScript.njk' %}
-    {% endif %}
     {% include 'header.njk' %}
     <main class="grid">
       {{ content | safe }}
@@ -29,10 +25,8 @@
     {% include 'footer.njk' %}
     {% if (meta.env === 'production') %}
       <script type="module" src="/js/{{manifest['main.js']}}" async></script>
-      <script nomodule src="/js/{{manifest['main.iife.js']}}" defer></script>
     {% else %}
       <script type="module" src="/js/bundle.esm.js" async></script>
-      <script nomodule src="/js/bundle.iife.js" defer></script>
     {% endif %}
   </body>
 </html>

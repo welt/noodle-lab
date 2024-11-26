@@ -1,12 +1,12 @@
 /**
  * Returns a random property from an object as a key-value pair.
- * @param {Object} obj
- * @returns {Object}
+ * @param {Object} object
+ * @returns {Object} new object with a random key-value pair
  */
 export default function randomProperty(obj) {
   const keys = Object.keys(obj);
+  if (keys.length === 0) return {};
   const random = Math.floor(Math.random() * keys.length);
   const key = keys[random];
-  const value = obj[keys[random]];
-  return { key, value };
+  return { [key]: obj[key] };
 }
