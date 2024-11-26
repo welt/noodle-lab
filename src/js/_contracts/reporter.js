@@ -4,6 +4,8 @@
  */
 import Api from "../_lib/api.js";
 
+const warning = (strings, name) => `${strings[0]}${name}${strings[1]}`;
+
 /**
  * Contract for Reporter classes.
  * @extends HTMLElement
@@ -31,7 +33,7 @@ export default class Reporter extends HTMLElement {
     this._src = this.getAttribute("src");
     if (!this._src) {
       console.warn(
-        `"src" attribute was not found on \u003C${this.localName} \u2215\u003E elemnent.\nUsing default\u2026`,
+        warning`"src" attribute was not found on <${this.localName} /> elemnent.\nUsing default…`,
       );
     }
   }

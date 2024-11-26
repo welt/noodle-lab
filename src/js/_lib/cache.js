@@ -50,3 +50,9 @@ export const cache = {
     localStorage.setItem(`${cacheKey}${options.suffix}`, Date.now().toString());
   },
 };
+
+Object.defineProperty(cache, 'options', {
+  get() {
+    return options;
+  },
+});
