@@ -5,7 +5,7 @@
  */
 export default function randomProperty(obj) {
   const keys = Object.keys(obj);
-  if (keys.length === 0) return {};
+  if (!keys.length) return {};
   const random = Math.floor(Math.random() * keys.length);
   const key = keys[random];
   return { [key]: obj[key] };
