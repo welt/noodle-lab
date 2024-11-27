@@ -1,4 +1,4 @@
-import { cache } from "../src/js/_lib/cache";
+import { cache } from "../src/js/_lib/localCache";
 
 const testUri = "https://test.example.com";
 

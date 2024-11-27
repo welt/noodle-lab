@@ -3,7 +3,7 @@
  * Wrapper around the Fetch API to make it easier
  * to fetch and optionally cache data from an API.
  */
-import { cache } from "./cache";
+import { cache } from "./localCache";
 
 const defaultOptions = {
   method: "GET",

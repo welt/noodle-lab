@@ -1,11 +1,10 @@
 /**
- * @file cache.js
- * Caches & fetches data objects using localStorage.
+ * @file localCache.js
+ * Simple cache using localStorage.
  */
 
-/**
- * @const {Object} cache options, r/o.
- */
+import Cache from '../_contracts/cache';
+
 const options = {
   expiryTimeInMs: 1000 * 60 * 5, // 5 minutes
   prefix: "cache_",
@@ -18,11 +17,11 @@ const isObject = (thing) => {
   );
 };
 
-export const cache = {
-  /**
-   * @param {String} uri
-   * @returns {Object} cached data or null if not found or expired
-   */
+export default class LocalCache extends Cache {
+  constructor() {
+    super();
+  }
+
   getCachedData(uri) {
     const cacheKey = `${options.prefix}${uri}`;
     const cachedData = localStorage.getItem(cacheKey);
@@ -41,22 +40,16 @@ export const cache = {
       }
     }
     return null;
-  },
+  }
 
-  /**
-   * @param {String} uri
-   * @param {Object} data
-   */
   setCachedData(uri, data) {
     if (!isObject(data)) throw new TypeError("Data must be an object.");
     const cacheKey = `${options.prefix}${uri}`;
     localStorage.setItem(cacheKey, JSON.stringify(data));
     localStorage.setItem(`${cacheKey}${options.suffix}`, Date.now().toString());
-  },
-};
+  }
 
-Object.defineProperty(cache, 'options', {
-  get() {
+  get options() {
     return options;
-  },
-});
+  }
+}
