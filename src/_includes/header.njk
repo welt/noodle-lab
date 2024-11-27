@@ -1,4 +1,12 @@
 <header>
-  <h1>{{ 'Hello World' | upper }}</h1>
+  <div>
+    <h1>{{ 'Hello World' | upper }}</h1>
+    <toggle-button
+      aria-label="Toggle dark mode"
+      title="Toggle dark mode"
+      role="checkbox"
+      aria-checked="false"
+      tabindex="0"></toggle-button>
+  </div>
   <p>{{ metaDescription }}</p>
 </header>

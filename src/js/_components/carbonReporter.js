@@ -4,6 +4,7 @@
  * the UK Carbon Intensity API.
  */
 import Reporter from "../_contracts/reporter.js";
+import formatTimestamp from '../_lib/formatTimestamp.js';
 
 const src = "https://api.carbonintensity.org.uk/intensity";
 const styles = ["reporter", "reporter--carbon"];
@@ -36,16 +37,19 @@ export default class CarbonReporter extends Reporter {
    * @returns {string} - HTML.
    */
   generateHtml(obj) {
-    const htmlContent = Object.entries(obj).reduce((html, [key, value]) => {
-      if (typeof value === "object" && value !== null) {
-        html += `<dt><strong>${key}</strong></dt>`;
-        html += `<dd>${this.generateHtml(value)}</dd>`;
-      } else {
-        html += `<dt>${key}:</dt>`;
-        html += `<dd>${value}</dd>`;
-      }
-      return html;
-    }, "");
+    const htmlContent = Object.entries(obj)
+      .reduce((html, [key, value]) => {
+        if (typeof value === "object" && value !== null) {
+          html += `<dt><strong>${key}</strong></dt>`;
+          html += `<dd>${this.generateHtml(value)}</dd>`;
+        } else {
+          html += `<dt>${key}:</dt>`;
+          html += (key === 'from' || key === 'to')
+            ? `<dd>${formatTimestamp(value)}</dd>`
+            : `<dd>${value}</dd>`;
+        }
+        return html;
+      }, "");
     return "<dl>" + htmlContent + "</dl>";
   }
 }
