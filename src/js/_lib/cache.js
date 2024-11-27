@@ -2,6 +2,10 @@
  * @file cache.js
  * Caches & fetches data objects using localStorage.
  */
+
+/**
+ * @const {Object} cache options, r/o.
+ */
 const options = {
   expiryTimeInMs: 1000 * 60 * 5, // 5 minutes
   prefix: "cache_",
