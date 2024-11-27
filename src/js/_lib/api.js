@@ -21,7 +21,7 @@ const defaultUri = "https://api.github.com/repos/11ty/eleventy";
  * @param {Object} options
  * @constructor
  */
-export default function Api(uri, options) {
+export default function Api(uri, options = {}) {
   this.uri = uri || defaultUri;
   const { useCache, ...fetchOptions } = { ...defaultOptions, ...options };
   this._useCache = !!useCache;

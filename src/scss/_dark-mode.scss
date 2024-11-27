@@ -1,0 +1,26 @@
+@media only screen {
+  .dark-mode {
+    body {
+      color: $color-darkmode-fore;
+      background-color: $color-darkmode-back;
+    }
+
+    main {
+      background-color: $color-darkmode-back;
+    }
+
+    toggle-button {
+      --mode-btn-color: $color-darkmode-fore;
+    }
+
+    a,
+    a:link,
+    a:visited {
+      color: $color-darkmode-fore;
+    }
+
+    .reporter {
+      border-color: $color-darkmode-fore;
+    }
+  }
+}

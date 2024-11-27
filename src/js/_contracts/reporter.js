@@ -4,7 +4,8 @@
  */
 import Api from "../_lib/api.js";
 
-const warning = (strings, name) => `${strings[0]}${name}${strings[1]}`;
+const warning = (_strings, name) =>
+  `"src" attribute was not found on <${name} /> elemnent.\nUsing default…`;
 
 /**
  * Contract for Reporter classes.
@@ -31,11 +32,7 @@ export default class Reporter extends HTMLElement {
       throw new Error("Cannot instantiate abstract Reporter class directly.");
     }
     this._src = this.getAttribute("src");
-    if (!this._src) {
-      console.warn(
-        warning`"src" attribute was not found on <${this.localName} /> elemnent.\nUsing default…`,
-      );
-    }
+    if (!this._src) console.warn(warning`${this.localName}`);
   }
 
   /**
