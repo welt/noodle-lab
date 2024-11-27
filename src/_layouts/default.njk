@@ -9,17 +9,16 @@
       <link rel="preload" href="/css/style.css" as="style">
       <link rel="stylesheet" href="/css/style.css" media="all">
     {% endif %}
-    <script>
-      document.documentElement.className = document.documentElement.className.replace('no-js','js');
-    </script>
+    <link rel="canonical" href="{{meta.canonical}}{{page.url}}">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="dark light">
     <meta name="description" content="{{metaDescription}}">
     {% include 'openGraph.njk' %}
   </head>
   <body>
     {% include 'header.njk' %}
-    <main class="grid">
+    <main class="main grid">
       {{ content | safe }}
     </main>
     {% include 'footer.njk' %}
@@ -28,5 +27,15 @@
     {% else %}
       <script type="module" src="/js/bundle.esm.js" async></script>
     {% endif %}
+    <script>
+      document.documentElement.className = document.documentElement.className.replace('no-js','js');
+      const currentMode = localStorage.getItem('mode');
+      const prefersDarkScheme = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      if (currentMode === 'dark' || (!currentMode && prefersDarkScheme)) {
+        document.documentElement.classList.add('dark-mode');
+        const firstToggleButton = document.querySelector('toggle-button');
+        firstToggleButton && firstToggleButton.setAttribute('checked', 'checked');
+      }
+    </script>
   </body>
 </html>
