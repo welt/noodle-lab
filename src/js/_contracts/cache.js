@@ -1,9 +1,12 @@
 /**
  * @file cache.js
  * Abstract class for caches.
- * @abstract
  */
 
+/**
+ * Contract for Cache classes.
+ * @abstract
+ */
 export default class Cache {
   constructor() {
     if (new.target === Cache) {

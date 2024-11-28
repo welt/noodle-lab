@@ -3,7 +3,7 @@
  * Wrapper around the Fetch API to make it easier
  * to fetch and optionally cache data from an API.
  */
-import { cache } from "./localCache";
+import LocalCache from "./localCache";
 
 const defaultOptions = {
   method: "GET",
@@ -26,7 +26,7 @@ export default function Api(uri, options = {}) {
   const { useCache, ...fetchOptions } = { ...defaultOptions, ...options };
   this._useCache = !!useCache;
   this.request = new Request(this.uri, fetchOptions);
-  this.cache = cache;
+  this.cache = new LocalCache();
 }
 
 Api.prototype.getData = async function () {
