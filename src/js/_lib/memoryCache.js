@@ -29,14 +29,14 @@ export default class MemoryCache extends Cache {
       return null;
     }
 
-    console.log(`Found cached data for ${uri}`);
     const now = Date.now();
     if (now - cachedTimestamp >= this.options.expiryTimeInMs) {
       this.#cacheMap.delete(uri);
       this.#timestampMap.delete(uri);
       return null;
     }
-
+    
+    console.log(`Found cached data for ${uri}`);
     return cachedData;
   }
 

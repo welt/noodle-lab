@@ -3,7 +3,11 @@
  * Wrapper around the Fetch API to make it easier
  * to fetch and optionally cache data from an API.
  */
+/* eslint-disable no-unused-vars */
 import LocalCache from "./localCache";
+import MemoryCache from "./memoryCache";
+import SessionCache from "./sessionCache";
+/* eslint-enable no-unused-vars */
 
 const defaultOptions = {
   method: "GET",
@@ -11,6 +15,7 @@ const defaultOptions = {
     Accept: "application/json",
   },
   useCache: true, // !! Non-standard local option for this module.
+  cacheStrategy: SessionCache, // !! Non-standard local option for this module.
 };
 
 const defaultUri = "https://api.github.com/repos/11ty/eleventy";
@@ -23,10 +28,10 @@ const defaultUri = "https://api.github.com/repos/11ty/eleventy";
  */
 export default function Api(uri, options = {}) {
   this.uri = uri || defaultUri;
-  const { useCache, ...fetchOptions } = { ...defaultOptions, ...options };
+  const { useCache, cacheStrategy, ...fetchOptions } = { ...defaultOptions, ...options };
   this._useCache = !!useCache;
   this.request = new Request(this.uri, fetchOptions);
-  this.cache = new LocalCache();
+  this.cache = new cacheStrategy();
 }
 
 Api.prototype.getData = async function () {
