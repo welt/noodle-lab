@@ -1,6 +1,6 @@
 import Cache from '../_contracts/cache';
 
-const options = {
+const defaults = {
   expiryTimeInMs: 1000 * 60 * 5, // 5 minutes
   prefix: "cache_",
   suffix: "_timestamp",
@@ -13,18 +13,23 @@ const isObject = (thing) => {
 };
 
 export default class LocalCache extends Cache {
+  constructor(options = {}) {
+    super();
+    this._options = { ...defaults, ...options };
+  }
+
   getCachedData(uri) {
-    const cacheKey = `${options.prefix}${uri}`;
+    const cacheKey = `${this.options.prefix}${uri}`;
     const cachedData = localStorage.getItem(cacheKey);
-    const cachedTimestamp = localStorage.getItem(`${cacheKey}${options.suffix}`);
+    const cachedTimestamp = localStorage.getItem(`${cacheKey}${this.options.suffix}`);
 
     if (cachedData && cachedTimestamp) {
       const now = Date.now();
-      if (now - cachedTimestamp < options.expiryTimeInMs) {
+      if (now - cachedTimestamp < this.options.expiryTimeInMs) {
         return JSON.parse(cachedData);
       } else {
         localStorage.removeItem(cacheKey);
-        localStorage.removeItem(`${cacheKey}${options.suffix}`);
+        localStorage.removeItem(`${cacheKey}${this.options.suffix}`);
       }
     }
     return null;
@@ -32,12 +37,12 @@ export default class LocalCache extends Cache {
 
   setCachedData(uri, data) {
     if (!isObject(data)) throw new TypeError("Data must be an object.");
-    const cacheKey = `${options.prefix}${uri}`;
+    const cacheKey = `${this.options.prefix}${uri}`;
     localStorage.setItem(cacheKey, JSON.stringify(data));
-    localStorage.setItem(`${cacheKey}${options.suffix}`, Date.now().toString());
+    localStorage.setItem(`${cacheKey}${this.options.suffix}`, Date.now().toString());
   }
 
   get options() {
-    return options;
+    return this._options;
   }
 }
