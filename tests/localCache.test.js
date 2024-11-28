@@ -3,7 +3,7 @@ import LocalCache from '../src/js/_lib/localCache';
 const testUri = "https://test.example.com";
 const testData = { loremFakeKey: "ipsumFakeValue" };
 
-describe("Test the cache", () => {
+describe("Test the LocalCache implementation", () => {
   let cache;
   let cacheKey;
   let timestampKey;
