@@ -1,8 +1,3 @@
-/**
- * @file localCache.js
- * Simple cache using localStorage.
- */
-
 import Cache from '../_contracts/cache';
 
 const options = {
@@ -18,21 +13,14 @@ const isObject = (thing) => {
 };
 
 export default class LocalCache extends Cache {
-  constructor() {
-    super();
-  }
-
   getCachedData(uri) {
     const cacheKey = `${options.prefix}${uri}`;
     const cachedData = localStorage.getItem(cacheKey);
-    const cachedTimestamp = localStorage.getItem(
-      `${cacheKey}${options.suffix}`,
-    );
+    const cachedTimestamp = localStorage.getItem(`${cacheKey}${options.suffix}`);
 
     if (cachedData && cachedTimestamp) {
       const now = Date.now();
       if (now - cachedTimestamp < options.expiryTimeInMs) {
-        console.log("Returning cached data");
         return JSON.parse(cachedData);
       } else {
         localStorage.removeItem(cacheKey);
