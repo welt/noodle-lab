@@ -24,6 +24,7 @@ export default class LocalCache extends Cache {
     const cachedTimestamp = localStorage.getItem(`${cacheKey}${this.options.suffix}`);
 
     if (cachedData && cachedTimestamp) {
+      console.log(`Found cached data for ${uri}`);
       const now = Date.now();
       if (now - cachedTimestamp < this.options.expiryTimeInMs) {
         return JSON.parse(cachedData);
