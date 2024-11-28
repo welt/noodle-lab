@@ -17,6 +17,7 @@ export default class LocalCache extends Cache {
     super();
     this._options = { ...defaults, ...options };
   }
+
   getCachedData(uri) {
     const cacheKey = `${this.options.prefix}${uri}`;
     const cachedData = localStorage.getItem(cacheKey);
