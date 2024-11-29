@@ -4,11 +4,11 @@
  * to fetch and optionally cache data from an API.
  */
 /* eslint-disable no-unused-vars */
-import LocalCache from "./localCache";
-import MemoryCache from "./memoryCache"; // !! Broken - cache can not persist on page refresh.
-import SessionCache from "./sessionCache";
 import CacheApiCache from "./cacheApiCache";
 import CookieCache from './cookieCache';
+import LocalCache from "./localCache";
+import MemoryCache from "./memoryCache"; // !! Cache can not persist on page refresh.
+import SessionCache from "./sessionCache";
 /* eslint-enable no-unused-vars */
 
 const defaultOptions = {
@@ -22,6 +22,9 @@ const defaultOptions = {
 
 const defaultUri = "https://api.github.com/repos/11ty/eleventy";
 
+// WeakMap to store private fields
+const _privateFields = new WeakMap();
+
 /**
  * Wrapper function with same signature as Fetch.
  * @param {String} uri
@@ -31,23 +34,26 @@ const defaultUri = "https://api.github.com/repos/11ty/eleventy";
 export default function Api(uri, options = {}) {
   this.uri = uri || defaultUri;
   const { useCache, cacheStrategy, ...fetchOptions } = { ...defaultOptions, ...options };
-  this._useCache = !!useCache;
-  this.request = new Request(this.uri, fetchOptions);
-  this.cache = new cacheStrategy();
+  _privateFields.set(this, {
+    useCache: !!useCache,
+    request: new Request(this.uri, fetchOptions),
+    cache: new cacheStrategy(),
+  });
 }
 
 Api.prototype.getData = async function () {
-  const cachedData = this.useCache && await this.cache.getCachedData(this.uri);
+  const { useCache, request, cache } = _privateFields.get(this);
+  const cachedData = useCache && await cache.getCachedData(this.uri);
   if (cachedData) return cachedData;
 
   try {
-    const response = await fetch(this.request);
+    const response = await fetch(request);
     if (!response.ok) {
       throw new Error("Network response was not ok");
     }
     const data = await response.json();
-    if (this.useCache) {
-      await this.cache.setCachedData(this.uri, data);
+    if (useCache) {
+      await cache.setCachedData(this.uri, data);
     }
     return data;
   } catch (error) {
@@ -58,9 +64,22 @@ Api.prototype.getData = async function () {
 
 Object.defineProperty(Api.prototype, "useCache", {
   get: function () {
-    return this._useCache;
+    return _privateFields.get(this).useCache;
   },
   set: function (value) {
-    this._useCache = !!value;
+    const fields = _privateFields.get(this);
+    fields.useCache = !!value;
+    _privateFields.set(this, fields);
+  },
+});
+
+Object.defineProperty(Api.prototype, "cache", {
+  get: function () {
+    return _privateFields.get(this).cache;
+  },
+  set: function (value) {
+    const fields = _privateFields.get(this);
+    fields.cache = value;
+    _privateFields.set(this, fields);
   },
 });
