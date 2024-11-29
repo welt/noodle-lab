@@ -74,7 +74,7 @@ describe("Test the API handles args", () => {
     expect(data).toEqual(mockData);
   });
 
-  test("It should set the _useCache property correctly", () => {
+  test("It should set the useCache property correctly", () => {
     const api = new Api(customUri);
     expect(api.useCache).toBe(true);
     api.useCache = false;
