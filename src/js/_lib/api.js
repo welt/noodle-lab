@@ -8,6 +8,7 @@ import LocalCache from "./localCache";
 import MemoryCache from "./memoryCache"; // !! Broken - cache can not persist on page refresh.
 import SessionCache from "./sessionCache";
 import CacheApiCache from "./cacheApiCache";
+import CookieCache from './cookieCache';
 /* eslint-enable no-unused-vars */
 
 const defaultOptions = {
@@ -16,7 +17,7 @@ const defaultOptions = {
     Accept: "application/json",
   },
   useCache: true, // !! Non-standard local option for this module.
-  cacheStrategy: CacheApiCache, // !! Non-standard local option for this module.
+  cacheStrategy: CookieCache, // !! Non-standard local option for this module.
 };
 
 const defaultUri = "https://api.github.com/repos/11ty/eleventy";
