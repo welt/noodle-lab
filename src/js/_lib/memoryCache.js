@@ -14,10 +14,11 @@ const defaults = {
 export default class MemoryCache extends Cache {
   #cacheMap;
   #timestampMap;
+  #options;
 
   constructor(options = {}) {
     super();
-    this._options = { ...defaults, ...options };
+    this.#options = { ...defaults, ...options };
     this.#cacheMap = new Map();
     this.#timestampMap = new Map();
   }
@@ -48,6 +49,6 @@ export default class MemoryCache extends Cache {
   }
 
   get options() {
-    return this._options;
+    return this.#options;
   }
 }

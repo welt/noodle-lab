@@ -13,9 +13,11 @@ const defaults = {
 };
 
 export default class LocalCache extends Cache {
+  #options;
+
   constructor(options = {}) {
     super();
-    this._options = { ...defaults, ...options };
+    this.#options = { ...defaults, ...options };
   }
 
   getCachedData(uri) {
@@ -46,6 +48,6 @@ export default class LocalCache extends Cache {
   }
 
   get options() {
-    return this._options;
+    return this.#options;
   }
 }
