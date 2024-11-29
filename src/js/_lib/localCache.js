@@ -1,15 +1,15 @@
+/**
+ * @file sessionCache.js
+ * A simple local storage cache implementation.
+ * @extends Cache
+ */
+import isObject from './isObject';
 import Cache from '../_contracts/cache';
 
 const defaults = {
   expiryTimeInMs: 1000 * 60 * 5, // 5 minutes
   prefix: "cache_",
   suffix: "_timestamp",
-};
-
-const isObject = (thing) => {
-  return (
-    thing !== null && typeof thing === "object" && thing.constructor === Object
-  );
 };
 
 export default class LocalCache extends Cache {

@@ -1,13 +1,14 @@
+/**
+ * @file memoryCache.js
+ * A simple in-memory cache implementation.
+ * !! This cache does not persist on page refresh.
+ * @extends Cache
+ */
+import isObject from './isObject';
 import Cache from '../_contracts/cache';
 
 const defaults = {
   expiryTimeInMs: 1000 * 60 * 5, // 5 minutes
-};
-
-const isObject = (thing) => {
-  return (
-    thing !== null && typeof thing === "object" && thing.constructor === Object
-  );
 };
 
 export default class MemoryCache extends Cache {
