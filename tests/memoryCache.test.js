@@ -1,21 +1,14 @@
-import LocalCache from '../src/js/_lib/localCache';
+import { jest } from '@jest/globals';
+import MemoryCache from '../src/js/_lib/memoryCache';
 
 const testUri = "https://test.example.com";
 const testData = { loremFakeKey: "ipsumFakeValue" };
 
-describe("Test the LocalCache implementation", () => {
+describe("Test the MemoryCache implementation", () => {
   let cache;
-  let cacheKey;
-  let timestampKey;
-
-  beforeAll(() => {
-    cache = new LocalCache();
-    cacheKey = `cache_${testUri}`;
-    timestampKey = `${cacheKey}_timestamp`;
-  });
 
   beforeEach(() => {
-    localStorage.clear();
+    cache = new MemoryCache();
   });
 
   test("It should return null if no cached data exists", () => {
@@ -30,19 +23,19 @@ describe("Test the LocalCache implementation", () => {
   });
 
   test('It handles non-expired cached data correctly', () => {
-    localStorage.setItem(cacheKey, JSON.stringify(testData));
-    localStorage.setItem(timestampKey, (Date.now() - 1000).toString()); // 1 second ago
+    cache.setCachedData(testUri, testData);
     const result = cache.getCachedData(testUri);
     expect(result).toEqual(testData);
   });
 
   test('It handles expired cached data correctly', () => {
-    localStorage.setItem(cacheKey, JSON.stringify(testData));
-    localStorage.setItem(timestampKey, (Date.now() - 1000 * 60 * 6).toString()); // 6 minutes ago
+    cache.setCachedData(testUri, testData);
+    const now = Date.now();
+    jest.spyOn(Date, 'now')
+      .mockImplementation(() => now + 1000 * 60 * 10);
     const result = cache.getCachedData(testUri);
     expect(result).toBeNull();
-    expect(localStorage.getItem(cacheKey)).toBeNull();
-    expect(localStorage.getItem(timestampKey)).toBeNull();
+    Date.now.mockRestore();
   });
 
   test("It throws a TypeError if data is not an object", () => {
@@ -55,8 +48,6 @@ describe("Test the LocalCache implementation", () => {
   test('It should return the correct options', () => {
     const expectedOptions = {
       expiryTimeInMs: 1000 * 60 * 5,
-      prefix: "cache_",
-      suffix: "_timestamp",
     };
     expect(cache.options).toEqual(expectedOptions);
   });

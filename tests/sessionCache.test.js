@@ -1,4 +1,4 @@
-import LocalCache from '../src/js/_lib/localCache';
+import SessionCache from '../src/js/_lib/sessionCache';
 
 const testUri = "https://test.example.com";
 const testData = { loremFakeKey: "ipsumFakeValue" };
@@ -9,13 +9,13 @@ describe("Test the LocalCache implementation", () => {
   let timestampKey;
 
   beforeAll(() => {
-    cache = new LocalCache();
+    cache = new SessionCache();
     cacheKey = `cache_${testUri}`;
     timestampKey = `${cacheKey}_timestamp`;
   });
 
   beforeEach(() => {
-    localStorage.clear();
+    sessionStorage.clear();
   });
 
   test("It should return null if no cached data exists", () => {
@@ -30,19 +30,19 @@ describe("Test the LocalCache implementation", () => {
   });
 
   test('It handles non-expired cached data correctly', () => {
-    localStorage.setItem(cacheKey, JSON.stringify(testData));
-    localStorage.setItem(timestampKey, (Date.now() - 1000).toString()); // 1 second ago
+    sessionStorage.setItem(cacheKey, JSON.stringify(testData));
+    sessionStorage.setItem(timestampKey, (Date.now() - 1000).toString()); // 1 second ago
     const result = cache.getCachedData(testUri);
     expect(result).toEqual(testData);
   });
 
   test('It handles expired cached data correctly', () => {
-    localStorage.setItem(cacheKey, JSON.stringify(testData));
-    localStorage.setItem(timestampKey, (Date.now() - 1000 * 60 * 6).toString()); // 6 minutes ago
+    sessionStorage.setItem(cacheKey, JSON.stringify(testData));
+    sessionStorage.setItem(timestampKey, (Date.now() - 1000 * 60 * 6).toString()); // 6 minutes ago
     const result = cache.getCachedData(testUri);
     expect(result).toBeNull();
-    expect(localStorage.getItem(cacheKey)).toBeNull();
-    expect(localStorage.getItem(timestampKey)).toBeNull();
+    expect(sessionStorage.getItem(cacheKey)).toBeNull();
+    expect(sessionStorage.getItem(timestampKey)).toBeNull();
   });
 
   test("It throws a TypeError if data is not an object", () => {

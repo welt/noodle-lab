@@ -1,6 +1,6 @@
 /**
  * @file reporter.js
- * Abstract class for API data reporters.
+ * Pseudo-abstract class / base class for API data reporters.
  */
 import Api from "../_lib/api.js";
 
@@ -47,6 +47,7 @@ export default class Reporter extends HTMLElement {
 
   /**
    * Called when the element is connected to the DOM.
+   * This method should not be overridden by subclasses.
    */
   async connectedCallback() {
     try {

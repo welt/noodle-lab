@@ -47,14 +47,10 @@ describe("Test the API handles args", () => {
     expect(api.uri).toBe(customUri);
   });
 
-  test("It handles network errors", () => {
+  test("It handles network errors and logs them", async () => {
     const api = new Api(invalidUri);
-    expect(api.getData()).rejects.toThrow(networkErrorMessage);
-  });
-
-  test("It logs any error", () => {
-    const api = new Api(invalidUri);
-    expect(consoleSpy).toBeCalled();
+    await expect(api.getData()).rejects.toThrow(networkErrorMessage);
+    expect(consoleSpy).toHaveBeenCalled();
   });
 
   test("It should throw an error if the network response is not ok", async () => {
