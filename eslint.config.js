@@ -9,6 +9,7 @@ export default [
       globals: {
         ...globals.browser,
         ...globals.node,
+        global: 'readonly',
       },
     },
   },
@@ -22,6 +23,7 @@ export default [
         ...globals.browser,
         ...globals.node,
         ...globals.jest,
+        global: 'readonly',
       },
     },
   },
