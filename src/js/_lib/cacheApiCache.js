@@ -19,7 +19,7 @@ export default class CacheApiCache extends Cache {
   }
 
   async getCachedData(uri) {
-    const cache = await caches.open(this._options.cacheName);
+    const cache = await caches.open(this.options.cacheName);
     const response = await cache.match(uri);
     if (!response) {
       return null;
@@ -31,7 +31,7 @@ export default class CacheApiCache extends Cache {
     }
 
     const now = Date.now();
-    if (now - cachedTimestamp >= this._options.expiryTimeInMs) {
+    if (now - cachedTimestamp >= this.options.expiryTimeInMs) {
       await cache.delete(uri);
       return null;
     }
@@ -42,7 +42,7 @@ export default class CacheApiCache extends Cache {
 
   async setCachedData(uri, data) {
     if (!isObject(data)) throw new TypeError("Data must be an object.");
-    const cache = await caches.open(this._options.cacheName);
+    const cache = await caches.open(this.options.cacheName);
     const response = new Response(JSON.stringify(data), {
       headers: { 'x-cache-timestamp': Date.now().toString() }
     });

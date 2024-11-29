@@ -35,7 +35,7 @@ export default class CookieCache extends Cache {
   }
 
   getCachedData(uri) {
-    const cacheKey = `${this._options.prefix}${uri}`;
+    const cacheKey = `${this.options.prefix}${uri}`;
     const cachedData = getCookie(cacheKey);
     const cachedTimestamp = getCookie(`${cacheKey}_timestamp`);
 
@@ -44,7 +44,7 @@ export default class CookieCache extends Cache {
     }
 
     const now = Date.now();
-    if (now - cachedTimestamp >= this._options.expiryTimeInMs) {
+    if (now - cachedTimestamp >= this.options.expiryTimeInMs) {
       deleteCookie(cacheKey);
       deleteCookie(`${cacheKey}_timestamp`);
       return null;
@@ -56,15 +56,15 @@ export default class CookieCache extends Cache {
 
   setCachedData(uri, data) {
     if (!isObject(data)) throw new TypeError("Data must be an object.");
-    const cacheKey = `${this._options.prefix}${uri}`;
+    const cacheKey = `${this.options.prefix}${uri}`;
     const dataString = JSON.stringify(data);
     const { length } = dataString;
     if (length > 4000) {
       console.warn(`Data size ${length} exceeds cookie limit for ${uri}\nData will not be cached.`);
       return;
     }
-    setCookie(cacheKey, dataString, this._options.expiryTimeInMs, this._options.sameSite);
-    setCookie(`${cacheKey}_timestamp`, Date.now().toString(), this._options.expiryTimeInMs, this._options.sameSite);
+    setCookie(cacheKey, dataString, this.options.expiryTimeInMs, this.options.sameSite);
+    setCookie(`${cacheKey}_timestamp`, Date.now().toString(), this.options.expiryTimeInMs, this._options.sameSite);
   }
 
   get options() {
