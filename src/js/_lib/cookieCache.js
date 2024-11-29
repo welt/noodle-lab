@@ -29,9 +29,11 @@ const deleteCookie = (name) => {
 };
 
 export default class CookieCache extends Cache {
+  #options;
+
   constructor(options = {}) {
     super();
-    this._options = { ...defaults, ...options };
+    this.#options = { ...defaults, ...options };
   }
 
   getCachedData(uri) {
@@ -64,10 +66,10 @@ export default class CookieCache extends Cache {
       return;
     }
     setCookie(cacheKey, dataString, this.options.expiryTimeInMs, this.options.sameSite);
-    setCookie(`${cacheKey}_timestamp`, Date.now().toString(), this.options.expiryTimeInMs, this._options.sameSite);
+    setCookie(`${cacheKey}_timestamp`, Date.now().toString(), this.options.expiryTimeInMs, this.#options.sameSite);
   }
 
   get options() {
-    return this._options;
+    return this.#options;
   }
 }

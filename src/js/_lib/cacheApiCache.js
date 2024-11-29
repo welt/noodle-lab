@@ -13,9 +13,11 @@ const defaults = {
 };
 
 export default class CacheApiCache extends Cache {
+  #options;
+
   constructor(options = {}) {
     super();
-    this._options = { ...defaults, ...options };
+    this.#options = { ...defaults, ...options };
   }
 
   async getCachedData(uri) {
@@ -50,6 +52,6 @@ export default class CacheApiCache extends Cache {
   }
 
   get options() {
-    return this._options;
+    return this.#options;
   }
 }
