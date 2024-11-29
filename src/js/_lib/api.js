@@ -5,8 +5,9 @@
  */
 /* eslint-disable no-unused-vars */
 import LocalCache from "./localCache";
-import MemoryCache from "./memoryCache";
+import MemoryCache from "./memoryCache"; // !! Broken - cache can not persist on page refresh.
 import SessionCache from "./sessionCache";
+import CacheApiCache from "./cacheApiCache";
 /* eslint-enable no-unused-vars */
 
 const defaultOptions = {
@@ -15,7 +16,7 @@ const defaultOptions = {
     Accept: "application/json",
   },
   useCache: true, // !! Non-standard local option for this module.
-  cacheStrategy: SessionCache, // !! Non-standard local option for this module.
+  cacheStrategy: CacheApiCache, // !! Non-standard local option for this module.
 };
 
 const defaultUri = "https://api.github.com/repos/11ty/eleventy";
@@ -35,7 +36,7 @@ export default function Api(uri, options = {}) {
 }
 
 Api.prototype.getData = async function () {
-  const cachedData = this.useCache && this.cache.getCachedData(this.uri);
+  const cachedData = this.useCache && await this.cache.getCachedData(this.uri);
   if (cachedData) return cachedData;
 
   try {
@@ -45,7 +46,7 @@ Api.prototype.getData = async function () {
     }
     const data = await response.json();
     if (this.useCache) {
-      this.cache.setCachedData(this.uri, data);
+      await this.cache.setCachedData(this.uri, data);
     }
     return data;
   } catch (error) {
