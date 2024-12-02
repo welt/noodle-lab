@@ -20,9 +20,6 @@ const defaultOptions = {
   cacheStrategy: CacheApiCache, // !! Non-standard local option for this module.
 };
 
-const defaultUri = "https://api.github.com/repos/11ty/eleventy";
-
-// WeakMap to store private fields
 const _privateFields = new WeakMap();
 
 /**
@@ -32,18 +29,21 @@ const _privateFields = new WeakMap();
  * @constructor
  */
 export default function Api(uri, options = {}) {
-  this.uri = uri || defaultUri;
+  if (!uri) {
+    throw new Error("URI is required");
+  }
   const { useCache, cacheStrategy, ...fetchOptions } = { ...defaultOptions, ...options };
   _privateFields.set(this, {
+    uri,
     useCache: !!useCache,
-    request: new Request(this.uri, fetchOptions),
+    request: new Request(uri, fetchOptions),
     cache: new cacheStrategy(),
   });
 }
 
 Api.prototype.getData = async function () {
-  const { useCache, request, cache } = _privateFields.get(this);
-  const cachedData = useCache && await cache.getCachedData(this.uri);
+  const { uri, useCache, request, cache } = _privateFields.get(this);
+  const cachedData = useCache && await cache.getCachedData(uri);
   if (cachedData) return cachedData;
 
   try {
@@ -53,7 +53,7 @@ Api.prototype.getData = async function () {
     }
     const data = await response.json();
     if (useCache) {
-      await cache.setCachedData(this.uri, data);
+      await cache.setCachedData(uri, data);
     }
     return data;
   } catch (error) {
@@ -61,25 +61,4 @@ Api.prototype.getData = async function () {
     throw error;
   }
 };
-
-Object.defineProperty(Api.prototype, "useCache", {
-  get: function () {
-    return _privateFields.get(this).useCache;
-  },
-  set: function (value) {
-    const fields = _privateFields.get(this);
-    fields.useCache = !!value;
-    _privateFields.set(this, fields);
-  },
-});
-
-Object.defineProperty(Api.prototype, "cache", {
-  get: function () {
-    return _privateFields.get(this).cache;
-  },
-  set: function (value) {
-    const fields = _privateFields.get(this);
-    fields.cache = value;
-    _privateFields.set(this, fields);
-  },
-});
+ 
