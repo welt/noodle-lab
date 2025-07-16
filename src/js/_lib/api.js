@@ -7,7 +7,7 @@
 import CacheApiCache from "./cacheApiCache";
 import CookieCache from './cookieCache';
 import LocalCache from "./localCache";
-import MemoryCache from "./memoryCache"; // !! Cache can not persist on page refresh.
+import MemoryCache from "./memoryCache"; // !! This cache can not persist on page refresh.
 import SessionCache from "./sessionCache";
 /* eslint-enable no-unused-vars */
 

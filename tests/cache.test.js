@@ -2,7 +2,7 @@ import Cache from "../src/js/_contracts/cache";
 
 const testUri = "https://test.example.com";
 
-describe("Test the Cache abstract class", () => {
+describe("Test the Cache is an abstract class", () => {
   test("It does not allow instantiation", () => {
     expect(() => new Cache()).toThrow(
       "Cannot instantiate abstract Cache class directly.",
