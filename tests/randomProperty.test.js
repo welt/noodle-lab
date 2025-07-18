@@ -1,3 +1,4 @@
+import { jest } from "@jest/globals";
 import randomProperty from "../src/js/_lib/randomProperty";
 
 describe("Test randomProperty() function", () => {

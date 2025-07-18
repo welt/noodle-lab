@@ -18,7 +18,7 @@ export default class DumpToScreen extends Logger {
     if (!this.element) {
       throw new Error("Element with id '" + elementId + "' not found.");
     }
-    this.messages = new Fifo(queueLength, []);
+    this.messages = new Fifo(queueLength);
   }
 
   /**

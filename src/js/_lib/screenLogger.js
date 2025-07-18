@@ -1,18 +1,18 @@
 /**
  * @file screenLogger.js
  * Proxies console.log() so that messages containing
- * the substring "cached" are also logged to screen.
+ * specified substrings, eg. "cached", are also logged to screen.
  * @param {Logger} DumpToScreenClass
  * @param {String} elementId - DOM id of the element to log messages to
  * @returns {Function}
  */
 const matrixTimeOptions = {
-  year: '2-digit',
-  month: '2-digit',
-  day: '2-digit',
-  hour: '2-digit',
-  minute: '2-digit',
-  second: '2-digit',
+  year: "2-digit",
+  month: "2-digit",
+  day: "2-digit",
+  hour: "2-digit",
+  minute: "2-digit",
+  second: "2-digit",
   hour12: false,
 };
 
@@ -21,13 +21,18 @@ export default function createScreenLogger(DumpToScreenClass, elementId) {
 
   const originalConsoleLog = console.log;
 
-  const stringsAllowed = ["cached", "Call trans opt: received"];
+  const stringsAllowed = ["cached", "fetched", "Call trans opt: received"];
 
   const isScreenMethod = (str) => {
     if (typeof str !== "string") return false;
     return stringsAllowed.some((allowedStr) =>
       str.toLowerCase().includes(allowedStr),
     );
+  };
+
+  const matrixMessage = () => {
+    const currentDate = new Date().toLocaleString("en-US", matrixTimeOptions);
+    return `Call trans opt: received. ${currentDate} REC:Log>`;
   };
 
   console.log = new Proxy(originalConsoleLog, {
@@ -37,11 +42,7 @@ export default function createScreenLogger(DumpToScreenClass, elementId) {
         screenDumper.log(str);
       }
       if (Math.random() < 0.2) {
-        const currentDate = new Date()
-          .toLocaleString('en-US', matrixTimeOptions);
-        screenDumper.log(
-          `Call trans opt: received. ${currentDate} REC:Log>`
-        );
+        screenDumper.log(matrixMessage());
       }
       return Reflect.apply(target, thisArg, argumentsList);
     },
