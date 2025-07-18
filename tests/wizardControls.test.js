@@ -1,19 +1,20 @@
 import { jest } from "@jest/globals";
 import WizardControls from "../src/js/_components/wizardControls";
 
-describe("WizardControls prototype", () => {
-  test("methods exist on prototype", () => {
+describe("WizardControls implementation", () => {
+  test("These methods exist on WizardControls prototype", () => {
+    expect(typeof WizardControls.prototype.render).toBe("function");
     expect(typeof WizardControls.prototype.onWizardsUpdated).toBe("function");
     expect(typeof WizardControls.prototype.onWizardAddedToStory).toBe(
       "function",
     );
   });
 
-  test("onWizardsUpdated calls render with event detail", () => {
-    const ctrl = Object.create(WizardControls.prototype);
-    ctrl.render = jest.fn();
+  test("Its onWizardsUpdated method renders with event detail", () => {
+    const controls = Object.create(WizardControls.prototype);
+    controls.render = jest.fn();
     const event = { detail: ["Merlin", "Gandalf"] };
-    WizardControls.prototype.onWizardsUpdated.call(ctrl, event);
-    expect(ctrl.render).toHaveBeenCalledWith(["Merlin", "Gandalf"]);
+    WizardControls.prototype.onWizardsUpdated.call(controls, event);
+    expect(controls.render).toHaveBeenCalledWith(["Merlin", "Gandalf"]);
   });
 });
