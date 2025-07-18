@@ -22,5 +22,14 @@
     .reporter {
       border-color: $color-darkmode-fore;
     }
+
+    .message-panel {
+      border-color: $color-darkmode-fore;
+    }
+
+    .button > * {
+      color: $color-darkmode-fore;
+      border-color: $color-darkmode-fore;
+    }
   }
 }

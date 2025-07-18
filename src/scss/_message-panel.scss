@@ -1,0 +1,12 @@
+.message-panel {
+  border-radius: 8px;
+  border: 2px dashed Black;
+  box-sizing: border-box;
+  font-family: 'Courier New', Courier, monospace;
+  margin-bottom: 20px;
+  padding: 1rem;
+}
+
+.message-panel:empty {
+  display: none;
+}

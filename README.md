@@ -10,6 +10,7 @@ Vanilla JS
 
 Web Components
 
+Doodling around with cache strategies, API calls, lean web and other stuff.
 
 ## Development
 
