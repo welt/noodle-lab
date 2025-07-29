@@ -4,12 +4,12 @@
  * @see https://developer.mozilla.org/en-US/docs/Web/API/Cache
  * @extends Cache
  */
-import isObject from './isObject';
-import Cache from '../_contracts/cache';
+import isObject from "./isObject";
+import Cache from "../_contracts/cache";
 
 const defaults = {
   expiryTimeInMs: 1000 * 60 * 5, // 5 minutes
-  cacheName: 'api-cache',
+  cacheName: "api-cache",
 };
 
 export default class CacheApiCache extends Cache {
@@ -27,7 +27,7 @@ export default class CacheApiCache extends Cache {
       return null;
     }
 
-    const cachedTimestamp = response.headers.get('x-cache-timestamp');
+    const cachedTimestamp = response.headers.get("x-cache-timestamp");
     if (!cachedTimestamp) {
       return null;
     }
@@ -43,10 +43,12 @@ export default class CacheApiCache extends Cache {
   }
 
   async setCachedData(uri, data) {
-    if (!isObject(data)) throw new TypeError("Data must be an object.");
+    if (data === null || (!isObject(data) && !Array.isArray(data))) {
+      throw new TypeError("Data must be an object or array.");
+    }
     const cache = await caches.open(this.options.cacheName);
     const response = new Response(JSON.stringify(data), {
-      headers: { 'x-cache-timestamp': Date.now().toString() }
+      headers: { "x-cache-timestamp": Date.now().toString() },
     });
     await cache.put(uri, response);
   }
