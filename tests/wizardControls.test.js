@@ -1,5 +1,10 @@
 import { jest } from "@jest/globals";
 import WizardControls from "../src/js/_components/wizardFeature/wizardControls";
+import { registerCustomElements } from "../src/js/_lib/registerCustomElements.js";
+
+beforeAll(() => {
+  registerCustomElements();
+});
 
 describe("WizardControls implementation", () => {
   test("These methods exist on WizardControls prototype", () => {

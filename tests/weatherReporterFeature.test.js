@@ -1,13 +1,17 @@
 import { jest } from "@jest/globals";
-import WeatherReporterFeature from "../src/js/_components/weatherReporter/weatherReporterFeature.js";
-import WeatherReporterButton from "../src/js/_components/weatherReporter/weatherReporterButton.js";
-import WeatherReporter from "../src/js/_components/weatherReporter/weatherReporter.js";
+import { registerCustomElements } from "../src/js/_lib/registerCustomElements.js";
+import {
+  WeatherReporterFeature,
+  WeatherReporterButton,
+  WeatherReporter,
+} from "../src/js/_components/weatherReporter/index.js";
 
 describe("WeatherReporterFeature", () => {
   let feature;
   let parent;
 
   beforeEach(() => {
+    registerCustomElements();
     parent = document.createElement("section");
     parent.id = "test-parent";
     document.body.appendChild(parent);
@@ -30,9 +34,6 @@ describe("WeatherReporterFeature", () => {
   });
 
   test("creates a WeatherReporter in the correct container on event", () => {
-    if (!customElements.get("weather-reporter-button")) {
-      customElements.define("weather-reporter-button", WeatherReporterButton);
-    }
     const button = document.createElement("weather-reporter-button");
     parent.appendChild(button);
 
@@ -46,9 +47,6 @@ describe("WeatherReporterFeature", () => {
   });
 
   test("enforces the instance limit and shows error dialog on fourth attempt", async () => {
-    if (!customElements.get("weather-reporter-button")) {
-      customElements.define("weather-reporter-button", WeatherReporterButton);
-    }
     const button = document.createElement("weather-reporter-button");
     parent.appendChild(button);
 

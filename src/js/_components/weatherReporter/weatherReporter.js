@@ -5,14 +5,13 @@
  */
 import Reporter from "../../_contracts/reporter.js";
 
-const src = "https://api.github.com/repos/11ty/eleventy";
-const styles = ["reporter", "reporter--weather"];
+const src = "https://api.github.com/repos/11ty/eleventy"; // !! dummy placeholder src
+const styles = ["reporter", "reporter--weather", "grid-item"];
 
 export default class WeatherReporter extends Reporter {
   constructor() {
     super();
     this.src = src;
-    // Stub: Add properties or initialization as needed
   }
 
   render() {

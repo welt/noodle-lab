@@ -1,9 +1,10 @@
 import { jest } from "@jest/globals";
 import ErrorDialog from "../src/js/_components/ErrorDialog.js";
+import { registerCustomElements } from "../src/js/_lib/registerCustomElements.js";
 
-if (!customElements.get("error-dialog")) {
-  customElements.define("error-dialog", ErrorDialog);
-}
+beforeAll(() => {
+  registerCustomElements();
+});
 
 describe("ErrorDialog", () => {
   let dialog;

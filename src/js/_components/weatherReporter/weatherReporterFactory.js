@@ -1,6 +1,5 @@
 /**
  * @file weatherReporterFactory.js
- * Factory for creating WeatherReporter instances, enforcing a maximum of 3.
  */
 import WeatherReporter from "./weatherReporter.js";
 import WeatherReporterLimitError from "./weatherReporterLimitError.js";

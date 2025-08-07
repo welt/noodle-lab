@@ -1,12 +1,15 @@
 import { jest } from "@jest/globals";
 import { WizardFeature } from "../src/js/_components/wizardFeature/index.js";
+import { WizardFeature } from "./index.js";
+import { registerCustomElements } from "../src/js/_lib/registerCustomElements.js";
 
-describe("test the WizardFeature facade", () => {
+describe("WizardFeature facade", () => {
   let feature;
   let main;
   let reporter;
 
   beforeAll(() => {
+    registerCustomElements();
     document.body.innerHTML = '<div id="main"></div>';
     feature = new WizardFeature("#main");
     feature.init();
@@ -24,20 +27,23 @@ describe("test the WizardFeature facade", () => {
   });
 
   it("renders the initial wizard list", () => {
+    // Should show a <ul> with at least one <li> (initial wizards)
     expect(reporter.innerHTML).toMatch(/<ul>[\s\S]*<li>.*<\/li>[\s\S]*<\/ul>/);
   });
 
   it("updates the wizard list when a wizard is added", () => {
+    // Simulate adding a wizard via the button event
     const addEvent = new CustomEvent("add-wizard-to-story", {
-      detail: "Fake Wizard Name",
+      detail: "Test Wizard",
       bubbles: true,
       cancelable: true,
     });
     document.dispatchEvent(addEvent);
 
-    expect(reporter.innerHTML).toContain("Fake Wizard Name");
-    const listItemCount = reporter.innerHTML.match(/<li>/g)?.length || 0;
-    // 3 initial wizards plus one added wizard = four.
-    expect(listItemCount).toBeGreaterThanOrEqual(4);
+    // After event, the new wizard should appear in the list
+    expect(reporter.innerHTML).toContain("Test Wizard");
+    // Optionally, check the count
+    const liCount = reporter.innerHTML.match(/<li>/g)?.length || 0;
+    expect(liCount).toBeGreaterThanOrEqual(4); // 3 initial + 1 added
   });
 });
