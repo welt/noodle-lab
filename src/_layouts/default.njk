@@ -19,7 +19,7 @@
   <body>
     {% include 'header.njk' %}
     {% include 'messagePanel.njk' %}
-    <main class="main grid">
+    <main id="main" class="main grid">
       {{ content | safe }}
     </main>
     {% include 'footer.njk' %}
