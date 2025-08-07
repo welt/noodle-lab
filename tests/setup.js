@@ -1,8 +1,22 @@
 /**
  * Mocks some global browser APIs and objects.
- * Needed to test the borwser Cache API.
+ * Needed to test the browser Cache API.
  */
-import { jest } from '@jest/globals';
+import { jest } from "@jest/globals";
+import "whatwg-fetch";
+
+// Polyfill <dialog> element methods for jsdom (Jest) compatibility
+if (typeof window !== "undefined") {
+  if (typeof window.HTMLDialogElement === "undefined") {
+    window.HTMLDialogElement = class extends window.HTMLElement {};
+  }
+  window.HTMLDialogElement.prototype.showModal = function () {
+    this.open = true;
+  };
+  window.HTMLDialogElement.prototype.close = function () {
+    this.open = false;
+  };
+}
 
 global.caches = {
   _cache: new Map(),
