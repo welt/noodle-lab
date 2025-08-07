@@ -1,5 +1,5 @@
 import { jest } from "@jest/globals";
-import WeatherReporterButton from "../src/js/_components/weatherReporter/weatherReporterButton.js";
+import { WeatherReporterButton } from "../src/js/_components/weatherReporter/index.js";
 
 if (!customElements.get("weather-reporter-button")) {
   customElements.define("weather-reporter-button", WeatherReporterButton);

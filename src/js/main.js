@@ -7,12 +7,14 @@ import CarbonReporter from "./_components/carbonReporter.js";
 import GitHubReporter from "./_components/gitHubReporter.js";
 import LoadingSpinner from "./_components/loadingSpinner.js";
 import RandomReporter from "./_components/randomReporter.js";
-import WeatherReporterFeature from "./_components/weatherReporter/weatherReporterFeature.js";
-import WeatherReporterButton from "./_components/weatherReporter/weatherReporterButton.js";
 import F1Reporter from "./_components/f1Reporter.js";
 import ToggleButton from "./_components/toggleButton.js";
 import RefreshButton from "./_components/refreshButton.js";
 import { WizardFeature } from "./_components/wizardFeature/index.js";
+import {
+  WeatherReporterFeature,
+  WeatherReporterButton,
+} from "./_components/weatherReporter/index.js";
 
 window.WEATHER_REPORTER_FEATURE_ENABLED = true;
 const WEATHER_REPORTER_FEATURE_ENABLED =

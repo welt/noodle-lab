@@ -1,7 +1,9 @@
 import { jest } from "@jest/globals";
-import WeatherReporterFeature from "../src/js/_components/weatherReporter/weatherReporterFeature.js";
-import WeatherReporterButton from "../src/js/_components/weatherReporter/weatherReporterButton.js";
-import WeatherReporter from "../src/js/_components/weatherReporter/weatherReporter.js";
+import {
+  WeatherReporterFeature,
+  WeatherReporterButton,
+  WeatherReporter,
+} from "../src/js/_components/weatherReporter/index.js";
 
 describe("WeatherReporterFeature", () => {
   let feature;
