@@ -1,0 +1,1 @@
+export const WEATHER_REPORTER_MAX_INSTANCES = 3;
