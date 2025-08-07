@@ -1,8 +1,8 @@
 /**
  * @file wizardButton.js
  */
-import eventMixin from "../_mixins/eventMixin";
-import mixinApply from "../_lib/mixinApply";
+import eventMixin from "../../_mixins/eventMixin";
+import mixinApply from "../../_lib/mixinApply";
 
 const eventName = "add-wizard-to-story";
 const styles = ["button", "button--add-wizard"];

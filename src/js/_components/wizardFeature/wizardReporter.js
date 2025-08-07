@@ -1,8 +1,8 @@
 /**
  * @file wizardReporter.js
  */
-import Reporter from "../_contracts/reporter.js";
-import wizardStore from "../_lib/wizardStore.js";
+import Reporter from "../../_contracts/reporter.js";
+import wizardStore from "./wizardStore.js";
 
 const styles = ["reporter", "reporter--wizard"];
 

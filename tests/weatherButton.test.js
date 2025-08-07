@@ -1,9 +1,10 @@
 import { jest } from "@jest/globals";
-import WeatherReporterButton from "../src/js/_components/weatherReporter/weatherReporterButton.js";
+import { WeatherReporterButton } from "../src/js/_components/weatherReporter/index.js";
+import { registerCustomElements } from "../src/js/_lib/registerCustomElements.js";
 
-if (!customElements.get("weather-reporter-button")) {
-  customElements.define("weather-reporter-button", WeatherReporterButton);
-}
+beforeAll(() => {
+  registerCustomElements();
+});
 
 describe("WeatherReporterButton", () => {
   let button;

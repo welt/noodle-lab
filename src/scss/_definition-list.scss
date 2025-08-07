@@ -1,12 +1,27 @@
 dl {
-  display: grid;
-  grid-template-columns: max-content auto;
+  display: block;
+  margin-top: 0;
 }
 
 dt {
-  grid-column-start: 1;
+  font-style: bold;
 }
 
 dd {
-  grid-column-start: 2;
+  margin-left: 0;
+}
+
+dl > dl {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5em;
+}
+
+dd > dl > dt,
+dd > dl > dd {
+  display: inline;
+  margin-right: 0.5em;
+  margin-left: 0;
+  font-style: italic;
 }

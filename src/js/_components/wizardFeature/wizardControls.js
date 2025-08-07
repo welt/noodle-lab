@@ -1,12 +1,12 @@
 /**
  * @file wizardControls.js
  */
-import wizardStore from "../_lib/wizardStore.js";
-import WizardButton from "../_components/wizardButton.js";
-import ControlPanel from "../_contracts/controlPanel.js";
-import eventMixin from "../_mixins/eventMixin";
-import mixinApply from "../_lib/mixinApply";
-import findAndPop from "../_lib/findAndPop.js";
+import wizardStore from "./wizardStore.js";
+import WizardButton from "./wizardButton.js";
+import ControlPanel from "../../_contracts/controlPanel.js";
+import eventMixin from "../../_mixins/eventMixin";
+import mixinApply from "../../_lib/mixinApply";
+import findAndPop from "../../_lib/findAndPop.js";
 
 customElements.define("wizard-button", WizardButton);
 

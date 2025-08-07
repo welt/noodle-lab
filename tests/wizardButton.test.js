@@ -1,7 +1,10 @@
 import { beforeAll, jest } from "@jest/globals";
-import WizardButton from "../src/js/_components/wizardButton";
+import WizardButton from "../src/js/_components/wizardFeature/wizardButton";
+import { registerCustomElements } from "../src/js/_lib/registerCustomElements.js";
 
-customElements.define("wizard-button", WizardButton);
+beforeAll(() => {
+  registerCustomElements();
+});
 
 describe("Test WizardButton implementation", () => {
   test("It binds onClick", () => {

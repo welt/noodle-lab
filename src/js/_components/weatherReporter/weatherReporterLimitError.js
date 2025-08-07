@@ -1,6 +1,6 @@
 /**
+ * Custom error for WeatherReporterFactory instance limit.
  * @file weatherReporterLimitError.js
- * Custom error for enforcing WeatherReporterFactory instance limit.
  */
 import { WEATHER_REPORTER_MAX_INSTANCES } from "./weatherReporterConfig.js";
 

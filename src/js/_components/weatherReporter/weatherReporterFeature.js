@@ -5,14 +5,9 @@ import WeatherReporterLimitError from "./weatherReporterLimitError.js";
 
 /**
  * Facade for the WeatherReporter feature.
- * Encapsulates all setup, event handling, and teardown logic.
+ * Encapsulates setup, event handling, and teardown logic.
  *
  * @class
- * @example
- *   const feature = new WeatherReporterFeature();
- *   feature.init();
- *   // ... later ...
- *   feature.destroy();
  */
 export default class WeatherReporterFeature {
   /**
@@ -50,8 +45,6 @@ export default class WeatherReporterFeature {
 
   /**
    * Initialize the WeatherReporter feature.
-   * Registers custom elements and event listeners,
-   * and ensures the container and error dialog are in the DOM.
    */
   init() {
     if (this.initialized) return;
@@ -67,7 +60,6 @@ export default class WeatherReporterFeature {
 
   /**
    * Remove all feature elements and listeners from the DOM.
-   * Cleans up the container, error dialog, and event listeners.
    */
   destroy() {
     if (!this.initialized) return;
@@ -80,9 +72,7 @@ export default class WeatherReporterFeature {
   }
 
   /**
-   * Handle the add-weather-reporter event.
-   * Creates a new WeatherReporter if under the limit,
-   * otherwise shows an error dialog.
+   * Handles add-weather-reporter event.
    * @private
    */
   handleAddReporter() {
