@@ -1,12 +1,12 @@
-import { beforeAll, jest } from "@jest/globals";
-import WizardButton from "../src/js/_components/wizardFeature/wizardButton";
+import { jest } from "@jest/globals";
+import WizardButton from "../src/js/_components/wizardFeature/wizardButton.js";
 import { registerCustomElements } from "../src/js/_lib/registerCustomElements.js";
 
-beforeAll(() => {
-  registerCustomElements();
-});
-
 describe("Test WizardButton implementation", () => {
+  beforeAll(() => {
+    registerCustomElements();
+  });
+
   test("It binds onClick", () => {
     const btn = new WizardButton();
     expect(btn.onClick).toBeInstanceOf(Function);
