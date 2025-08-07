@@ -21,7 +21,13 @@ export default function createScreenLogger(DumpToScreenClass, elementId) {
 
   const originalConsoleLog = console.log;
 
-  const stringsAllowed = ["cached", "fetched", "Call trans opt: received"];
+  const stringsAllowed = [
+    "cached",
+    "fetched",
+    "created",
+    "errored",
+    "Call trans opt: received",
+  ];
 
   const isScreenMethod = (str) => {
     if (typeof str !== "string") return false;
