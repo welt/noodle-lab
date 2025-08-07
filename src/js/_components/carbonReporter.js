@@ -20,11 +20,11 @@ export default class CarbonReporter extends Reporter {
    */
   render(data) {
     const [values] = Object.values(data);
-    let htmlContent = "";
+    let htmlContent = "<h2>UK Carbon Intensity</h2>";
 
     if (values.length > 0) {
       const firstObject = values[0];
-      htmlContent = this.generateHtml(firstObject);
+      htmlContent += this.generateHtml(firstObject);
     }
 
     this.classList.add(...styles);
