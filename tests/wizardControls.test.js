@@ -1,5 +1,5 @@
 import { jest } from "@jest/globals";
-import WizardControls from "../src/js/_components/wizardControls";
+import WizardControls from "../src/js/_components/wizardFeature/wizardControls";
 
 describe("WizardControls implementation", () => {
   test("These methods exist on WizardControls prototype", () => {

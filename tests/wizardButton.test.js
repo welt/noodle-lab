@@ -1,5 +1,5 @@
 import { beforeAll, jest } from "@jest/globals";
-import WizardButton from "../src/js/_components/wizardButton";
+import WizardButton from "../src/js/_components/wizardFeature/wizardButton";
 
 customElements.define("wizard-button", WizardButton);
 
