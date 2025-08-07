@@ -1,6 +1,5 @@
 import { jest } from "@jest/globals";
 import { WizardFeature } from "../src/js/_components/wizardFeature/index.js";
-import { WizardFeature } from "./index.js";
 import { registerCustomElements } from "../src/js/_lib/registerCustomElements.js";
 
 describe("WizardFeature facade", () => {
