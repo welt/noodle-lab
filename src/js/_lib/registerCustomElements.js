@@ -20,6 +20,7 @@ import ToggleButton from "../_components/toggleButton.js";
 import RefreshButton from "../_components/refreshButton.js";
 import ErrorDialog from "../_components/ErrorDialog.js";
 import InfoDialog from "../_components/infoDialog.js";
+import GitHubLinkButton from "../_components/gitHubLinkButton.js";
 
 export function registerCustomElements() {
   // Dialogs
@@ -64,4 +65,6 @@ export function registerCustomElements() {
     customElements.define("toggle-button", ToggleButton);
   if (!customElements.get("refresh-button"))
     customElements.define("refresh-button", RefreshButton);
+  if (!customElements.get("github-link-button"))
+    customElements.define("github-link-button", GitHubLinkButton);
 }
