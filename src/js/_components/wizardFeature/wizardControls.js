@@ -25,7 +25,7 @@ export default class WizardControls extends ControlPanel {
     this.classList.add(...styles);
     this.innerHTML = `
       <div>
-        <p>Add a new wizard&hellip;</p>
+        <p>Add a new wizard to the story&hellip;</p>
           ${data
             .map(function (wizard) {
               return `<wizard-button class="button">

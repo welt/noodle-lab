@@ -9,8 +9,24 @@ export default [
       globals: {
         ...globals.browser,
         ...globals.node,
-        global: 'readonly',
+        global: "readonly",
       },
+    },
+    rules: {
+      // Set max line length (e.g., 80 characters)
+      "max-len": [
+        "warn",
+        {
+          code: 80,
+          ignoreUrls: true,
+          ignoreStrings: true,
+          ignoreTemplateLiterals: true,
+        },
+      ],
+      // Enforce multiline ternary expressions
+      "multiline-ternary": ["error", "always-multiline"],
+      // Encourage multiline conditions (optional, for readability)
+      "operator-linebreak": ["error", "after"],
     },
   },
   {
@@ -23,7 +39,7 @@ export default [
         ...globals.browser,
         ...globals.node,
         ...globals.jest,
-        global: 'readonly',
+        global: "readonly",
       },
     },
   },

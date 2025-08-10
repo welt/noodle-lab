@@ -5,33 +5,41 @@ import DumpToScreen from "./_lib/dumpToScreen";
 import createScreenLogger from "./_lib/screenLogger";
 import { WizardFeature } from "./_components/wizardFeature/index.js";
 import { WeatherReporterFeature } from "./_components/weatherReporter/index.js";
+import { InfoFeature } from "./_components/infoFeature/index.js";
 import { registerCustomElements } from "./_lib/registerCustomElements.js";
+
+const screenLogger = createScreenLogger(DumpToScreen, "message-panel");
 
 window.WEATHER_REPORTER_FEATURE_ENABLED = true;
 const WEATHER_REPORTER_FEATURE_ENABLED =
   window.WEATHER_REPORTER_FEATURE_ENABLED;
 let weatherReporterFeature;
 
-const wizardFeature = new WizardFeature("#main");
-wizardFeature.init();
-
-const screenLogger = createScreenLogger(DumpToScreen, "message-panel");
-
-function initializeThemeSwitch() {
+function initialiseFeatures() {
   const themeSwitch = new ToggleDarkMode();
   themeSwitch.init();
-}
 
-function init() {
-  localDebug.refresh();
-  screenLogger();
-  registerCustomElements();
-  messages.hello();
-  initializeThemeSwitch();
+  const wizardFeature = new WizardFeature("#main");
+  wizardFeature.init();
+
   if (WEATHER_REPORTER_FEATURE_ENABLED) {
     weatherReporterFeature = new WeatherReporterFeature("#main");
     weatherReporterFeature.init();
   }
+
+  const infoDialog = document.createElement("info-dialog");
+  document.body.appendChild(infoDialog);
+
+  const infoFeature = new InfoFeature({ modal: infoDialog });
+  infoFeature.init();
+}
+
+function init() {
+  registerCustomElements();
+  localDebug.refresh();
+  screenLogger();
+  messages.hello();
+  initialiseFeatures();
 }
 
 init();

@@ -1,8 +1,3 @@
-/**
- * @file infoDialog.js
- * InfoDialog component extending PlainModalDialog,
- * using Light DOM and native <dialog>.
- */
 import PlainModalDialog from "../_contracts/plainModalDialog.js";
 
 export default class InfoDialog extends PlainModalDialog {
@@ -10,24 +5,13 @@ export default class InfoDialog extends PlainModalDialog {
     super();
     this.dialog = null;
     this.messageDiv = null;
+  }
+
+  connectedCallback() {
     this.render();
   }
 
-  show(message) {
-    this.render(message);
-    if (!this.dialog.open) {
-      this.dialog.showModal();
-    }
-  }
-
-  close() {
-    if (this.dialog && this.dialog.open) {
-      this.dialog.close();
-    }
-  }
-
   render(message = "") {
-    // Only render the dialog structure once
     if (!this.querySelector("dialog")) {
       this.innerHTML = `
         <style>
@@ -38,7 +22,7 @@ export default class InfoDialog extends PlainModalDialog {
             box-shadow: 0 2px 10px rgba(0,0,0,0.2);
             font-family: inherit;
             min-width: 250px;
-            max-width: 90vw;
+            max-width: 60vw;
           }
           .info-message {
             margin-bottom: 1.5em;
@@ -66,14 +50,29 @@ export default class InfoDialog extends PlainModalDialog {
       this.messageDiv = this.querySelector(".info-message");
       this.dialog.addEventListener("close", this.#onClose.bind(this));
     }
-
-    if (typeof message === "string" && message.length > 0) {
+    if (typeof message === "string" && message.length > 0 && this.messageDiv) {
       this.messageDiv.textContent = message;
     }
   }
 
+  show(message) {
+    if (this.messageDiv) {
+      this.messageDiv.textContent = message;
+    }
+    if (this.dialog && !this.dialog.open) {
+      this.dialog.showModal();
+    }
+  }
+
+  close() {
+    if (this.dialog && this.dialog.open) {
+      this.dialog.close();
+    }
+  }
+
   #onClose() {
-    // Clear the message if required.
-    this.messageDiv.textContent = "";
+    if (this.messageDiv) {
+      this.messageDiv.textContent = "";
+    }
   }
 }
