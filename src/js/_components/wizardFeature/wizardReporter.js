@@ -4,7 +4,7 @@
 import Reporter from "../../_contracts/reporter.js";
 import wizardStore from "./wizardStore.js";
 
-const styles = ["reporter", "reporter--wizard"];
+const styles = ["reporter", "reporter--wizard", "list-inline"];
 
 export default class WizardReporter extends Reporter {
   #localWizards;

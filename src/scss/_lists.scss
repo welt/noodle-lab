@@ -4,3 +4,19 @@ ol {
   margin-bottom: 0;
   margin-top: 0;
 }
+
+.list-inline {
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  li {
+    display: inline;
+  }
+
+  li:not(:last-child)::after {
+    content: ", ";
+  }
+}
