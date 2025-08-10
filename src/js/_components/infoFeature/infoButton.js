@@ -1,5 +1,6 @@
 /**
  * @file InfoButton.js
+ * component that emits 'show-info'
  */
 import eventMixin from "../../_mixins/eventMixin";
 import mixinApply from "../../_lib/mixinApply";

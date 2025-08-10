@@ -1,3 +1,7 @@
+/**
+ * @file GitHubLinkButton.js
+ * component that links GitHub repository
+ */
 // !! Injected at build time by Rollup bundler.
 const GITHUB_REPO_URL =
   typeof __GITHUB_REPO_URL__ !== "undefined" ? __GITHUB_REPO_URL__ : "";
