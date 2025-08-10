@@ -4,6 +4,10 @@
   "description": "dumb project",
   "main": "eleventy.config.js",
   "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/welt/dumb-project-001.git"
+  },
   "scripts": {
     "html:dev": "ELEVENTY_ENV=dev set DEBUG=Eleventy* & npx @11ty/eleventy --serve",
     "html:prd": "ELEVENTY_ENV=production NODE_ENV=production npx @11ty/eleventy",
@@ -40,6 +44,7 @@
     "whatwg-fetch": "^3.6.20"
   },
   "dependencies": {
+    "@rollup/plugin-replace": "^6.0.2",
     "autoprefixer": "^10.4.21",
     "cssnano": "^7.1.0",
     "postcss-advanced-variables": "^5.0.0",

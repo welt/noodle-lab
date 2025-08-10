@@ -2,6 +2,13 @@
 // https://rollupjs.org/guide/en/
 import terser from "@rollup/plugin-terser";
 import { nodeResolve } from "@rollup/plugin-node-resolve";
+import replace from "@rollup/plugin-replace";
+import fs from "fs";
+import path from "path";
+import normalizeRepoUrl from "./scripts/normalizeRepoUrl.js";
+
+const pkg = JSON.parse(fs.readFileSync(path.resolve("./package.json"), "utf8"));
+const repoUrl = normalizeRepoUrl(pkg.repository);
 
 /* Hack for unusual ESM/npm package structure - oudated plugin */
 /* https://github.com/shuizhongyueming/rollup-plugin-output-manifest/issues/21#issuecomment-1368169746 */
@@ -21,7 +28,14 @@ const noop = () => {};
 export default [
   {
     input: "./src/js/main.js",
-    plugins: [nodeResolve(), devMode ? noop() : outputManifest(manifestOpts)],
+    plugins: [
+      nodeResolve(),
+      replace({
+        preventAssignment: true,
+        __GITHUB_REPO_URL__: JSON.stringify(repoUrl),
+      }),
+      devMode ? noop() : outputManifest(manifestOpts),
+    ],
     output: {
       entryFileNames: devMode ? "bundle.esm.js" : "bundle-[hash].esm.js",
       generatedCode: "es2015",
