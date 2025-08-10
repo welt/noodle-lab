@@ -10,6 +10,7 @@ import {
   WeatherReporter,
   WeatherReporterButton,
 } from "../_components/weatherReporter/index.js";
+import { InfoFeature, InfoButton } from "../_components/infoFeature/index.js";
 import CarbonReporter from "../_components/carbonReporter.js";
 import GitHubReporter from "../_components/gitHubReporter.js";
 import LoadingSpinner from "../_components/loadingSpinner.js";
@@ -21,6 +22,13 @@ import ErrorDialog from "../_components/ErrorDialog.js";
 import InfoDialog from "../_components/infoDialog.js";
 
 export function registerCustomElements() {
+  // Dialogs
+  if (!customElements.get("error-dialog"))
+    customElements.define("error-dialog", ErrorDialog);
+  if (!customElements.get("info-dialog")) {
+    customElements.define("info-dialog", InfoDialog);
+  }
+
   // Wizard Feature
   if (!customElements.get("wizard-reporter"))
     customElements.define("wizard-reporter", WizardReporter);
@@ -34,6 +42,12 @@ export function registerCustomElements() {
     customElements.define("weather-reporter", WeatherReporter);
   if (!customElements.get("weather-reporter-button"))
     customElements.define("weather-reporter-button", WeatherReporterButton);
+
+  // InfoFeature Feature
+  if (!customElements.get("info-feature"))
+    customElements.define("info-feature", InfoFeature);
+  if (!customElements.get("info-button"))
+    customElements.define("info-button", InfoButton);
 
   // Other Reporters & UI
   if (!customElements.get("carbon-reporter"))
@@ -50,10 +64,4 @@ export function registerCustomElements() {
     customElements.define("toggle-button", ToggleButton);
   if (!customElements.get("refresh-button"))
     customElements.define("refresh-button", RefreshButton);
-
-  // Dialogs
-  if (!customElements.get("error-dialog"))
-    customElements.define("error-dialog", ErrorDialog);
-  if (!customElements.get("info-dialog"))
-    customElements.define("info-dialog", InfoDialog);
 }
