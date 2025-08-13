@@ -1,7 +1,8 @@
 import WeatherReporterFactory from "./weatherReporterFactory.js";
 import WeatherReporter from "./weatherReporter.js";
 import ErrorDialog from "../ErrorDialog.js";
-import WeatherReporterLimitError from "./weatherReporterLimitError.js";
+import { WeatherReporterLimitError } from "./errors.js";
+import GeolocationWeatherStrategy from "./geolocationWeatherStrategy.js";
 
 /**
  * Facade for the WeatherReporter feature.
@@ -12,9 +13,9 @@ import WeatherReporterLimitError from "./weatherReporterLimitError.js";
 export default class WeatherReporterFeature {
   /**
    * Create a WeatherReporterFeature.
-   * @param {string} [containerSelector="#weather-reporter-container"] - Selector for the container element.
-   * @param {HTMLElement} [parent=document.body] - Parent element to append the container to.
-   * @param {HTMLElement|null} [errorDialog=null] - Optional error dialog element to use.
+   * @param {string} containerSelector - Selector for container.
+   * @param {HTMLElement} parent - Parent element for container.
+   * @param {HTMLElement|null} errorDialog - Optional error dialog element.
    */
   constructor(
     containerSelector = "#weather-reporter-container",
@@ -78,6 +79,7 @@ export default class WeatherReporterFeature {
   handleAddReporter() {
     try {
       const reporter = this.factory.createWeatherReporter();
+      reporter.setStrategy(new GeolocationWeatherStrategy());
       this.logMessage("Created: created new Reporter:> WeatherReporter");
       this.container.appendChild(reporter);
     } catch (err) {
