@@ -5,10 +5,11 @@
  */
 /* eslint-disable no-unused-vars */
 import CacheApiCache from "./cacheApiCache";
-import CookieCache from './cookieCache';
+import CookieCache from "./cookieCache";
 import LocalCache from "./localCache";
 import MemoryCache from "./memoryCache"; // !! This cache can not persist on page refresh.
 import SessionCache from "./sessionCache";
+import { ApiError } from "./errors.js";
 /* eslint-enable no-unused-vars */
 
 const defaultOptions = {
@@ -16,8 +17,8 @@ const defaultOptions = {
   headers: {
     Accept: "application/json",
   },
-  useCache: true, // !! Non-standard local option for this module.
-  cacheStrategy: CacheApiCache, // !! Non-standard local option for this module.
+  useCache: true, // !! Non-Fetch local option for this module.
+  cacheStrategy: CacheApiCache, // !! Non-Fetch local option for this module.
 };
 
 const _privateFields = new WeakMap();
@@ -30,9 +31,13 @@ const _privateFields = new WeakMap();
  */
 export default function Api(uri, options = {}) {
   if (!uri) {
-    throw new Error("URI is required");
+    throw new ApiError("URI is required");
   }
-  const { useCache, cacheStrategy, ...fetchOptions } = { ...defaultOptions, ...options };
+  const { useCache, cacheStrategy, ...fetchOptions } = {
+    ...defaultOptions,
+    ...options,
+  };
+
   _privateFields.set(this, {
     uri,
     useCache: !!useCache,
@@ -43,22 +48,42 @@ export default function Api(uri, options = {}) {
 
 Api.prototype.getData = async function () {
   const { uri, useCache, request, cache } = _privateFields.get(this);
-  const cachedData = useCache && await cache.getCachedData(uri);
+  const cachedData = useCache && (await cache.getCachedData(uri));
   if (cachedData) return cachedData;
 
+  let response, data;
   try {
-    const response = await fetch(request);
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
-    }
-    const data = await response.json();
-    if (useCache) {
-      await cache.setCachedData(uri, data);
-    }
-    return data;
-  } catch (error) {
-    console.error("Error fetching data:", error);
-    throw error;
+    response = await fetch(request);
+  } catch (networkError) {
+    console.error("Network error:", networkError);
+    throw new ApiError("Network error during API request", {
+      cause: networkError,
+      uri,
+    });
   }
+  if (!response.ok) {
+    console.error("API response not OK:", response.status, response.statusText);
+    throw new ApiError("Network response was not ok", {
+      status: response.status,
+      statusText: response.statusText,
+      uri,
+    });
+  }
+  try {
+    data = await response.json();
+  } catch (jsonError) {
+    console.error("JSON parse error:", jsonError);
+    throw new ApiError("Failed to parse API response", {
+      cause: jsonError,
+      uri,
+    });
+  }
+  if (useCache) {
+    try {
+      await cache.setCachedData(uri, data);
+    } catch (cacheError) {
+      console.warn("Failed to cache API data:", cacheError);
+    }
+  }
+  return data;
 };
- 
