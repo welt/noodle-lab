@@ -8,8 +8,9 @@ import WeatherDataStrategy from "./contracts/weatherDataStrategy.js";
 import getLocation from "./getLocation.js";
 import GeocodingService from "./geocodingService.js";
 import { WeatherApiError, GeocodingError } from "./errors.js";
+import Api from "../../_lib/api.js";
 
-const OPEN_METEO_URL = "https://api.open-meteo.com/v1/forecast";
+const url = new URL("https://api.open-meteo.com/v1/forecast");
 
 export default class GeolocationWeatherStrategy extends WeatherDataStrategy {
   constructor(errorDialog = null) {
@@ -22,28 +23,31 @@ export default class GeolocationWeatherStrategy extends WeatherDataStrategy {
         this.parent.appendChild(el);
         return el;
       })();
+    this.geocodingService = new GeocodingService(Api);
   }
 
   async getWeatherData() {
-    console.log("Getting weather data...");
     const position = await getLocation();
     const { latitude, longitude } = position.coords;
 
     let city = "Unknown location";
     try {
-      city = await GeocodingService.getCityName(latitude, longitude);
-      console.log("City data...", city);
+      city = await this.geocodingService.getCityName(latitude, longitude);
     } catch (err) {
       if (err instanceof GeocodingError) {
-        console.error("GEOCODING ERROR:", err.message);
         this.errorDialog.show(err.message);
       } else {
         throw err;
       }
     }
 
-    // Query Open-Meteo for current weather
-    const url = `${OPEN_METEO_URL}?latitude=${latitude}&longitude=${longitude}&current_weather=true`;
+    const params = new URLSearchParams({
+      latitude,
+      longitude,
+      current_weather: true,
+    });
+
+    url.search = params;
 
     const response = await fetch(url);
     if (!response.ok)

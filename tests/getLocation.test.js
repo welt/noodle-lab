@@ -3,6 +3,7 @@
  */
 import { jest } from "@jest/globals";
 import getLocation from "../src/js/_components/weatherReporter/getLocation";
+import { GeolocationError } from "../src/js/_components/weatherReporter/errors.js";
 
 const originalGeolocation = window.navigator.geolocation;
 
@@ -37,7 +38,16 @@ describe("getLocation", () => {
     window.navigator.geolocation.getCurrentPosition.mockImplementation(
       (success, error) => error(mockError),
     );
-    await expect(getLocation()).rejects.toEqual(mockError);
+    await expect(getLocation()).rejects.toThrow("User denied geolocation");
+    await expect(getLocation()).rejects.toBeInstanceOf(GeolocationError);
+
+    // Optionally, check the details property
+    try {
+      await getLocation();
+    } catch (err) {
+      expect(err.details).toEqual(mockError);
+    }
+
     expect(window.navigator.geolocation.getCurrentPosition).toHaveBeenCalled();
   });
 

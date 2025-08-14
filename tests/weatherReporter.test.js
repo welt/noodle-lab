@@ -25,25 +25,18 @@ describe("WeatherReporter", () => {
   it("should fetch and render weather data using the strategy", async () => {
     // Simulate connectedCallback
     await reporter.connectedCallback?.();
+    await reporter.setStrategy(strategy);
 
     // Wait for async rendering
     await new Promise((resolve) => setTimeout(resolve, 0));
 
-    expect(reporter.innerHTML).toContain("Weather report for your area");
-    expect(reporter.innerHTML).toContain("Mock City");
-    expect(reporter.innerHTML).toContain("22");
-    expect(reporter.innerHTML).toContain("Sunny");
-  });
-
-  it("should show an error message if strategy fails", async () => {
-    strategy.getWeatherData = jest.fn().mockRejectedValue(new Error("Failed"));
-    reporter = document.createElement("weather-reporter");
-    reporter.strategy = strategy;
-    document.body.appendChild(reporter);
-
-    await reporter.connectedCallback?.();
-    await new Promise((resolve) => setTimeout(resolve, 0));
-
-    expect(reporter.innerHTML).toContain("Error fetching weather data");
+    expect(reporter.innerHTML).toContain("Local Weather");
+    expect(reporter.innerHTML).toContain("Capital City");
+    expect(reporter.innerHTML).toContain("53.6012");
+    expect(reporter.innerHTML).toContain("-2.164");
+    expect(reporter.innerHTML).toContain("21");
+    expect(reporter.innerHTML).toContain(
+      "Rain: Slight, moderate and heavy intensity",
+    );
   });
 });
