@@ -17,9 +17,8 @@ export default class WeatherReporterButton extends HTMLElement {
     this.classList.add(...styles);
   }
 
-  onClick(event) {
-    console.log("clicked");
-    this.emit(eventName, event.target.textContent);
+  onClick() {
+    this.emit(eventName);
   }
 
   connectedCallback() {

@@ -1,6 +1,8 @@
 /**
  * @file infoFeature.js
  * Facade for the Info feature.
+ * Defines the InfoFeature class.
+ * Displays information messages in a plain modal.
  */
 import InfoMessage from "./infoMessage.js";
 import ensureContract from "../../_mixins/ensureContract.js";

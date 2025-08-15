@@ -1,6 +1,6 @@
 {
   "name": "dumb-project-001",
-  "version": "2.1.4",
+  "version": "2.1.5",
   "description": "dumb project",
   "main": "eleventy.config.js",
   "type": "module",

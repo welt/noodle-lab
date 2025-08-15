@@ -7,7 +7,10 @@ import formatTimestamp from "../_lib/formatTimestamp.js";
 import textUtils from "../_lib/textUtils.js";
 
 const url = new URL("https://api.openf1.org/v1/meetings");
-const paramsObj = { year: "2025", meeting_key: "latest" };
+const params = new URLSearchParams({
+  year: "2025",
+  meeting_key: "latest",
+});
 
 const styles = ["reporter", "reporter--f1"];
 
@@ -35,9 +38,8 @@ export default class F1Reporter extends Reporter {
     `;
   }
   async connectedCallback() {
-    const params = new URLSearchParams(paramsObj);
-    url.search = params.toString();
-    this.src = url.toString();
+    url.search = params;
+    this.src = url;
     await super.connectedCallback();
   }
 }
