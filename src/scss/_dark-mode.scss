@@ -24,7 +24,9 @@
     }
 
     .reporter {
+      background-color: $color-darkmode-back;
       border-color: $color-darkmode-fore;
+      color: $color-darkmode-fore;
     }
 
     .message-panel {

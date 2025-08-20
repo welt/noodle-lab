@@ -10,7 +10,7 @@ import findAndPop from "../../_lib/findAndPop.js";
 
 customElements.define("wizard-button", WizardButton);
 
-const styles = ["controls", "controls--wizard"];
+const styles = ["wizard-controls"];
 
 export default class WizardControls extends ControlPanel {
   constructor() {
@@ -24,16 +24,16 @@ export default class WizardControls extends ControlPanel {
   render(data = this.wizards) {
     this.classList.add(...styles);
     this.innerHTML = `
-      <div>
-        <p>Add a new wizard to the story&hellip;</p>
-          ${data
-            .map(function (wizard) {
-              return `<wizard-button class="button">
-                        <button>${wizard}</button>
-                      </wizard-button>`;
-            })
-            .join("")}
-      </div>`;
+      <p>Add a new wizard to the story&hellip;</p>
+      <div class="controls-row" role="group">
+        ${data
+          .map(function (wizard) {
+            return `<wizard-button class="button">
+                      <button>${wizard}</button>
+                    </wizard-button>`;
+          })
+          .join("")}
+    </div>`;
   }
 
   connectedCallback() {
