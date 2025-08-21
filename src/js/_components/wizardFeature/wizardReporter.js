@@ -29,14 +29,29 @@ export default class WizardReporter extends Reporter {
     }
   }
 
-  render(data = this.#localWizards) {
+  render(data) {
+    // Use provided data or fall back to local wizards
+    const wizardData = data !== undefined ? data : this.#localWizards;
+    
     this.classList.add(...styles);
+    
+    // Handle empty state
+    if (!wizardData || !Array.isArray(wizardData) || wizardData.length === 0) {
+      this.innerHTML = `
+        <h2>Wizards in this story:</h2>
+        <div class="empty-state" role="status" aria-live="polite">
+          <p>No wizards have been added to this story yet.</p>
+          <p>Use the controls above to add wizards to your story.</p>
+        </div>`;
+      return;
+    }
+    
     this.innerHTML = `
       <h2>Wizards in this story:</h2>
-      <ul>
-        ${data
+      <ul role="list" aria-label="List of wizards in the story">
+        ${wizardData
           .map(function (wizard) {
-            return `<li>${wizard}</li>`;
+            return `<li role="listitem">${wizard}</li>`;
           })
           .join("")}
       </ul>`;

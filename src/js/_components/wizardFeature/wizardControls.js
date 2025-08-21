@@ -21,15 +21,29 @@ export default class WizardControls extends ControlPanel {
     this.onWizardAddedToStory = this.onWizardAddedToStory.bind(this);
   }
 
-  render(data = this.wizards) {
+  render(data) {
+    // Use provided data or fall back to local wizards
+    const wizardData = data !== undefined ? data : this.wizards;
+    
     this.classList.add(...styles);
+    
+    // Handle empty state
+    if (!wizardData || !Array.isArray(wizardData) || wizardData.length === 0) {
+      this.innerHTML = `
+        <p>Add a new wizard to the story&hellip;</p>
+        <div class="controls-row empty-state" role="group" aria-live="polite">
+          <p class="empty-message">No more wizards available to add to the story.</p>
+        </div>`;
+      return;
+    }
+    
     this.innerHTML = `
       <p>Add a new wizard to the story&hellip;</p>
-      <div class="controls-row" role="group">
-        ${data
+      <div class="controls-row" role="group" aria-label="Available wizards to add">
+        ${wizardData
           .map(function (wizard) {
             return `<wizard-button class="button">
-                      <button>${wizard}</button>
+                      <button aria-label="Add ${wizard} to the story">${wizard}</button>
                     </wizard-button>`;
           })
           .join("")}
