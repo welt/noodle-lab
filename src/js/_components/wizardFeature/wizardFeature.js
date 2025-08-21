@@ -6,6 +6,7 @@
 import WizardReporter from "./wizardReporter.js";
 import WizardButton from "./wizardButton.js";
 import WizardControls from "./wizardControls.js";
+import ResetButton from "./resetButton.js";
 
 function registerElements() {
   if (!customElements.get("wizard-reporter")) {
@@ -16,6 +17,9 @@ function registerElements() {
   }
   if (!customElements.get("wizard-controls")) {
     customElements.define("wizard-controls", WizardControls);
+  }
+  if (!customElements.get("reset-button")) {
+    customElements.define("reset-button", ResetButton);
   }
 }
 

@@ -45,4 +45,38 @@ describe("WizardFeature facade", () => {
     const liCount = reporter.innerHTML.match(/<li>/g)?.length || 0;
     expect(liCount).toBeGreaterThanOrEqual(4); // 3 initial + 1 added
   });
+
+  it("should include a reset button in the rendered output", () => {
+    expect(reporter.innerHTML).toContain('reset-button');
+    expect(reporter.innerHTML).toContain('Reset Story');
+  });
+
+  it("resets the wizard story when reset button is clicked", () => {
+    // First, add a wizard to the story
+    const addEvent = new CustomEvent("add-wizard-to-story", {
+      detail: "Test Wizard for Reset",
+      bubbles: true,
+      cancelable: true,
+    });
+    document.dispatchEvent(addEvent);
+
+    // Verify wizard was added
+    expect(reporter.innerHTML).toContain("Test Wizard for Reset");
+    
+    // Count wizards before reset (should be at least 4: 3 initial + 1 added)
+    const beforeResetCount = (reporter.innerHTML.match(/<li>/g) || []).length;
+    expect(beforeResetCount).toBeGreaterThanOrEqual(4);
+
+    // Simulate reset button click
+    const resetEvent = new CustomEvent("reset-wizard-story", {
+      bubbles: true,
+      cancelable: true,
+    });
+    document.dispatchEvent(resetEvent);
+
+    // After reset, the story should be empty
+    const afterResetCount = (reporter.innerHTML.match(/<li>/g) || []).length;
+    expect(afterResetCount).toBe(0);
+    expect(reporter.innerHTML).not.toContain("Test Wizard for Reset");
+  });
 });
