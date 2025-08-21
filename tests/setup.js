@@ -3,9 +3,15 @@
  * Needed to test the browser Cache API.
  */
 import { jest } from "@jest/globals";
+/*
+ * Jest uses JSDOM. JSDOM has no native implementation
+ * of various Fetch-related APIs. Importing "whatwg-fetch"
+ * automatically polyfills `window.fetch` and other APIs.
+ * @see https://www.npmjs.com/package/whatwg-fetch
+ */
 import "whatwg-fetch";
 
-// Polyfill <dialog> element methods for jsdom (Jest) compatibility
+// Polyfill <dialog> element methods for JSODM (Jest) compatibility
 if (typeof window !== "undefined") {
   if (typeof window.HTMLDialogElement === "undefined") {
     window.HTMLDialogElement = class extends window.HTMLElement {};
