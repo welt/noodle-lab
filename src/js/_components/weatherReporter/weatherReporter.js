@@ -30,6 +30,10 @@ export default class WeatherReporter extends Reporter {
   }
 
   async fetchAndRender() {
+    this.innerHTML = `<h2>Weather report for your area</h2>
+      <loading-spinner></loading-spinner>
+      <p>Loading...</p>`;
+
     if (!this.strategy) {
       this.innerHTML = `<h2>Weather report for your area</h2><p>No strategy set.</p>`;
       return;
@@ -41,6 +45,7 @@ export default class WeatherReporter extends Reporter {
       this.data = null;
       this.error = err;
     }
+
     this.render();
   }
 
@@ -52,7 +57,8 @@ export default class WeatherReporter extends Reporter {
     }
     if (!this.data) {
       this.innerHTML = `<h2>Weather report for your area</h2>
-         <p>Loading...</p>`;
+        <loading-spinner></loading-spinner>
+        <p>Loading...</p>`;
       return;
     }
 
