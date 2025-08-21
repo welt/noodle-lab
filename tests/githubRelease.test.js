@@ -1,7 +1,7 @@
 import { jest } from "@jest/globals";
 import githubRelease from "../src/_data/githubRelease.js";
 
-const mockUrl = `https://api.github.com/repos/welt/dumb-project-001/tags`;
+const mockUrl = `https://api.github.com/repos/welt/noodle-lab/tags`;
 
 describe("githubRelease data function", () => {
   beforeEach(() => {
