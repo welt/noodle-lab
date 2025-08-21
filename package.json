@@ -1,12 +1,12 @@
 {
-  "name": "dumb-project-001",
+  "name": "noodle-lab",
   "version": "2.1.9",
-  "description": "dumb project",
+  "description": "Noodling around project",
   "main": "eleventy.config.js",
   "type": "module",
   "repository": {
     "type": "git",
-    "url": "https://github.com/welt/dumb-project-001.git"
+    "url": "https://github.com/welt/noodle-lab.git"
   },
   "scripts": {
     "html:dev": "ELEVENTY_ENV=dev set DEBUG=Eleventy* & npx @11ty/eleventy --serve",
