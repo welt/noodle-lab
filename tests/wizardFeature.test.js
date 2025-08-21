@@ -27,7 +27,9 @@ describe("WizardFeature facade", () => {
 
   it("renders the initial wizard list", () => {
     // Should show a <ul> with at least one <li> (initial wizards)
-    expect(reporter.innerHTML).toMatch(/<ul>[\s\S]*<li>.*<\/li>[\s\S]*<\/ul>/);
+    expect(reporter.innerHTML).toMatch(
+      /<ul[^>]*>[\s\S]*<li>.*<\/li>[\s\S]*<\/ul>/,
+    );
   });
 
   it("updates the wizard list when a wizard is added", () => {
@@ -47,8 +49,8 @@ describe("WizardFeature facade", () => {
   });
 
   it("should include a reset button in the rendered output", () => {
-    expect(reporter.innerHTML).toContain('reset-button');
-    expect(reporter.innerHTML).toContain('Reset Story');
+    expect(reporter.innerHTML).toContain("reset-button");
+    expect(reporter.innerHTML).toContain("Reset Story");
   });
 
   it("resets the wizard story when reset button is clicked", () => {
@@ -62,7 +64,7 @@ describe("WizardFeature facade", () => {
 
     // Verify wizard was added
     expect(reporter.innerHTML).toContain("Test Wizard for Reset");
-    
+
     // Count wizards before reset (should be at least 4: 3 initial + 1 added)
     const beforeResetCount = (reporter.innerHTML.match(/<li>/g) || []).length;
     expect(beforeResetCount).toBeGreaterThanOrEqual(4);
