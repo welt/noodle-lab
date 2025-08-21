@@ -30,16 +30,24 @@ export default class WizardReporter extends Reporter {
   }
 
   render(data = this.#localWizards) {
+    const isDisabled = this.#localWizards.length === 0;
     this.classList.add(...styles);
     this.innerHTML = `
       <h2>Wizards in this story:</h2>
-      <ul>
+      <ul aria-live="polite">
         ${data
           .map(function (wizard) {
             return `<li>${wizard}</li>`;
           })
           .join("")}
-      </ul>`;
+      </ul>
+      <reset-button>
+      <button
+        ${isDisabled ? "disabled aria-disabled='true' title='No wizards to remove'" : ""}
+      >
+        Reset Story
+      </button>
+      </reset-button>`;
   }
 
   connectedCallback() {
@@ -56,6 +64,17 @@ export default class WizardReporter extends Reporter {
       const { detail } = event;
       this.logMessage(detail);
       this.#localWizards.push(detail);
+      this.render();
+    });
+
+    document.addEventListener("reset-wizard-story", () => {
+      this.logMessage("Resetting wizard story");
+      // Move all local wizards back to the store
+      this.#localWizards.forEach((wizard) => {
+        wizardStore.push(wizard);
+      });
+      // Clear the local wizards
+      this.#localWizards = [];
       this.render();
     });
   }

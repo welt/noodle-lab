@@ -1,3 +1,4 @@
+import dateFilter from "./scripts/dateFilter.js";
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -7,6 +8,7 @@ export default async function (eleventyConfig) {
   eleventyConfig.addPassthroughCopy("./src/favicon.ico");
   eleventyConfig.addWatchTarget("./src/js/");
   eleventyConfig.addWatchTarget("./src/scss/");
+  eleventyConfig.addFilter("date", dateFilter);
 
   return {
     dir: {

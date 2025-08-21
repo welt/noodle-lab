@@ -1,0 +1,29 @@
+---
+permalink: /feed.xml
+eleventyExcludeFromCollections: true
+---
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0">
+  <channel>
+    <title>Latest Release for {{ meta.repoName }}</title>
+    <link>{{ meta.repoUrl }}</link>
+    <description>Latest GitHub release tag for {{ meta.repoName }}</description>
+    <language>en</language>
+    {% if githubRelease and githubRelease.name %}
+      <item>
+        <title>{{ githubRelease.name }}</title>
+        <link>{{ githubRelease.commit.url }}</link>
+        <description>Latest tag: {{ githubRelease.name }}</description>
+        <pubDate>{{ "now" | date("utc") }}</pubDate>
+        <guid>{{ githubRelease.commit.url }}</guid>
+      </item>
+    {% else %}
+      <item>
+        <title>Error fetching tag info</title>
+        <description>Could not fetch the latest tag from GitHub. Please check the feed later.</description>
+        <pubDate>{{ "now" | date("utc") }}</pubDate>
+        <guid>error-{{ "now" | date("iso") }}</guid>
+      </item>
+    {% endif %}
+  </channel>
+</rss>
