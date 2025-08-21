@@ -70,4 +70,6 @@ export function registerCustomElements() {
     customElements.define("refresh-button", RefreshButton);
   if (!customElements.get("github-link-button"))
     customElements.define("github-link-button", GitHubLinkButton);
+  if (!customElements.get("loading-spinner"))
+    customElements.define("loading-spinner", LoadingSpinner);
 }
