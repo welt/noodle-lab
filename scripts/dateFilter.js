@@ -1,5 +1,6 @@
 /**
  * @file scripts/dateFilter.js
+ * 11ty date filter function.
  */
 
 /**
@@ -14,12 +15,7 @@ const formatsAllowed = {
 };
 
 export default function dateFilter(value, format = "utc") {
-  let dateObj;
-  if (value === "now") {
-    dateObj = new Date();
-  } else {
-    dateObj = new Date(value);
-  }
+  const dateObj = value === "now" ? new Date() : new Date(value);
 
   const formatter = formatsAllowed[format];
 
@@ -28,5 +24,6 @@ export default function dateFilter(value, format = "utc") {
       `Unsupported date format: "${format}". Allowed formats are: ${Object.keys(formatsAllowed).join(", ")}`,
     );
   }
+
   return formatter(dateObj);
 }
