@@ -7,3 +7,9 @@
   border: 2px solid $color-fore;
   border-radius: 0.25rem;
 }
+
+button[disabled] {
+  opacity: 0.8;
+  border: 2px dashed $color-fore;
+  cursor: not-allowed;
+}

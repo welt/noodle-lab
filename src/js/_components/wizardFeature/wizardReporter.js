@@ -30,10 +30,11 @@ export default class WizardReporter extends Reporter {
   }
 
   render(data = this.#localWizards) {
+    const isDisabled = this.#localWizards.length === 0;
     this.classList.add(...styles);
     this.innerHTML = `
       <h2>Wizards in this story:</h2>
-      <ul>
+      <ul aria-live="polite">
         ${data
           .map(function (wizard) {
             return `<li>${wizard}</li>`;
@@ -41,7 +42,11 @@ export default class WizardReporter extends Reporter {
           .join("")}
       </ul>
       <reset-button>
-        <button>Reset Story</button>
+      <button
+        ${isDisabled ? "disabled aria-disabled='true' title='No wizards to remove'" : ""}
+      >
+        Reset Story
+      </button>
       </reset-button>`;
   }
 
@@ -65,7 +70,7 @@ export default class WizardReporter extends Reporter {
     document.addEventListener("reset-wizard-story", () => {
       this.logMessage("Resetting wizard story");
       // Move all local wizards back to the store
-      this.#localWizards.forEach(wizard => {
+      this.#localWizards.forEach((wizard) => {
         wizardStore.push(wizard);
       });
       // Clear the local wizards
