@@ -27,7 +27,8 @@ describe("WizardFeature facade", () => {
 
   it("renders the initial wizard list", () => {
     // Should show a <ul> with at least one <li> (initial wizards)
-    expect(reporter.innerHTML).toMatch(/<ul>[\s\S]*<li>.*<\/li>[\s\S]*<\/ul>/);
+    // Updated to account for role attributes in the HTML
+    expect(reporter.innerHTML).toMatch(/<ul[^>]*>[\s\S]*<li[^>]*>.*<\/li>[\s\S]*<\/ul>/);
   });
 
   it("updates the wizard list when a wizard is added", () => {
@@ -41,8 +42,8 @@ describe("WizardFeature facade", () => {
 
     // After event, the new wizard should appear in the list
     expect(reporter.innerHTML).toContain("Test Wizard");
-    // Optionally, check the count
-    const liCount = reporter.innerHTML.match(/<li>/g)?.length || 0;
+    // Optionally, check the count - updated to account for role attributes
+    const liCount = reporter.innerHTML.match(/<li[^>]*>/g)?.length || 0;
     expect(liCount).toBeGreaterThanOrEqual(4); // 3 initial + 1 added
   });
 });
