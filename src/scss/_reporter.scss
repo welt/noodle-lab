@@ -4,3 +4,18 @@
   background-color: Whitesmoke;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
 }
+
+.reporter--wizard {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.reporter--wizard ul {
+  flex: 1 1 auto;
+  margin-bottom: 0.5rem;
+}
+
+.reporter--wizard reset-button {
+  align-self: flex-end;
+}
