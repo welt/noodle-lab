@@ -3,6 +3,8 @@
  * Needed to test the browser Cache API.
  */
 import { jest } from "@jest/globals";
+import "dotenv/config";
+
 /*
  * Jest uses JSDOM. JSDOM has no native implementation
  * of various Fetch-related APIs. Importing "whatwg-fetch"
