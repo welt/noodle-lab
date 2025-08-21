@@ -39,7 +39,10 @@ export default class WizardReporter extends Reporter {
             return `<li>${wizard}</li>`;
           })
           .join("")}
-      </ul>`;
+      </ul>
+      <reset-button>
+        <button>Reset Story</button>
+      </reset-button>`;
   }
 
   connectedCallback() {
@@ -56,6 +59,17 @@ export default class WizardReporter extends Reporter {
       const { detail } = event;
       this.logMessage(detail);
       this.#localWizards.push(detail);
+      this.render();
+    });
+
+    document.addEventListener("reset-wizard-story", () => {
+      this.logMessage("Resetting wizard story");
+      // Move all local wizards back to the store
+      this.#localWizards.forEach(wizard => {
+        wizardStore.push(wizard);
+      });
+      // Clear the local wizards
+      this.#localWizards = [];
       this.render();
     });
   }

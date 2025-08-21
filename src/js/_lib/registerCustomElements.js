@@ -5,6 +5,7 @@ import {
   WizardReporter,
   WizardButton,
   WizardControls,
+  ResetButton,
 } from "../_components/wizardFeature/index.js";
 import {
   WeatherReporter,
@@ -37,6 +38,8 @@ export function registerCustomElements() {
     customElements.define("wizard-button", WizardButton);
   if (!customElements.get("wizard-controls"))
     customElements.define("wizard-controls", WizardControls);
+  if (!customElements.get("reset-button"))
+    customElements.define("reset-button", ResetButton);
 
   // WeatherReporter Feature
   if (!customElements.get("weather-reporter"))
