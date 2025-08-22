@@ -34,6 +34,7 @@ export default class DumpToScreen extends Logger {
             this.element = document.getElementById(this.elementId);
             if (this.element) {
               this.#updatePanel(str);
+              requestAnimationFrame(noop); // Forced repaint.
               return;
             }
             this.#throwNotFound();
@@ -59,7 +60,6 @@ export default class DumpToScreen extends Logger {
       .map((message) => `<p>${message}</p>`)
       .join("");
     this.element.innerHTML = latest;
-    requestAnimationFrame(noop); // Additional redundancy: forced repaint.
   }
 
   #throwNotFound() {
