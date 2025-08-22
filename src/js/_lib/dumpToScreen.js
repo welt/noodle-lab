@@ -4,6 +4,7 @@
  */
 import Logger from "../_contracts/logger";
 import Fifo from "./fifo";
+import noop from "./noop";
 
 const maxMessageQueue = 4;
 
@@ -53,11 +54,12 @@ export default class DumpToScreen extends Logger {
 
   #updatePanel(str) {
     this.messages.push(str);
-    const lastThreeMessages = this.messages
+    const latest = this.messages
       .toArray()
       .map((message) => `<p>${message}</p>`)
       .join("");
-    this.element.innerHTML = lastThreeMessages;
+    this.element.innerHTML = latest;
+    requestAnimationFrame(noop); // Additional redundancy: forced repaint.
   }
 
   #throwNotFound() {
