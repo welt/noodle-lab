@@ -7,30 +7,60 @@ import Fifo from "./fifo";
 
 const maxMessageQueue = 4;
 
+class LoggerError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = "LoggerError";
+  }
+}
+
 export default class DumpToScreen extends Logger {
-  /**
-   * @param {String} elementId
-   * @param {Number} queueLength
-   */
   constructor(elementId, queueLength = maxMessageQueue) {
     super();
-    this.element = document.getElementById(elementId);
-    if (!this.element) {
-      throw new Error("Element with id '" + elementId + "' not found.");
-    }
+    this.elementId = elementId;
     this.messages = new Fifo(queueLength);
+    this.element = null;
   }
 
-  /**
-   * Upates the DOM element with the last three messages.
-   * @param {String} str - message to log
-   */
   log(str) {
+    if (this.element === null) {
+      this.element = document.getElementById(this.elementId);
+
+      if (!this.element && document.readyState === "loading") {
+        document.addEventListener(
+          "DOMContentLoaded",
+          () => {
+            this.element = document.getElementById(this.elementId);
+            if (this.element) {
+              this.#updatePanel(str);
+              return;
+            }
+            this.#throwNotFound();
+          },
+          { once: true },
+        );
+        return;
+      }
+
+      if (!this.element) {
+        this.#throwNotFound();
+        return;
+      }
+    }
+
+    this.#updatePanel(str);
+  }
+
+  #updatePanel(str) {
     this.messages.push(str);
     const lastThreeMessages = this.messages
       .toArray()
       .map((message) => `<p>${message}</p>`)
       .join("");
     this.element.innerHTML = lastThreeMessages;
+  }
+
+  #throwNotFound() {
+    throw new LoggerError(`Element with id '${this.elementId}' not found.`);
   }
 }
