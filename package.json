@@ -1,10 +1,6 @@
 {
   "name": "noodle-lab",
-<<<<<<< Updated upstream
-  "version": "2.2.7",
-=======
-  "version": "2.2.6",
->>>>>>> Stashed changes
+  "version": "2.2.8",
   "description": "Noodling around project",
   "main": "eleventy.config.js",
   "type": "module",
