@@ -3,8 +3,8 @@ dotenv.config();
 
 export default function () {
   return {
-    ogDescription: "Lorem ipsum dolor sit amet",
-    ogTitle: "Duis eu massa vitae nisi efficitur ornare",
+    ogDescription: "Carefree vanilla JavaScript codez, for fun.",
+    ogTitle: "Hallo Welt",
     logEnabled: process.env.LOG_LEVEL === "1",
     repoUser: process.env.REPO_USER,
     repoName: process.env.REPO_NAME,

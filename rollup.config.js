@@ -54,7 +54,7 @@ export default [
           ? noop()
           : terser({
               ecma: 2020,
-              mangle: { toplevel: true },
+              mangle: { toplevel: false }, // For Firebug ;]
               compress: {
                 module: true,
                 toplevel: true,
