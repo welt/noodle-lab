@@ -59,7 +59,7 @@ export default [
                 module: true,
                 toplevel: true,
                 unsafe_arrows: true,
-                drop_console: logEnabled, // MessagePanel uses console.log
+                drop_console: !logEnabled, // MessagePanel uses console.log
                 drop_debugger: !devMode,
               },
               output: {
