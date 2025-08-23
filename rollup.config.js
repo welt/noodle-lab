@@ -21,6 +21,7 @@ const { default: outputManifest } = pluginManifest;
 const devMode = process.env.NODE_ENV !== "production";
 
 const logEnabled = process.env.LOG_LEVEL === "1";
+console.log(">>>> Log enabled:", logEnabled);
 
 // Options for creating hash manifest of the outputs.
 const manifestOpts = {
