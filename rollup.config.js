@@ -13,8 +13,8 @@ const repoUrl = normalizeRepoUrl(pkg.repository);
 /* Hack for unusual ESM/npm package structure - oudated plugin */
 /* https://github.com/shuizhongyueming/rollup-plugin-output-manifest/issues/21#issuecomment-1368169746 */
 import pluginManifest from "rollup-plugin-output-manifest";
-
 const { default: outputManifest } = pluginManifest;
+/* end Hack */
 
 const devMode = process.env.NODE_ENV !== "production";
 
@@ -56,7 +56,7 @@ export default [
                 module: true,
                 toplevel: true,
                 unsafe_arrows: true,
-                drop_console: logToScreen, // MessagePanel uses console.log
+                drop_console: logEnabled, // MessagePanel uses console.log
                 drop_debugger: !devMode,
               },
               output: {
