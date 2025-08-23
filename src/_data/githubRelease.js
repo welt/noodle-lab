@@ -55,6 +55,5 @@ export default async function githubRelease() {
     );
   }
 
-  const [tags] = json;
-  return tags;
+  return json;
 }
