@@ -1,5 +1,7 @@
 // rollup.config.js
 // https://rollupjs.org/guide/en/
+import dotenv from "dotenv";
+dotenv.config();
 import terser from "@rollup/plugin-terser";
 import { nodeResolve } from "@rollup/plugin-node-resolve";
 import replace from "@rollup/plugin-replace";
@@ -57,7 +59,7 @@ export default [
                 toplevel: true,
                 unsafe_arrows: true,
                 drop_console: logEnabled, // MessagePanel uses console.log
-                drop_debugger: logEnabled,
+                drop_debugger: !devMode,
               },
               output: {
                 quote_style: 1,
