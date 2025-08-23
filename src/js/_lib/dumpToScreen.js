@@ -4,9 +4,8 @@
  */
 import Logger from "../_contracts/logger";
 import Fifo from "./fifo";
-import noop from "./noop";
 
-const maxMessageQueue = 4;
+const MAX_MESSAGE_QUEUE = 4;
 
 class LoggerError extends Error {
   constructor(message) {
@@ -16,7 +15,7 @@ class LoggerError extends Error {
 }
 
 export default class DumpToScreen extends Logger {
-  constructor(elementId, queueLength = maxMessageQueue) {
+  constructor(elementId, queueLength = MAX_MESSAGE_QUEUE) {
     super();
     this.elementId = elementId;
     this.messages = new Fifo(queueLength);
@@ -34,7 +33,6 @@ export default class DumpToScreen extends Logger {
             this.element = document.getElementById(this.elementId);
             if (this.element) {
               this.#updatePanel(str);
-              requestAnimationFrame(noop); // Forced repaint.
               return;
             }
             this.#throwNotFound();
