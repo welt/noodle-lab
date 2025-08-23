@@ -2,8 +2,6 @@ import dotenv from "dotenv";
 dotenv.config();
 
 export default function () {
-  console.log("REPO_USER:", process.env.REPO_USER); // Should print 'welt'
-
   return {
     ogDescription: "Lorem ipsum dolor sit amet",
     ogTitle: "Duis eu massa vitae nisi efficitur ornare",
