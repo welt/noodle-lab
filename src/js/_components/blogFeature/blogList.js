@@ -16,7 +16,7 @@ export default class BlogList extends HTMLElement {
 
   render() {
     this.innerHTML = `
-      <ul id="post-list"></ul>
+      <ul id="post-list" class="post-list"></ul>
     `;
   }
 
