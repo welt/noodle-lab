@@ -20,6 +20,27 @@ describe("mixinApply", () => {
     expect(instance.bar()).toBe("bar");
   });
 
+  it("applies multiple mixins from an array", () => {
+    const mixinA = {
+      foo() {
+        return "fooA";
+      },
+    };
+    const mixinB = {
+      bar() {
+        return "barB";
+      },
+    };
+
+    class Target {}
+
+    mixinApply(Target, [mixinA, mixinB]);
+
+    const instance = new Target();
+    expect(instance.foo()).toBe("fooA");
+    expect(instance.bar()).toBe("barB");
+  });
+
   it("overwrites existing methods on the target", () => {
     const mixin = {
       foo() {

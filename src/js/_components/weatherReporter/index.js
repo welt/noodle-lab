@@ -3,7 +3,7 @@ import WeatherReporter from "./weatherReporter.js";
 import WeatherReporterButton from "./weatherReporterButton.js";
 import WeatherReporterFactory from "./weatherReporterFactory.js";
 import { WeatherReporterLimitError } from "./errors.js";
-import { WEATHER_REPORTER_MAX_INSTANCES } from "./weatherReporterConfig.js";
+import { WEATHER_REPORTER_MAX_INSTANCES } from "./config.js";
 
 export {
   WeatherReporterFeature,
