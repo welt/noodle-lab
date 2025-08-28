@@ -21,7 +21,7 @@ describe("githubRelease data function", () => {
     expect(global.fetch).toHaveBeenCalledWith(mockUrl);
   });
 
-  it("returns the first tag object on success", async () => {
+  it("returns an array of tag objects on success", async () => {
     const mockTags = [
       { name: "v2.1.8", commit: { url: "https://api.github.com/commit/abc" } },
       { name: "v2.1.7", commit: { url: "https://api.github.com/commit/def" } },
@@ -31,8 +31,8 @@ describe("githubRelease data function", () => {
       json: async () => mockTags,
     });
     const result = await githubRelease();
-    expect(result).toEqual(mockTags[0]);
-    expect(result.name).toBe("v2.1.8");
+    expect(result).toEqual(mockTags);
+    expect(result[0].name).toBe("v2.1.8");
   });
 
   it("throws custom error on HTTP error", async () => {

@@ -2,7 +2,7 @@
  * @file error.js
  * Custom errors for WeatherReporter feature.
  */
-import { WEATHER_REPORTER_MAX_INSTANCES } from "./weatherReporterConfig.js";
+import { WEATHER_REPORTER_MAX_INSTANCES } from "./config.js";
 
 class WeatherReporterLimitError extends Error {
   constructor(

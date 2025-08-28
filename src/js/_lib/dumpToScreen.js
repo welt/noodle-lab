@@ -19,35 +19,19 @@ export default class DumpToScreen extends Logger {
     super();
     this.elementId = elementId;
     this.messages = new Fifo(queueLength);
-    this.element = null;
+    this.element = document.getElementById(this.elementId);
+    if (!this.element) {
+      throw new LoggerError(`Element with id '${this.elementId}' not found.`);
+    }
   }
 
   log(str) {
-    if (this.element === null) {
+    if (!this.element) {
       this.element = document.getElementById(this.elementId);
-
-      if (!this.element && document.readyState === "loading") {
-        document.addEventListener(
-          "DOMContentLoaded",
-          () => {
-            this.element = document.getElementById(this.elementId);
-            if (this.element) {
-              this.#updatePanel(str);
-              return;
-            }
-            this.#throwNotFound();
-          },
-          { once: true },
-        );
-        return;
-      }
-
       if (!this.element) {
-        this.#throwNotFound();
-        return;
+        throw new LoggerError(`Element with id '${this.elementId}' not found.`);
       }
     }
-
     this.#updatePanel(str);
   }
 
@@ -58,9 +42,5 @@ export default class DumpToScreen extends Logger {
       .map((message) => `<p>${message}</p>`)
       .join("");
     this.element.innerHTML = latest;
-  }
-
-  #throwNotFound() {
-    throw new LoggerError(`Element with id '${this.elementId}' not found.`);
   }
 }

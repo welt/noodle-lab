@@ -4,6 +4,10 @@
  */
 import { jest } from "@jest/globals";
 import "dotenv/config";
+if (typeof global.structuredClone === "undefined") {
+  global.structuredClone = (obj) => JSON.parse(JSON.stringify(obj));
+}
+import "fake-indexeddb/auto";
 
 /*
  * Jest uses JSDOM. JSDOM has no native implementation
