@@ -44,7 +44,6 @@ export default class BlogApp {
     });
 
     eventBus.on("post-selected", (e) => {
-      console.log(">>>@", e.detail);
       this.modal.show(e.detail);
     });
 
