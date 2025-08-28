@@ -1,3 +1,6 @@
+/**
+ * @file eventBus.js
+ */
 export default class EventBus {
   constructor() {
     if (EventBus.instance) {
