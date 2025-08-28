@@ -18,7 +18,6 @@ const defaults = {
  * @returns {String}
  */
 export default function formatTimestamp(timestamp, options = {}) {
-  console.log(">>> from fomrtetter", timestamp);
   const date = new Date(timestamp);
   const opts = { ...defaults, ...options };
   return date.toLocaleString("en-GB", opts);
