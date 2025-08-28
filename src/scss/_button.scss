@@ -15,6 +15,10 @@ button[disabled] {
   cursor: not-allowed;
 }
 
+button[data-modal-close] {
+  margin-top: 1rem;
+}
+
 .clickable-text {
   all: unset;
   cursor: pointer;

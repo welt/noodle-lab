@@ -26,21 +26,27 @@ export default class BlogApp {
     }
 
     eventBus.on("post-created", async (e) => {
-      this.#postCreated = (async () => {
-        const { title, content } = e.detail || {};
-        if (!title || !content) {
-          this.modal.show("Title and content are required.");
-          return;
-        }
-        try {
-          await this.service.createPost({ title, content });
-          const posts = await this.service.listPosts();
-          this.listCard.renderPosts(posts);
-        } catch (err) {
-          this.modal.show(err.message || "An error occurred");
-        }
-      })();
-      await this.#postCreated;
+      const { title, content } = e.detail || {};
+      if (!title || !content) {
+        this.modal.show("Title and content are required.");
+        return;
+      }
+      try {
+        this.#postCreated = this.service
+          .createPost({ title, content })
+          .then(() => this.service.listPosts())
+          .then((posts) => this.listCard.renderPosts(posts))
+          .catch((err) => {
+            this.modal.show(
+              err.message || "An error occurred during post creation",
+            );
+          });
+        await this.#postCreated;
+      } catch (err) {
+        this.modal.show(
+          err.message || "An error occurred during post creation",
+        );
+      }
     });
 
     eventBus.on("post-selected", (e) => {
