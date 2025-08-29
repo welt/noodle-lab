@@ -1,4 +1,4 @@
-import FeatureFacade from "../../_contracts/featureFacade";
+import FeatureFacadeContract from "../../_contracts/featureFacadeContract";
 import BlogApp from "./blogApp";
 import BlogEditor from "./blogEditor";
 import BlogList from "./blogList";
@@ -7,7 +7,7 @@ import BlogEditorCard from "./blogEditorCard";
 import BlogListCard from "./blogListCard";
 import BlogStrategySwitch from "./blogStrategySwitch";
 
-export default class BlogFeatureFacade extends FeatureFacade {
+export default class BlogFeatureFacade extends FeatureFacadeContract {
   register() {
     customElements.define("blog-list", BlogList);
     customElements.define("blog-editor", BlogEditor);
