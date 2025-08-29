@@ -7,6 +7,10 @@ import { WizardFeature } from "./_components/wizardFeature/index.js";
 import { WeatherReporterFeature } from "./_components/weatherReporter/index.js";
 import { InfoFeature } from "./_components/infoFeature/index.js";
 import { registerCustomElements } from "./_lib/registerCustomElements.js";
+import BlogFeatureFacade from "./_components/blogFeature/facade.js";
+
+const facades = [new BlogFeatureFacade()];
+facades.forEach((facade) => facade.register());
 
 const screenLogger = createScreenLogger(DumpToScreen, "message-panel");
 

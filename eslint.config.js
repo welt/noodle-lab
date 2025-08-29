@@ -23,10 +23,6 @@ export default [
           ignoreTemplateLiterals: true,
         },
       ],
-      // Enforce multiline ternary expressions
-      "multiline-ternary": ["error", "always-multiline"],
-      // Encourage multiline conditions (optional, for readability)
-      "operator-linebreak": ["error", "after"],
     },
   },
   {

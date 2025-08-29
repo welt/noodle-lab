@@ -8,8 +8,6 @@ import eventMixin from "../../_mixins/eventMixin";
 import mixinApply from "../../_lib/mixinApply";
 import findAndPop from "../../_lib/findAndPop.js";
 
-customElements.define("wizard-button", WizardButton);
-
 const styles = ["wizard-controls"];
 
 export default class WizardControls extends ControlPanel {
