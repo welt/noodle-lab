@@ -6,7 +6,7 @@
 import { GeocodingError } from "./errors.js";
 import extractCityName from "./extractCityName.js";
 import NativeFetchApi from "./nativeFetchApi.js";
-import isDuckType from "../../_lib/isDucktype/isDuckType.js";
+import { isDuckType } from "../../_lib/isDucktype";
 import ApiContract from "../../_contracts/apiContract.js";
 
 const url = new URL("https://nominatim.openstreetmap.org/reverse");
