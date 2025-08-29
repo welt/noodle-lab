@@ -4,16 +4,29 @@
 import BlogPost from "./blogPost.js";
 import { BlogPostValidationError, BlogPostNotFoundError } from "./errors.js";
 import blogRepositoryStrategy from "./blogRepositoryStrategy.js";
+import RepositoryContract from "../../_contracts/repositoryContract.js";
+import { isDuckTypeClass } from "../../_lib/isDucktype";
+
+const isValidRepo = (repository) =>
+  isDuckTypeClass(repository?.constructor, RepositoryContract);
 
 export default class BlogPostService {
   #repository;
 
-  constructor(repository = undefined) {
-    this.#repository = repository || blogRepositoryStrategy("memory");
+  constructor(repository) {
+    this.#repository = isValidRepo(repository)
+      ? repository
+      : blogRepositoryStrategy("memory");
   }
 
   setRepository(repository) {
-    this.#repository = repository;
+    try {
+      isValidRepo(repository);
+      this.#repository = repository;
+    } catch (err) {
+      console.error("[BlogPostService] setRepository error:", err);
+      throw err;
+    }
   }
 
   async listPosts() {
