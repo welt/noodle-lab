@@ -4,21 +4,21 @@
  */
 
 const defaults = {
-  year: 'numeric',
-  month: '2-digit',
-  day: '2-digit',
-  hour: '2-digit',
-  minute: '2-digit',
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+  hour: "2-digit",
+  minute: "2-digit",
   hour12: false,
 };
 
 /**
- * @param {String} timestamp 
- * @param {Object} options 
+ * @param {String} timestamp
+ * @param {Object} options
  * @returns {String}
  */
 export default function formatTimestamp(timestamp, options = {}) {
   const date = new Date(timestamp);
   const opts = { ...defaults, ...options };
-  return date.toLocaleString('en-GB', opts);
+  return date.toLocaleString("en-GB", opts);
 }

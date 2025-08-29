@@ -1,3 +1,4 @@
+button.button,
 .button > * {
   background: transparent;
   padding: 0.25em;
@@ -12,4 +13,18 @@ button[disabled] {
   opacity: 0.8;
   border: 2px dashed $color-fore;
   cursor: not-allowed;
+}
+
+button[data-modal-close] {
+  margin-top: 1rem;
+}
+
+.clickable-text {
+  all: unset;
+  cursor: pointer;
+  margin-bottom: 0.4rem;
+  display: inline-block;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-decoration-color: $color-fore;
 }

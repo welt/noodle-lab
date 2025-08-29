@@ -41,6 +41,7 @@ export default {
       bubbles: true,
       cancelable: true,
       detail: detail,
+      composed: true,
     });
 
     return this.dispatchEvent(event);
