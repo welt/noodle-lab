@@ -165,4 +165,33 @@ describe("BlogApp event handling", () => {
       { title: "Switched", content: "Repo" },
     ]);
   });
+
+  it("should persist in-memory repository data across strategy switches", async () => {
+    // Simulate real repository caching in BlogApp
+    const app = new BlogApp({
+      listCard: mockListCard,
+      editorCard: mockEditorCard,
+      modal: mockModal,
+    });
+    await app.ready;
+
+    // Add a post to memory strategy
+    await app.setStrategy("memory");
+    await app.service.createPost({
+      title: "Memory Post",
+      content: "Persisted",
+    });
+    let posts = await app.service.listPosts();
+    expect(posts.some((p) => p.title === "Memory Post")).toBe(true);
+
+    // Switch to indexDB (posts will be different)
+    await app.setStrategy("indexDB");
+    posts = await app.service.listPosts();
+    expect(posts.some((p) => p.title === "Memory Post")).toBe(false);
+
+    // Switch back to memory, post should still be there
+    await app.setStrategy("memory");
+    posts = await app.service.listPosts();
+    expect(posts.some((p) => p.title === "Memory Post")).toBe(true);
+  });
 });

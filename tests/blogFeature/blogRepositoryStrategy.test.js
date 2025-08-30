@@ -29,12 +29,14 @@ describe("createBlogRepository (factory)", () => {
 });
 
 describe("BlogRepositoryContext runtime strategy swapping", () => {
-  let memoryRepo, indexDbRepo, context;
+  let repoCache, context;
 
   beforeEach(() => {
-    memoryRepo = createBlogRepository("memory");
-    indexDbRepo = createBlogRepository("indexDB");
-    context = new BlogRepositoryContext(memoryRepo);
+    repoCache = {
+      memory: createBlogRepository("memory"),
+      indexDB: createBlogRepository("indexDB"),
+    };
+    context = new BlogRepositoryContext(repoCache.memory);
   });
 
   test("delegates to initial strategy", async () => {
@@ -50,7 +52,7 @@ describe("BlogRepositoryContext runtime strategy swapping", () => {
     let fetched = await context.getPostById("2");
     expect(fetched.title).toBe("Memory");
 
-    context.setStrategy(indexDbRepo);
+    context.setStrategy(repoCache.indexDB);
     const missing = await context.getPostById("2");
     expect(missing).toBeNull();
 
@@ -61,16 +63,18 @@ describe("BlogRepositoryContext runtime strategy swapping", () => {
 
   test("strategy swap does not affect previous repository state", async () => {
     await context.addPost({ id: "4", title: "First", content: "Memory" });
-    context.setStrategy(indexDbRepo);
+    context.setStrategy(repoCache.indexDB);
     await context.addPost({ id: "5", title: "Second", content: "IndexDB" });
 
-    context.setStrategy(memoryRepo);
+    // Switch back to memory and verify persistence
+    context.setStrategy(repoCache.memory);
     const memPost = await context.getPostById("4");
     expect(memPost.title).toBe("First");
     const memMissing = await context.getPostById("5");
     expect(memMissing).toBeNull();
 
-    context.setStrategy(indexDbRepo);
+    // Switch to indexDB and verify persistence
+    context.setStrategy(repoCache.indexDB);
     const idxPost = await context.getPostById("5");
     expect(idxPost.title).toBe("Second");
     const idxMissing = await context.getPostById("4");
