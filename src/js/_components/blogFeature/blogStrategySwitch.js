@@ -19,10 +19,18 @@ export default class BlogStrategySwitch extends HTMLElement {
     `;
     this.classList.add(...styles);
 
-    const select = this.querySelector("[data-repo-strategy]");
+    this.select = this.querySelector("[data-repo-strategy]");
 
-    select.addEventListener("change", (e) => {
+    this.select.addEventListener("change", (e) => {
       eventBus.emit("switch-strategy", { strategy: e.target.value });
     });
+
+    eventBus.on("switch-strategy", (e) => {
+      this.#updateStrategySelect(e.detail);
+    });
+  }
+
+  #updateStrategySelect(detail) {
+    this.select.value = detail.strategy;
   }
 }
