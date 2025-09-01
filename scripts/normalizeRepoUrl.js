@@ -1,8 +1,7 @@
 /**
- * Normalize a GitHub repository URL.
- * @file scripts/normalizeRepoUrl.js
- * @param {string} repo - repository URL or name.
- * @returns {string} - normalized repository URL string.
+ * Normalize common protocol GitHub repository URLs or name.
+ * @param {string} repo GitHub repository URL or name
+ * @returns {string}
  */
 export default function normalizeRepoUrl(repo) {
   if (!repo) return "";
