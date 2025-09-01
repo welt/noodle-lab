@@ -1,3 +1,8 @@
+/**
+ * Normalize common protocol GitHub repository URLs or name.
+ * @param {string} repo GitHub repository URL or name
+ * @returns {string}
+ */
 export default function normalizeRepoUrl(repo) {
   if (!repo) return "";
   if (typeof repo === "string") {
