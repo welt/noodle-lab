@@ -7,6 +7,8 @@ import WizardReporter from "./wizardReporter.js";
 import WizardButton from "./wizardButton.js";
 import WizardControls from "./wizardControls.js";
 import ResetButton from "./resetButton.js";
+import WizardModal from "./wizardModal.js";
+import wizardStore from "./wizardStore.js";
 
 function registerElements() {
   if (!customElements.get("wizard-reporter")) {
@@ -21,6 +23,9 @@ function registerElements() {
   if (!customElements.get("reset-button")) {
     customElements.define("reset-button", ResetButton);
   }
+  if (!customElements.get("wizard-modal")) {
+    customElements.define("wizard-modal", WizardModal);
+  }
 }
 
 export default class WizardFeature {
@@ -30,6 +35,7 @@ export default class WizardFeature {
   constructor(rootSelector = "#main") {
     this.rootSelector = rootSelector;
     this.initialized = false;
+    this.initialWizardCount = wizardStore.length;
   }
 
   /**
@@ -40,6 +46,23 @@ export default class WizardFeature {
     if (this.initialized) return;
     registerElements();
     this.initialized = true;
+    const modal = document.createElement("wizard-modal");
+    modal.setAttribute("data-wizard-modal", "true");
+    this.modal = modal;
+    document.body.appendChild(this.modal);
+    document.addEventListener(
+      "wizards",
+      this.#handleWizardStoreChange.bind(this),
+    );
+  }
+
+  #handleWizardStoreChange(e) {
+    const wizards = e.detail;
+    if (wizards.length > this.initialWizardCount) {
+      this.modal.show(
+        `Wizard ${wizards[wizards.length - 1]} apologised for arriving late.`,
+      );
+    }
   }
 
   /**

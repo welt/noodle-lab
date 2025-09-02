@@ -1,5 +1,5 @@
 import store from "../../_lib/store";
-import { allWizards } from "../../_data/allWizards";
+import { allWizards } from "./allWizards";
 
 // Initialize the wizard store.
 const wizardStore = store(allWizards, "wizards");

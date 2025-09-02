@@ -3,6 +3,8 @@ import WizardReporter from "./wizardReporter.js";
 import WizardButton from "./wizardButton.js";
 import WizardControls from "./wizardControls.js";
 import ResetButton from "./resetButton.js";
+import WizardModal from "./wizardModal.js";
+import wizardStore from "./wizardStore.js";
 
 export {
   WizardFeature,
@@ -10,4 +12,6 @@ export {
   WizardButton,
   WizardControls,
   ResetButton,
+  WizardModal,
+  wizardStore,
 };
