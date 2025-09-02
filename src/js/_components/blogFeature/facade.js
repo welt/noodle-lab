@@ -43,11 +43,14 @@ export default class BlogFeatureFacade extends FeatureFacadeContract {
         main.appendChild(listCard);
       }
 
-      let modal = main.querySelector("blog-modal");
-      if (!modal) {
-        modal = document.createElement("blog-modal");
-        main.appendChild(modal);
-      }
+      const modal =
+        main.querySelector("blog-modal") ||
+        document.createElement("blog-modal");
+
+      document.body.insertBefore(
+        modal,
+        document.body.querySelector("script") || null,
+      );
 
       let strategySwitch = primaryControls.querySelector(
         "blog-strategy-switch",
@@ -56,6 +59,9 @@ export default class BlogFeatureFacade extends FeatureFacadeContract {
         strategySwitch = document.createElement("blog-strategy-switch");
         primaryControls.appendChild(strategySwitch);
       }
+      document.addEventListener("load", () => {
+        strategySwitch.update;
+      });
 
       try {
         window.blogApp = new BlogApp({
