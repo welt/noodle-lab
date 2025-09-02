@@ -4,6 +4,7 @@
  */
 // !! Injected at build time by Rollup bundler.
 const GITHUB_REPO_URL =
+  /* eslint-disable no-undef */
   typeof __GITHUB_REPO_URL__ !== "undefined" ? __GITHUB_REPO_URL__ : "";
 
 const isValidGitHubUrl = (url) =>
