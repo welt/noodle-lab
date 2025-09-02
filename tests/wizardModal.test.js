@@ -1,5 +1,8 @@
 import { jest } from "@jest/globals";
-import { WizardFeature } from "../src/js/_components/wizardFeature/index.js";
+import {
+  wizardStore,
+  WizardFeature,
+} from "../src/js/_components/wizardFeature/index.js";
 import { registerCustomElements } from "../src/js/_lib/registerCustomElements.js";
 
 describe("WizardFeature facade", () => {
@@ -15,7 +18,7 @@ describe("WizardFeature facade", () => {
     main = document.querySelector("#main");
     reporter = document.createElement("wizard-reporter");
     main.appendChild(reporter);
-    // !! Required: JSDom fix: ensures connectedCallback is called
+    // JSDom fix: ensures connectedCallback is called
     reporter.connectedCallback?.();
   });
 
@@ -33,6 +36,7 @@ describe("WizardFeature facade", () => {
   });
 
   it("updates the wizard list when a wizard is added", () => {
+    // Simulate adding a wizard via the button event
     const addEvent = new CustomEvent("add-wizard-to-story", {
       detail: "Test Wizard",
       bubbles: true,
@@ -42,7 +46,7 @@ describe("WizardFeature facade", () => {
 
     // After event, the new wizard should appear in the list
     expect(reporter.innerHTML).toContain("Test Wizard");
-
+    // Optionally, check the count
     const liCount = reporter.innerHTML.match(/<li>/g)?.length || 0;
     expect(liCount).toBeGreaterThanOrEqual(4); // 3 initial + 1 added
   });
@@ -53,6 +57,7 @@ describe("WizardFeature facade", () => {
   });
 
   it("resets the wizard story when reset button is clicked", () => {
+    // First, add a wizard to the story
     const addEvent = new CustomEvent("add-wizard-to-story", {
       detail: "Test Wizard for Reset",
       bubbles: true,
@@ -60,6 +65,7 @@ describe("WizardFeature facade", () => {
     });
     document.dispatchEvent(addEvent);
 
+    // Verify wizard was added
     expect(reporter.innerHTML).toContain("Test Wizard for Reset");
 
     // Count wizards before reset (should be at least 4: 3 initial + 1 added)
@@ -77,5 +83,30 @@ describe("WizardFeature facade", () => {
     const afterResetCount = (reporter.innerHTML.match(/<li>/g) || []).length;
     expect(afterResetCount).toBe(0);
     expect(reporter.innerHTML).not.toContain("Test Wizard for Reset");
+  });
+});
+
+describe("WizardFeature late wizard modal", () => {
+  let wizardFeature;
+
+  beforeEach(() => {
+    document.body.innerHTML = "";
+    while (wizardStore.length > 0) wizardStore.pop();
+    wizardStore.push("Merlin", "Gandalf"); // Initial wizards
+    wizardFeature = new WizardFeature("#main");
+    wizardFeature.init();
+  });
+
+  it("shows modal when a new wizard is added", () => {
+    const modalShowSpy = jest.spyOn(wizardFeature.modal, "show");
+    wizardStore.push("Ursula");
+    expect(modalShowSpy).toHaveBeenCalledWith(
+      "Wizard Ursula apologised for arriving late.",
+    );
+  });
+
+  it("does not show modal if no new wizard is added", () => {
+    const modalShowSpy = jest.spyOn(wizardFeature.modal, "show");
+    expect(modalShowSpy).not.toHaveBeenCalled();
   });
 });
