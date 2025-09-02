@@ -16,6 +16,7 @@ export default function store(data = {}, name = "store") {
       bubbles: true,
       cancelable: true,
       detail: detail,
+      composed: true,
     });
     return document.dispatchEvent(event);
   };
@@ -31,24 +32,27 @@ export default function store(data = {}, name = "store") {
   ];
 
   const proxy = new Proxy(data, {
-    get: function (obj, prop) {
-      if (Array.isArray(obj) && arrayMethods.includes(prop)) {
+    get: function (thing, prop) {
+      if (prop === "length" && Array.isArray(thing)) {
+        return thing.length;
+      }
+      if (Array.isArray(thing) && arrayMethods.includes(prop)) {
         return function (...args) {
-          const result = Array.prototype[prop].apply(obj, args);
-          emit(name, obj);
+          const result = Array.prototype[prop].apply(thing, args);
+          emit(name, thing);
           return result;
         };
       }
-      return obj[prop];
+      return thing[prop];
     },
-    set: function (obj, prop, value) {
-      if (obj[prop] === value) return true;
-      obj[prop] = value;
+    set: function (thing, prop, value) {
+      if (thing[prop] === value) return true;
+      thing[prop] = value;
       emit(name, data);
       return true;
     },
-    deleteProperty: function (obj, prop) {
-      delete obj[prop];
+    deleteProperty: function (thing, prop) {
+      delete thing[prop];
       emit(name, data);
       return true;
     },
