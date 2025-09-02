@@ -10,8 +10,8 @@ layout: null
     <link>{{ meta.repoUrl }}</link>
     <description>Latest GitHub release tag for {{ meta.repoName }}</description>
     <language>en</language>
-    {% if githubRelease and githubRelease.length %}
-      {% for tag in githubRelease %}
+    {% if gitHubRelease and gitHubRelease.length %}
+      {% for tag in gitHubRelease %}
         <item>
           <title>{{ tag.name }}</title>
           <link>{{ tag.commit.url }}</link>
