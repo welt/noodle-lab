@@ -35,11 +35,11 @@ export default class BlogApp extends AppContract {
       this.service = service;
     } else {
       const res = cookies.getCookie(COOKIE_NAME);
-      const savedStrategy = res ? JSON.parse(res) : { strategy: "memory" };
-      const repoInstance = this.getOrCreateRepository(savedStrategy.strategy);
+      const strategy = res ? JSON.parse(res) : { strategy: "memory" };
+      const repoInstance = this.getOrCreateRepository(strategy.strategy);
       const repoContext = new BlogRepositoryContext(repoInstance);
       this.service = new BlogPostService(repoContext);
-      eventBus.emit("switch-strategy", savedStrategy);
+      eventBus.emit("switch-strategy", strategy);
     }
 
     this.init();
@@ -60,6 +60,17 @@ export default class BlogApp extends AppContract {
 
     if (this.modal) {
       this.modal.show(`Storage strategy switched to ${strategyName}.`);
+    }
+  }
+
+  async setStrategyFromObject(strategy) {
+    const repoInstance = this.getOrCreateRepository(strategy.strategy);
+    this.service.setRepository(repoInstance);
+    const posts = await this.service.listPosts();
+    this.listCard.renderPosts(posts);
+
+    if (this.modal) {
+      this.modal.show(`Storage strategy switched to ${strategy.strategy}.`);
     }
   }
 
@@ -90,11 +101,10 @@ export default class BlogApp extends AppContract {
   }
 
   async #onSwitchStrategy(e) {
-    const strategyName = e.detail;
-    await this.setStrategy(strategyName);
-    const value = JSON.stringify(strategyName);
+    const strategy = e.detail;
+    await this.setStrategyFromObject(strategy);
+    const value = JSON.stringify(strategy);
     cookies.setCookie(COOKIE_NAME, value, COOKIE_DURATION);
-    await this.setStrategy(e.detail.strategy);
   }
 
   init() {

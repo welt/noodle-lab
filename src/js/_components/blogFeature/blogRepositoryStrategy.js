@@ -10,10 +10,9 @@ const strategiesAllowed = {
   default: () => new BlogPostRepositoryInMemory(),
 };
 
-const blogRepositoryStrategy = (strategy) => {
-  const strategyName = strategy || "default";
-  const strategyFn =
-    strategiesAllowed[strategyName] || strategiesAllowed["default"];
+const blogRepositoryStrategy = (strategyName) => {
+  const name = strategyName || "default";
+  const strategyFn = strategiesAllowed[name] || strategiesAllowed["default"];
   return strategyFn();
 };
 
