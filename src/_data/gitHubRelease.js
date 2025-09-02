@@ -10,7 +10,7 @@ function githubApiUrl(strings, user, repo) {
 
 const url = githubApiUrl`https://api.github.com/repos/${REPO_USER}/${REPO_NAME}/tags`;
 
-export default async function githubRelease() {
+export default async function gitHubRelease() {
   const response = await safeFetch(url);
   return await safeJson(response, url);
 }

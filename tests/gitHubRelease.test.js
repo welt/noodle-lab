@@ -1,9 +1,9 @@
 import { jest } from "@jest/globals";
-import githubRelease from "../src/_data/githubRelease.js";
+import gitHubRelease from "../src/_data/gitHubRelease.js";
 
 const mockUrl = `https://api.github.com/repos/welt/noodle-lab/tags`;
 
-describe("githubRelease data function", () => {
+describe("gitHubRelease data function", () => {
   beforeEach(() => {
     global.fetch = jest.fn();
   });
@@ -17,7 +17,7 @@ describe("githubRelease data function", () => {
       ok: true,
       json: async () => [{ name: "v1.0.0" }],
     });
-    await githubRelease();
+    await gitHubRelease();
     expect(global.fetch).toHaveBeenCalledWith(mockUrl);
   });
 
@@ -30,7 +30,7 @@ describe("githubRelease data function", () => {
       ok: true,
       json: async () => mockTags,
     });
-    const result = await githubRelease();
+    const result = await gitHubRelease();
     expect(result).toEqual(mockTags);
     expect(result[0].name).toBe("v2.1.8");
   });
@@ -42,14 +42,14 @@ describe("githubRelease data function", () => {
       statusText: "Not Found",
       json: async () => [],
     });
-    await expect(githubRelease()).rejects.toThrow(
-      /Failed to fetch tags from GitHub/,
+    await expect(gitHubRelease()).rejects.toThrow(
+      /GitHub API returned status 404: Not Found/,
     );
   });
 
   it("throws custom error on network/fetch error", async () => {
     global.fetch.mockRejectedValue(new Error("Network error"));
-    await expect(githubRelease()).rejects.toThrow(/Network error/);
+    await expect(gitHubRelease()).rejects.toThrow(/Network error/);
   });
 
   it("throws custom error on JSON parse error", async () => {
@@ -59,6 +59,6 @@ describe("githubRelease data function", () => {
         throw new Error("Invalid JSON");
       },
     });
-    await expect(githubRelease()).rejects.toThrow(/Failed to parse JSON/);
+    await expect(gitHubRelease()).rejects.toThrow(/Failed to parse JSON/);
   });
 });
