@@ -2,6 +2,12 @@ import globals from "globals";
 import pluginJs from "@eslint/js";
 
 export default [
+  {
+    env: {
+      es2021: true,
+      node: true,
+    },
+  },
   pluginJs.configs.recommended,
   {
     files: ["src/**/*.js", "./*.js"],
@@ -10,6 +16,7 @@ export default [
         ...globals.browser,
         ...globals.node,
         global: "readonly",
+        fetch: "readonly",
       },
     },
     rules: {
@@ -36,6 +43,7 @@ export default [
         ...globals.node,
         ...globals.jest,
         global: "readonly",
+        fetch: "readonly",
       },
     },
   },
