@@ -9,6 +9,7 @@ import WizardControls from "./wizardControls.js";
 import ResetButton from "./resetButton.js";
 import WizardModal from "./wizardModal.js";
 import wizardStore from "./wizardStore.js";
+import { allWizards } from "./allWizards";
 
 function registerElements() {
   if (!customElements.get("wizard-reporter")) {
@@ -29,45 +30,30 @@ function registerElements() {
 }
 
 export default class WizardFeature {
-  /**
-   * @param {string} rootSelector - CSS selector for the root element.
-   */
   constructor(rootSelector = "#main") {
     this.rootSelector = rootSelector;
     this.initialized = false;
-    this.initialWizardCount = wizardStore.length;
   }
 
-  /**
-   * Initialize the wizard feature: register elements
-   * and perform any setup.
-   */
   init() {
     if (this.initialized) return;
     registerElements();
     this.initialized = true;
-    const modal = document.createElement("wizard-modal");
-    modal.setAttribute("data-wizard-modal", "true");
-    this.modal = modal;
+    this.modal = document.createElement("wizard-modal");
+    this.modal.setAttribute("data-wizard-modal", "true");
     document.body.appendChild(this.modal);
+
     document.addEventListener(
-      "wizards",
-      this.#handleWizardStoreChange.bind(this),
+      "wizards-added",
+      this.#handleWizardAdded.bind(this),
     );
   }
 
-  #handleWizardStoreChange(e) {
-    const wizards = e.detail;
-    if (wizards.length > this.initialWizardCount) {
-      this.modal.show(
-        `Wizard ${wizards[wizards.length - 1]} apologised for arriving late.`,
-      );
-    }
+  #handleWizardAdded(e) {
+    const { item: wizard } = e.detail;
+    this.modal.show(`Wizard ${wizard} apologised for arriving late.`);
   }
 
-  /**
-   * Clean up the wizard feature if needed.
-   */
   destroy() {
     // Remove listeners, clean up DOM, etc.
     this.initialized = false;
