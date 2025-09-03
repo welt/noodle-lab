@@ -69,9 +69,9 @@ export default class WizardReporter extends Reporter {
 
     document.addEventListener("reset-wizard-story", () => {
       this.logMessage("Resetting wizard story");
-      // Move all local wizards back to the store
-      wizardStore.splice(0, wizardStore.length, ...this.#localWizards);
-      // Clear the local wizards
+      const mergedWizards = [...wizardStore, ...this.#localWizards];
+      // Using splice to avoid creating any push events for a reset.
+      wizardStore.splice(0, wizardStore.length, ...mergedWizards);
       this.#localWizards = [];
       this.render();
     });
