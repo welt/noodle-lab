@@ -70,9 +70,7 @@ export default class WizardReporter extends Reporter {
     document.addEventListener("reset-wizard-story", () => {
       this.logMessage("Resetting wizard story");
       // Move all local wizards back to the store
-      this.#localWizards.forEach((wizard) => {
-        wizardStore.push(wizard);
-      });
+      wizardStore.splice(0, wizardStore.length, ...this.#localWizards);
       // Clear the local wizards
       this.#localWizards = [];
       this.render();
