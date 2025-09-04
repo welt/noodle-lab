@@ -12,9 +12,9 @@ export default class FeatureFacadeContract {
   }
 
   /**
-   * Register custom elements and setup.
+   * Initialise the feature facade.
    */
-  register() {
+  init() {
     throw new Error("Method 'register()' must be implemented by subclass.");
   }
 }
