@@ -1,0 +1,28 @@
+{
+  "name": "blog-feature",
+  "version": "1.0.0",
+  "description": "Blog feature for JavaScript projects.",
+  "main": "index.js",
+  "module": "index.js",
+  "exports": {
+    ".": "./index.js"
+  },
+  "type": "module",
+  "keywords": [
+    "blog",
+    "feature",
+    "javascript",
+    "module",
+    "web-components"
+  ],
+  "author": "welt",
+  "license": "UNLICENSED",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/welt/noodle-lab.git"
+  },
+  "bugs": {
+    "url": "https://github.com/welt/noodle-lab/issues"
+  },
+  "homepage": "https://github.com/welt/noodle-lab#readme"
+}
