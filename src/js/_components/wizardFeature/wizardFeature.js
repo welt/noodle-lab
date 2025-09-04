@@ -2,7 +2,6 @@
  * @file wizardFeature.js
  * Facade for the Wizard feature.
  */
-
 import WizardReporter from "./wizardReporter.js";
 import WizardButton from "./wizardButton.js";
 import WizardControls from "./wizardControls.js";
@@ -30,6 +29,8 @@ function registerElements() {
 }
 
 export default class WizardFeature {
+  #boundHandleWizardAdded = this.#handleWizardAdded.bind(this);
+
   constructor(rootSelector = "#main") {
     this.rootSelector = rootSelector;
     this.initialized = false;
@@ -42,20 +43,24 @@ export default class WizardFeature {
     this.modal = document.createElement("wizard-modal");
     this.modal.setAttribute("data-wizard-modal", "true");
     document.body.appendChild(this.modal);
-
-    document.addEventListener(
-      "wizards-added",
-      this.#handleWizardAdded.bind(this),
-    );
+    this.#bindEvents();
   }
 
-  #handleWizardAdded(e) {
+  async #handleWizardAdded(e) {
     const { item: wizard } = e.detail;
     this.modal.show(`Wizard ${wizard} apologised for arriving late.`);
   }
 
   destroy() {
-    // Remove listeners, clean up DOM, etc.
+    this.#unbindEvents();
     this.initialized = false;
+  }
+
+  #bindEvents() {
+    document.addEventListener("wizards-added", this.#boundHandleWizardAdded);
+  }
+
+  #unbindEvents() {
+    document.removeEventListener("wizards-added", this.#boundHandleWizardAdded);
   }
 }
