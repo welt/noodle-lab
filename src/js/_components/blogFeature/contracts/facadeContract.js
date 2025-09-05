@@ -2,9 +2,9 @@
  * @file featureFacadeContract.js
  * Contract for feature facades.
  */
-export default class FeatureFacadeContract {
+export default class facadeContract {
   constructor() {
-    if (new.target === FeatureFacadeContract) {
+    if (new.target === facadeContract) {
       throw new TypeError(
         "Cannot instantiate abstract class FeatureFacade directly.",
       );

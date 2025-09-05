@@ -1,4 +1,4 @@
-import FeatureFacadeContract from "../../_contracts/featureFacadeContract";
+import facadeContract from "./contracts/facadeContract";
 import BlogApp from "./blogApp";
 import BlogEditor from "./blogEditor";
 import BlogList from "./blogList";
@@ -7,7 +7,7 @@ import BlogEditorCard from "./blogEditorCard";
 import BlogListCard from "./blogListCard";
 import BlogStrategySwitch from "./blogStrategySwitch";
 
-export default class BlogFeatureFacade extends FeatureFacadeContract {
+export default class BlogFeatureFacade extends facadeContract {
   init() {
     this.defineCustomElements();
     const appComponents = this.setUpDOM();
