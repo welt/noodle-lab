@@ -7,6 +7,7 @@ import ControlPanel from "../../_contracts/controlPanel.js";
 import eventMixin from "../../_mixins/eventMixin";
 import mixinApply from "../../_lib/mixinApply";
 import findAndPop from "../../_lib/findAndPop.js";
+import { WizardStoreError } from "./errors.js";
 
 const styles = ["wizard-controls"];
 
@@ -17,10 +18,10 @@ export default class WizardControls extends ControlPanel {
     this.render = this.render.bind(this);
     this.onWizardsUpdated = this.onWizardsUpdated.bind(this);
     this.onWizardAddedToStory = this.onWizardAddedToStory.bind(this);
+    this.classList.add(...styles);
   }
 
   render(data = this.wizards) {
-    this.classList.add(...styles);
     this.innerHTML = `
       <p>Add a new wizard to the story&hellip;</p>
       <div class="controls-row" role="group" aria-live="polite">
@@ -34,10 +35,22 @@ export default class WizardControls extends ControlPanel {
     </div>`;
   }
 
+  renderError(error) {
+    this.classList.add(...styles);
+    this.innerHTML = `
+      <p>${error.message}</p>
+    `;
+  }
+
   connectedCallback() {
     this.render();
     document.addEventListener("wizards", this.onWizardsUpdated);
     this.subscribe("add-wizard-to-story", this.onWizardAddedToStory);
+  }
+
+  disconnectedCallback() {
+    document.removeEventListener("wizards", this.onWizardsUpdated);
+    this.unsubscribe("add-wizard-to-story", this.onWizardAddedToStory);
   }
 
   onWizardsUpdated(event) {
@@ -46,19 +59,20 @@ export default class WizardControls extends ControlPanel {
 
   onWizardAddedToStory(event) {
     try {
-      const removedWizard = findAndPop(this.wizards, event.detail);
-      if (this.wizards.length === 0) {
-        throw new Error("Wizards list is empty.");
-      }
-      if (!removedWizard) {
-        throw new Error("Wizard not found in stock.");
-      }
+      this.updateWizardStore(event);
       this.render(this.wizards);
     } catch (error) {
-      this.innerHTML = `
-        <div class="error">
-          <p>${error.message}</p>
-        </div>`;
+      this.renderError(error);
+    }
+  }
+
+  updateWizardStore(event) {
+    const removedWizard = findAndPop(this.wizards, event.detail);
+    if (this.wizards.length === 0) {
+      throw new WizardStoreError("Wizards list is empty.");
+    }
+    if (!removedWizard) {
+      throw new WizardStoreError("Wizard not found in stock.");
     }
   }
 }
