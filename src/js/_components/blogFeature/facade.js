@@ -10,12 +10,14 @@ import BlogStrategySwitch from "./blogStrategySwitch";
 export default class BlogFeatureFacade extends FeatureFacadeContract {
   init() {
     this.defineCustomElements();
-    this.setUpDOM();
+    const appComponents = this.setUpDOM();
 
     if (document.readyState === "loading") {
-      window.addEventListener("DOMContentLoaded", () => this.initialiseApp());
+      window.addEventListener("DOMContentLoaded", () =>
+        this.initialiseApp(appComponents),
+      );
     } else {
-      this.initialiseApp();
+      this.initialiseApp(appComponents);
     }
   }
 
@@ -28,6 +30,10 @@ export default class BlogFeatureFacade extends FeatureFacadeContract {
     customElements.define("blog-strategy-switch", BlogStrategySwitch);
   }
 
+  /**
+   * Set up DOM elements required for blog.
+   * @returns {Object<HTMLElement>}
+   */
   setUpDOM() {
     const main = document.getElementById("main");
     if (!main) {
@@ -71,9 +77,15 @@ export default class BlogFeatureFacade extends FeatureFacadeContract {
     document.addEventListener("load", () => {
       strategySwitch.update;
     });
+
+    return {
+      listCard,
+      editorCard,
+      modal,
+    };
   }
 
-  initialiseApp() {
+  initialiseApp({ listCard, editorCard, modal }) {
     try {
       window.blogApp = new BlogApp({
         listCard,
