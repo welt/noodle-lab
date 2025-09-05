@@ -3,14 +3,14 @@ import messages from "./_modules/messages.js";
 import ToggleDarkMode from "./_lib/toggleDarkMode.js";
 import DumpToScreen from "./_lib/dumpToScreen";
 import createScreenLogger from "./_lib/screenLogger";
-import { WizardFeature } from "./_components/wizardFeature/index.js";
-import { WeatherReporterFeature } from "./_components/weatherReporter/index.js";
-import { InfoFeature } from "./_components/infoFeature/index.js";
+import { WizardFeature } from "./_components/wizardFeature";
+import { WeatherReporterFeature } from "./_components/weatherReporter";
+import { InfoFeature } from "./_components/infoFeature";
 import { registerCustomElements } from "./_lib/registerCustomElements.js";
-import BlogFeatureFacade from "./_components/blogFeature/facade.js";
+import BlogFeatureFacade from "./_components/blogFeature";
 
 const facades = [new BlogFeatureFacade()];
-facades.forEach((facade) => facade.register());
+facades.forEach((facade) => facade.init());
 
 const screenLogger = createScreenLogger(DumpToScreen, "message-panel");
 
