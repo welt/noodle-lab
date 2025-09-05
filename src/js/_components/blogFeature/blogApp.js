@@ -1,7 +1,7 @@
 /**
  * @file blogApp.js
  */
-import AppContract from "../../_contracts/appContract";
+import AppContract from "./contracts/appContract";
 import BlogPostService from "./blogPostService";
 import createBlogRepository from "./blogRepositoryFactory";
 import BlogRepositoryContext from "./blogRepositoryContext";
