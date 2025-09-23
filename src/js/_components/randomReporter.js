@@ -3,7 +3,7 @@
  * Web component which shows random properties
  * from any API.
  */
-import isObject from '../_lib/isObject.js';
+import isObject from "../_lib/isObject.js";
 import randomProperty from "../_lib/randomProperty.js";
 import Reporter from "../_contracts/reporter.js";
 
@@ -11,7 +11,7 @@ const styles = ["reporter", "reporter--random"];
 
 /**
  * Recursively look for the first string value in an object.
- * @param {Object} data 
+ * @param {Object} data
  * @returns {String}
  */
 const getString = (data) => {
@@ -25,8 +25,7 @@ const getString = (data) => {
     content += firstValue;
   }
   return content;
-}
-
+};
 
 export default class RandomReporter extends Reporter {
   /**
@@ -45,7 +44,8 @@ export default class RandomReporter extends Reporter {
     const [[key, value]] = Object.entries(randomProp);
     this.classList.add(...styles);
     this.innerHTML = `
-      <h2>Key = ${key}</h2>
+      <h2>Random API Property</h2>
+      <h3>Key = ${key}</h3>
       <h3>Value = ${getString(value)}</h3>
     `;
   }
