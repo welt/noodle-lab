@@ -18,6 +18,14 @@ export default class AudioLoopsController {
       isPlaying: false,
       url: "/media/carillon-kultur-welt.mp3",
     },
+    tipi: {
+      buffer: null,
+      source: null,
+      startTime: 0,
+      pauseTime: 0,
+      isPlaying: false,
+      url: "/media/tipi_am_kanzleramt.mp3",
+    },
   };
 
   constructor(context, fetcher) {

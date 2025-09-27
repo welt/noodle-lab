@@ -12,7 +12,7 @@ export default class BlogEditorCard extends HTMLElement {
   render() {
     this.innerHTML = `
       <h2>DIY Web Log</h2>
-      <p>Write your own personal blog, using IndexDB. No-one but you will see your posts.</p>
+      <p>Write your own personal blog, using IndexDB.</p>
       <blog-editor></blog-editor>
     `;
   }
