@@ -74,9 +74,26 @@ export default class AudioLoopsCard extends HTMLElement {
   render() {
     this.innerHTML = `
       <style>
-        .audio-loops-card * + * { margin-top: 0.5rem; }
+        .audio-loops-card fieldset * + * { margin-top: 1rem; }
+        .audio-loops-card fieldset {
+          align-items: center;
+          border-radius: 8px;
+          border: 2px solid Black;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          margin-top: .5rem;
+        }
+        .audio-loops-card .button {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 100%;
+        }
       </style>
-      <h2>Carillon im Haus der Kulturen der Welt</h2>
+      <h3>Loops aus dem Carillon im Haus der Kulturen der Welt</h3>
+      <fieldset>
+        <legend>KulturWelt</legend>
       <button
         class="button"
         data-action="togglePlay"
@@ -86,6 +103,20 @@ export default class AudioLoopsCard extends HTMLElement {
         class="button"
         data-action="stop"
         data-source="carillon">Stop</button>
+      </fieldset>
+
+      <fieldset>
+        <legend>NachHause</legend>
+      <button
+        class="button"
+        data-action="togglePlay"
+        data-source="tipi"
+        aria-pressed="false">Play</button>
+      <button
+        class="button"
+        data-action="stop"
+        data-source="tipi">Stop</button>
+      </fieldset>
     `;
   }
 
