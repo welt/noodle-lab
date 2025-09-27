@@ -3,7 +3,7 @@
  * Util to fetch and decode audio files.
  */
 import Fetcher from "../contracts/fetcher";
-import AudioLoopsFetcherError from "../errors";
+import { AudioLoopsFetcherError } from "../errors";
 
 export default class AudioSourceFetcher extends Fetcher {
   /**
