@@ -3,6 +3,7 @@
  * Util to fetch and decode audio files.
  */
 import Fetcher from "../contracts/fetcher";
+import AudioLoopsFetcherError from "../errors";
 
 export default class AudioSourceFetcher extends Fetcher {
   /**
@@ -19,7 +20,7 @@ export default class AudioSourceFetcher extends Fetcher {
    * Uses cache if available.
    * @param {string} url - URL of the audio file
    * @returns {Promise<AudioBuffer>} - decoded AudioBuffer
-   * @throws {Error}
+   * @throws {AudioLoopsFetcherError}
    */
   async fetch(url) {
     if (this.cache.has(url)) {
@@ -29,7 +30,7 @@ export default class AudioSourceFetcher extends Fetcher {
     try {
       const response = await fetch(url);
       if (!response.ok) {
-        throw new Error(
+        throw new AudioLoopsFetcherError(
           `Failed to fetch audio: ${response.status} ${response.statusText}`,
         );
       }

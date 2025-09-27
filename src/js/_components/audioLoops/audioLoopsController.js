@@ -3,6 +3,7 @@
  * Controller for audio loops functionality.
  */
 import AudioLoopsCard from "./audioLoopsCard";
+import { AudioLoopsFetcherError } from "./errors";
 
 export default class AudioLoopsController {
   #context;
@@ -34,16 +35,17 @@ export default class AudioLoopsController {
   }
 
   /**
-   * Play a named source (default: "carillon")
-   * @param {string} name - Name of the source to play
+   * Play a named source
+   * @param {string} name - name of the source to play
    * @returns {Promise<void>}
+   * @throws {AudioLoopsFetcherError} If source is unknown or already playing.
    */
   async play(name = "carillon") {
     const s = this.#sources[name];
-    if (!s) throw new Error(`Unknown source: ${name}`);
-    // If already playing, do nothing
+    if (!s) throw new AudioLoopsFetcherError(`Unknown source: ${name}`);
+
     if (s.isPlaying) return;
-    // Load buffer if not loaded
+
     if (!s.buffer) {
       s.buffer = await this.#loadLoop(s.url);
     }
@@ -57,7 +59,7 @@ export default class AudioLoopsController {
     s.source = source;
     s.startTime = this.#context.currentTime - offset;
     s.isPlaying = true;
-    // When playback ends (if not looping), reset state
+
     source.onended = () => {
       s.isPlaying = false;
       s.source = null;
@@ -68,13 +70,12 @@ export default class AudioLoopsController {
     return this.#context;
   }
 
-  // Getter for sources for testing
   get sources() {
     return this.#sources;
   }
 
   /**
-   * Pause a named source (default: "carillon")
+   * Pause a named source
    * @param {string} name
    * @returns void
    */
@@ -88,7 +89,7 @@ export default class AudioLoopsController {
   }
 
   /**
-   * Resume a named source (default: "carillon")
+   * Resume a named source
    * @param {string} name
    * @returns void
    */
@@ -98,7 +99,11 @@ export default class AudioLoopsController {
     this.play(name);
   }
 
-  // Stop a named source (default: "carillon")
+  /**
+   * Stop a named source
+   * @param {string} name
+   * @returns void
+   */
   stop(name = "carillon") {
     const s = this.#sources[name];
     if (!s) return;
@@ -114,6 +119,8 @@ export default class AudioLoopsController {
 
   /**
    * Pause the currently playing loop.
+   * @param {string} name
+   * @returns void
    */
   getState(name = "carillon") {
     const s = this.#sources[name];
