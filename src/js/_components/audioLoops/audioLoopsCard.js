@@ -77,6 +77,7 @@ export default class AudioLoopsCard extends HTMLElement {
         .audio-loops-card fieldset * + * { margin-top: 1rem; }
         .audio-loops-card fieldset {
           align-items: center;
+          background-color: Gainsboro;
           border-radius: 8px;
           border: 2px solid Black;
           display: flex;
@@ -85,10 +86,17 @@ export default class AudioLoopsCard extends HTMLElement {
           margin-top: .5rem;
         }
         .audio-loops-card .button {
+          background-color: Whitesmoke;
           display: flex;
           align-items: center;
           justify-content: center;
           width: 100%;
+        }
+        .audio-loops-card legend {
+          background-color: Whitesmoke;
+          border-radius: 6px;
+          padding-left: 0.3rem;
+          padding-right: 0.3rem;
         }
       </style>
       <h3>Loops aus dem Carillon im Haus der Kulturen der Welt</h3>

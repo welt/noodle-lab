@@ -1,7 +1,7 @@
 .blog-editor-card {
   input,
   textarea {
-    background-color: Whitesmoke;
+    background-color: Gainsboro;
     border-color: Black;
     border-radius: 0.25em;
     border-radius: 8px;
@@ -14,5 +14,12 @@
     padding: 0.5em;
     resize: vertical;
     width: 100%;
+  }
+  fieldset {
+    border-radius: 8px;
+    border: 2px solid Black;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
 }
