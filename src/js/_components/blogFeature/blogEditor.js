@@ -13,16 +13,16 @@ export default class BlogEditor extends HTMLElement {
   connectedCallback() {
     this.innerHTML = `
       <form data-blog-editor-form>
-      <fieldset>
-      <legend>New Post</legend>
-        <label for="title">Title:</label>
-          <input type="text" name="title" placeholder="Title" required />
-        </label>
-        <label for="content">Content:</label>
-          <textarea name="content" placeholder="Write your post..." required></textarea>
-        </label>
-        <button type="submit" class="button">Save</button>
-      </fieldset>
+        <fieldset>
+          <legend>New Post</legend>
+          <label for="title">Title:</label>
+            <input type="text" name="title" required />
+          </label>
+          <label for="content">Content:</label>
+            <textarea name="content" required></textarea>
+          </label>
+          <button type="submit" class="button">Save</button>
+        </fieldset>
       </form>
     `;
 
