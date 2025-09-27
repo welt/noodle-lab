@@ -8,6 +8,7 @@ import { WeatherReporterFeature } from "./_components/weatherReporter";
 import { InfoFeature } from "./_components/infoFeature";
 import { registerCustomElements } from "./_lib/registerCustomElements.js";
 import BlogFeatureFacade from "./_components/blogFeature";
+import AudioLoopsApp from "./_components/audioLoops";
 
 const facades = [new BlogFeatureFacade()];
 facades.forEach((facade) => facade.init());
@@ -36,6 +37,9 @@ function initialiseFeatures() {
 
   const infoFeature = new InfoFeature({ modal: infoDialog });
   infoFeature.init();
+
+  const audioLoopsApp = new AudioLoopsApp();
+  audioLoopsApp.init();
 }
 
 function init() {
