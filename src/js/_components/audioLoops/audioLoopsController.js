@@ -4,6 +4,10 @@
  */
 import AudioLoopsCard from "./audioLoopsCard";
 import { AudioLoopsFetcherError } from "./errors";
+import dotenv from "dotenv";
+dotenv.config();
+
+const CANONICAL = process.env.CANONICAL;
 
 export default class AudioLoopsController {
   #context;
@@ -16,7 +20,7 @@ export default class AudioLoopsController {
       startTime: 0,
       pauseTime: 0,
       isPlaying: false,
-      url: "http://localhost:8080/media/carillon-kultur-welt.mp3",
+      url: `${CANONICAL}/media/carillon-kultur-welt.mp3`,
     },
   };
 
