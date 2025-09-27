@@ -1,4 +1,5 @@
 /**
+ * @file fetcher.js
  * Abstract base class for audio source fetchers.
  */
 export default class Fetcher {

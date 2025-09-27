@@ -74,8 +74,7 @@ export default class AudioLoopsCard extends HTMLElement {
   render() {
     this.innerHTML = `
       <style>
-      .audio-loops-card * + * {
-        margin-top: 0.5rem; }
+        .audio-loops-card * + * { margin-top: 0.5rem; }
       </style>
       <h2>Carillon im Haus der Kulturen der Welt</h2>
       <button
