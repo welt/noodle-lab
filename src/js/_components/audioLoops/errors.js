@@ -8,9 +8,9 @@ export class AudioLoopsFetcherError extends Error {
   }
 }
 
-export class BlogPostNotFoundError extends Error {
+export class AudioLoopsControllerError extends Error {
   constructor(message) {
     super(message);
-    this.name = "BlogPostNotFoundError";
+    this.name = "AudioLoopsControllerError";
   }
 }
