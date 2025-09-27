@@ -3,7 +3,7 @@
  * Controller for audio loops functionality.
  */
 import AudioLoopsCard from "./audioLoopsCard";
-import { AudioLoopsFetcherError } from "./errors";
+import { AudioLoopsControllerError } from "./errors";
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -42,11 +42,11 @@ export default class AudioLoopsController {
    * Play a named source
    * @param {string} name - name of the source to play
    * @returns {Promise<void>}
-   * @throws {AudioLoopsFetcherError} If source is unknown or already playing.
+   * @throws {AudioLoopsControllerError} If source is unknown or already playing.
    */
   async play(name = "carillon") {
     const s = this.#sources[name];
-    if (!s) throw new AudioLoopsFetcherError(`Unknown source: ${name}`);
+    if (!s) throw new AudioLoopsControllerError(`Unknown source: ${name}`);
 
     if (s.isPlaying) return;
 
