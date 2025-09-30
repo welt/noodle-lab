@@ -1,0 +1,40 @@
+.audio-loops-card fieldset * + * {
+  margin-top: 1rem;
+}
+.audio-loops-card fieldset {
+  align-items: center;
+  background-color: Gainsboro;
+  border-radius: 8px;
+  border: 2px solid Black;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin: 0.5rem 0 0 0;
+  padding: 1rem;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  flex-shrink: 1;
+  min-width: 0;
+}
+.audio-loops-card .button {
+  background-color: Whitesmoke;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+.audio-loops-card legend {
+  background-color: Whitesmoke;
+  border-radius: 6px;
+  padding-left: 0.3rem;
+  padding-right: 0.3rem;
+}
+.audio-loops-card .seek {
+  max-width: 100%;
+  box-sizing: border-box;
+  margin-top: 1rem;
+  padding: 0;
+  min-width: 0;
+  flex-shrink: 1;
+}
