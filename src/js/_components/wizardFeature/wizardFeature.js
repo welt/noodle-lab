@@ -48,7 +48,9 @@ export default class WizardFeature {
 
   async #handleWizardAdded(e) {
     const { item: wizard } = e.detail;
-    this.modal.show(`Wizard ${wizard} apologised for arriving late.`);
+    this.modal
+      .autoClose(3000)
+      .show(`Wizard ${wizard} apologised for arriving late.`);
   }
 
   destroy() {
