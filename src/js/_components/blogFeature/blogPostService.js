@@ -3,7 +3,7 @@
  */
 import BlogPost from "./blogPost.js";
 import { BlogPostValidationError, BlogPostNotFoundError } from "./errors.js";
-import blogRepositoryStrategy from "./blogRepositoryStrategy.js";
+import blogRepositoryFactory from "./blogRepositoryFactory.js";
 import RepositoryContract from "../../_contracts/repositoryContract.js";
 import { isDuckTypeClass } from "../../_lib/isDucktype";
 
@@ -16,7 +16,7 @@ export default class BlogPostService {
   constructor(repository) {
     this.#repository = isValidRepo(repository)
       ? repository
-      : blogRepositoryStrategy("memory");
+      : blogRepositoryFactory("memory");
   }
 
   setRepository(repository) {

@@ -9,7 +9,7 @@ import BlogPostRepositoryIndexDB from "./blogPostRepositoryIndexDB.js";
 const strategiesAllowed = {
   memory: () => new BlogPostRepositoryInMemory(),
   indexDB: () => new BlogPostRepositoryIndexDB(),
-  default: () => new BlogPostRepositoryInMemory(),
+  default: () => new BlogPostRepositoryIndexDB(),
 };
 
 /**

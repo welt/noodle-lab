@@ -59,7 +59,9 @@ export default class BlogApp extends AppContract {
     this.listCard.renderPosts(posts);
 
     if (this.modal) {
-      this.modal.show(`Storage strategy switched to ${strategyName}.`);
+      this.modal
+        .autoClose(3000)
+        .show(`Storage strategy switched to ${strategyName}.`);
     }
   }
 
