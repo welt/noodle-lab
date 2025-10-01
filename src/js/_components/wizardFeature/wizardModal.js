@@ -36,11 +36,22 @@ export default class WizardModal extends PlainModalDialog {
     if (this.dialog) {
       this.dialog.showModal();
     }
+    if (this.autoCloseTime) {
+      setTimeout(() => this.close(), this.autoCloseTime);
+    }
+  }
+
+  autoClose(milliseconds) {
+    this.autoCloseTime = milliseconds;
+    return this;
   }
 
   close() {
     if (this.dialog) {
       this.dialog.close();
+    }
+    if (this.autoCloseTime) {
+      clearTimeout(this.autoCloseTime);
     }
   }
 
