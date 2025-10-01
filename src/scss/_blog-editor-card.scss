@@ -16,10 +16,29 @@
     width: 100%;
   }
   fieldset {
+    align-items: center;
+    background-color: whitesmoke;
     border-radius: 8px;
     border: 2px solid Black;
+    box-sizing: border-box;
     display: flex;
     flex-direction: column;
+    flex-shrink: 1;
     justify-content: center;
+    margin: 0.5rem 0 0 0;
+    max-width: 100%;
+    min-width: 0;
+    padding: 1rem;
+    width: 100%;
+  }
+  legend {
+    background-color: Whitesmoke;
+    border-radius: 6px;
+    padding-left: 0.3rem;
+    padding-right: 0.3rem;
+  }
+  button,
+  label {
+    align-self: flex-start;
   }
 }
