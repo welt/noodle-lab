@@ -2,7 +2,6 @@
  * @file audioLoopsController.js
  * Controller for audio loops functionality.
  */
-import AudioLoopsCard from "./audioLoopsCard";
 import { AudioLoopsControllerError } from "./errors";
 
 export default class AudioLoopsController {
@@ -122,7 +121,6 @@ export default class AudioLoopsController {
     s.isPlaying = false;
     s.pauseTime = 0;
     s.startTime = 0;
-    s.buffer = null;
   }
 
   /**
