@@ -1,4 +1,3 @@
-import pkg from "../../package.json" with { type: "json" };
 import eleventyFetch from "@11ty/eleventy-fetch";
 
 const REPO_USER = process.env.REPO_USER;
@@ -11,31 +10,17 @@ function githubApiUrl(strings, user, repo) {
 const url = githubApiUrl`https://api.github.com/repos/${REPO_USER}/${REPO_NAME}/tags`;
 
 /**
- * Latest tag name from GitHub releases.
- * @returns {string}
+ * Fetches GitHub tags and caches for 2 hours.
+ * See: https://www.11ty.dev/docs/plugins/fetch/
  */
-export default async function () {
-  try {
-    const json = await eleventyFetch(url, {
-      duration: "2h",
-      type: "json",
-      fetchOptions: {
-        headers: {
-          "User-Agent": "node.js",
-        },
+export default async function gitHubRelease() {
+  return await eleventyFetch(url, {
+    duration: "2h", // cache for 2 hours
+    type: "json",
+    fetchOptions: {
+      headers: {
+        "User-Agent": "node.js",
       },
-    });
-    let releases;
-    if (Array.isArray(json)) {
-      releases = json.map((tag) => ({
-        name: tag.name,
-      }));
-    } else {
-      releases = [json];
-    }
-    const [latestTag] = releases;
-    return latestTag;
-  } catch (err) {
-    return { name: pkg.version ? `v${pkg.version}` : "unknown" };
-  }
+    },
+  });
 }

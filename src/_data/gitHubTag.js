@@ -12,13 +12,15 @@ const url = githubApiUrl`https://api.github.com/repos/${REPO_USER}/${REPO_NAME}/
 
 /**
  * Latest tag name from GitHub releases.
+ * Caches response for 2 hours using @11ty/eleventy-fetch.
+ * See: https://www.11ty.dev/docs/plugins/fetch/
  * @returns {string}
  */
 export default async function () {
   let releases;
   try {
     const json = await eleventyFetch(url, {
-      duration: "2h",
+      duration: "2h", // cache for 2 hours
       type: "json",
       fetchOptions: {
         headers: {
