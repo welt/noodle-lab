@@ -23,7 +23,13 @@
       color: $color-darkmode-fore;
     }
 
-    .reporter {
+    .card,
+    .reporter,
+    .card fieldset,
+    .card textarea,
+    .card input,
+    .card button,
+    .card legend {
       background-color: $color-darkmode-back;
       border-color: $color-darkmode-fore;
       color: $color-darkmode-fore;
