@@ -4,7 +4,7 @@ dotenv.config();
 export default function () {
   const siteUrl = process.env.SITE_URL;
   return {
-    ogDescription: "Carefree vanilla JavaScript codez, for fun.",
+    ogDescription: "Vanilla JavaScript codez for fun.",
     ogTitle: "Hallo Welt",
     logEnabled: process.env.LOG_LEVEL === "1",
     repoUser: process.env.REPO_USER,
