@@ -33,6 +33,14 @@ export default class ModalDialog extends HTMLElement {
   }
 
   /**
+   * Set auto-close time (in ms).
+   * Subclasses must implement this.
+   */
+  autoClose(milliseconds) {
+    throw new Error("PlainModalDialog.autoClose() must be implemented by subclass");
+  }
+
+  /**
    * Optionally, subclasses can implement this to render dialog content.
    * @param {string} message
    */

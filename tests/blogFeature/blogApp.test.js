@@ -9,6 +9,13 @@ if (!customElements.get("blog-editor-card")) {
   customElements.define("blog-editor-card", BlogEditorCard);
 }
 
+function createMockModal() {
+  const modal = {};
+  modal.autoClose = jest.fn().mockReturnValue(modal);
+  modal.show = jest.fn();
+  return modal;
+}
+
 describe("BlogApp event handling", () => {
   let mockListCard, mockEditorCard, mockModal, mockService, blogEditor;
 
@@ -25,7 +32,7 @@ describe("BlogApp event handling", () => {
     mockEditorCard = document.createElement("blog-editor-card");
     document.body.appendChild(mockEditorCard);
 
-    mockModal = { show: jest.fn() };
+    mockModal = createMockModal();
     mockService = {
       createPost: jest.fn().mockResolvedValue({}),
       listPosts: jest.fn().mockResolvedValue([]),
@@ -167,11 +174,20 @@ describe("BlogApp event handling", () => {
   });
 
   it("should persist in-memory repository data across strategy switches", async () => {
-    // Simulate real repository caching in BlogApp
+    // Use fresh mocks for all dependencies
+    const freshListCard = document.createElement("div");
+    freshListCard.renderPosts = jest.fn();
+
+    const freshEditorCard = document.createElement("blog-editor-card");
+    document.body.appendChild(freshEditorCard);
+
+    const modal = createMockModal();
+
+    // Do not pass service so BlogApp creates its own and caches repositories
     const app = new BlogApp({
-      listCard: mockListCard,
-      editorCard: mockEditorCard,
-      modal: mockModal,
+      listCard: freshListCard,
+      editorCard: freshEditorCard,
+      modal,
     });
     await app.ready;
 
@@ -193,5 +209,10 @@ describe("BlogApp event handling", () => {
     await app.setStrategy("memory");
     posts = await app.service.listPosts();
     expect(posts.some((p) => p.title === "Memory Post")).toBe(true);
+
+    // Clean up
+    if (freshEditorCard.parentNode) {
+      freshEditorCard.parentNode.removeChild(freshEditorCard);
+    }
   });
 });
