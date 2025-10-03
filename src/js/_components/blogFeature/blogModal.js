@@ -5,6 +5,8 @@ import PlainModalDialog from "../../_contracts/plainModalDialog.js";
 import { render as renderMessage } from "./render.js";
 
 export default class BlogModal extends PlainModalDialog {
+  #handleCloseClick = () => this.close();
+
   constructor() {
     super();
     this.dialog = null;
@@ -21,23 +23,47 @@ export default class BlogModal extends PlainModalDialog {
     `;
     this.dialog = this.querySelector("dialog");
     this.content = this.querySelector("[data-modal-content]");
-    this.closeBtn = this.querySelector("[data-modal-close]");
-
-    if (this.closeBtn) {
-      this.closeBtn.addEventListener("click", () => this.close());
-    }
+    this.closeBtn = this.querySelector("[data-modal-close]"); 
+    this.#bindEvents();
   }
 
+  disconnectedCallback() {
+    this.#unbindEvents();
+  }
+  
   show(message) {
     this.render(message);
     if (this.dialog) {
       this.dialog.showModal();
     }
+    if (this.autoCloseTime) {
+      setTimeout(() => this.close(), this.autoCloseTime);
+    }
   }
 
+  autoClose(milliseconds) {
+    this.autoCloseTime = milliseconds;
+    return this;
+  }
+  
   close() {
     if (this.dialog) {
       this.dialog.close();
+    }
+    if (this.autoCloseTime) {
+      clearTimeout(this.autoCloseTime);
+    }
+  }
+
+  #bindEvents() {
+    if (this.closeBtn) {
+      this.closeBtn.addEventListener("click", this.#handleCloseClick);
+    }
+  }
+
+  #unbindEvents() {
+    if (this.closeBtn) {
+      this.closeBtn.removeEventListener("click", this.#handleCloseClick);
     }
   }
 

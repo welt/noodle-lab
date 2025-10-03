@@ -57,12 +57,6 @@ export default class BlogApp extends AppContract {
     this.service.setRepository(repoInstance);
     const posts = await this.service.listPosts();
     this.listCard.renderPosts(posts);
-
-    if (this.modal) {
-      this.modal
-        .autoClose(3000)
-        .show(`Storage strategy switched to ${strategyName}.`);
-    }
   }
 
   async setStrategyFromObject(strategy) {
@@ -72,7 +66,9 @@ export default class BlogApp extends AppContract {
     this.listCard.renderPosts(posts);
 
     if (this.modal) {
-      this.modal.show(`Storage strategy switched to ${strategy.strategy}.`);
+      this.modal
+        .autoClose(2000)
+        .show(`Storage strategy switched to ${strategy.strategy}.`);
     }
   }
 

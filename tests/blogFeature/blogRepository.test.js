@@ -17,14 +17,14 @@ describe("createBlogRepository (factory)", () => {
     expect(repo).toBeInstanceOf(BlogPostRepositoryIndexDB);
   });
 
-  test("returns BlogPostRepositoryInMemory for unknown strategy (default)", () => {
+  test("returns BlogPostRepositoryIndexDB for unknown strategy (default)", () => {
     const repo = createBlogRepository("unknown");
-    expect(repo).toBeInstanceOf(BlogPostRepositoryInMemory);
+    expect(repo).toBeInstanceOf(BlogPostRepositoryIndexDB);
   });
 
-  test("returns BlogPostRepositoryInMemory when called with no argument", () => {
+  test("returns BlogPostRepositoryIndexDB when called with no argument", () => {
     const repo = createBlogRepository();
-    expect(repo).toBeInstanceOf(BlogPostRepositoryInMemory);
+    expect(repo).toBeInstanceOf(BlogPostRepositoryIndexDB);
   });
 });
 
