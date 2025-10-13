@@ -14,7 +14,12 @@
 
 .blog-strategy-switch select {
   -webkit-appearance: none;
-  appearance: none;
+  border: 1px solid transparent;
+  border-radius: 4px;
   font-size: 0.6rem;
   margin-left: 0.5em;
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
 }
