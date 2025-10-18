@@ -14,10 +14,10 @@ layout: null
       {% for tag in gitHubRelease %}
         <item>
           <title>{{ tag.name }}</title>
-          <link>{{ tag.commit.url }}</link>
+          <link>{{ meta.repoUrl }}/tags/{{ tag.name }}</link>
           <description>Tag: {{ tag.name }}</description>
           <pubDate>{{ "now" | date("utc") }}</pubDate>
-          <guid>{{ tag.commit.url }}</guid>
+          <guid>{{ tag.commit.sha }}</guid>
         </item>
       {% endfor %}
     {% else %}
