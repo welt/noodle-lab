@@ -14,7 +14,7 @@ layout: null
       {% for tag in gitHubRelease %}
         <item>
           <title>{{ tag.name }}</title>
-          <link>{{ meta.repoUrl }}/tags/{{ tag.name }}</link>
+          <link>{{ meta.repoUrl }}/releases/tag/{{ tag.name }}</link>
           <description>Tag: {{ tag.name }}</description>
           <pubDate>{{ "now" | date("utc") }}</pubDate>
           <guid>{{ tag.commit.sha }}</guid>
