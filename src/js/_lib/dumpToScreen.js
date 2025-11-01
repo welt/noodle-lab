@@ -9,6 +9,11 @@ import Message from "./message";
 
 const MAX_MESSAGE_QUEUE = 4;
 
+const shouldIgnoreError = (e) =>
+  e instanceof Error &&
+  e.name === "MatrixPrinterError" &&
+  e.message === "Print cancelled";
+
 class LoggerError extends Error {
   constructor(message) {
     super(message);
@@ -37,13 +42,6 @@ export default class DumpToScreen extends Logger {
     this.#render();
   }
 
-  logAnimated(str) {
-    this.#ensureElement();
-    const message = Message.from(str, true);
-    this.#addToQueue(message);
-    this.#startAnimation(message);
-  }
-
   #ensureElement() {
     if (!this.element) {
       this.element = document.getElementById(this.elementId);
@@ -58,19 +56,28 @@ export default class DumpToScreen extends Logger {
     return this.messages.toArray().length - 1;
   }
 
-  #startAnimation(message) {
-    if (message.animationStarted) return; // Don't restart
+  logAnimated(str) {
+    this.#ensureElement();
+    const message = Message.from(str, true);
+    this.#addToQueue(message);
+    void this.#startAnimation(message);
+  }
+
+  async #startAnimation(message) {
+    if (message.animationStarted) return;
     message.animationStarted = true;
-    this.printer
-      .print(message.messageText, (accumulated) => {
+    try {
+      await this.printer.print(message.messageText, (accumulated) => {
         message.currentDisplay = accumulated;
         this.#render();
-      })
-      .then(() => {
-        message.isAnimated = false;
-        message.currentDisplay = message.messageText;
-        this.#render();
       });
+      message.isAnimated = false;
+      message.currentDisplay = message.messageText;
+      this.#render();
+    } catch (e) {
+      if (shouldIgnoreError(e)) return;
+      console.error(e);
+    }
   }
 
   #render() {
