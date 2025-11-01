@@ -7,6 +7,7 @@ export default async function (eleventyConfig) {
   eleventyConfig.addPassthroughCopy("./src/images/**/*.{png,jpg,webp}");
   eleventyConfig.addPassthroughCopy("./src/favicon.ico");
   eleventyConfig.addPassthroughCopy("./src/media/**/*.{mp3,mp4,webm}");
+  eleventyConfig.addPassthroughCopy("./src/workers/**/*.worker.js");
   eleventyConfig.addWatchTarget("./src/js/");
   eleventyConfig.addWatchTarget("./src/scss/");
   eleventyConfig.addFilter("date", dateFilter);
