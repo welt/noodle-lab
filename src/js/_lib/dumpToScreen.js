@@ -4,6 +4,8 @@
  */
 import Logger from "../_contracts/logger";
 import Fifo from "./fifo";
+import MatrixPrinter from "./matrixPrinter";
+import Message from "./message";
 
 const MAX_MESSAGE_QUEUE = 4;
 
@@ -15,31 +17,66 @@ class LoggerError extends Error {
 }
 
 export default class DumpToScreen extends Logger {
-  constructor(elementId, queueLength = MAX_MESSAGE_QUEUE) {
+  constructor(elementId, queueLength = MAX_MESSAGE_QUEUE, printer = null) {
     super();
     this.elementId = elementId;
     this.messages = new Fifo(queueLength);
     this.element = document.getElementById(this.elementId);
-    if (!this.element) {
-      throw new LoggerError(`Element with id '${this.elementId}' not found.`);
-    }
+    this.printer = printer || new MatrixPrinter(20);
+    this.#ensureElement(); // ?element logic is dodgy - refactor
+  }
+
+  setPrinter(printer) {
+    this.printer = printer;
   }
 
   log(str) {
+    this.#ensureElement();
+    const message = Message.from(str, false);
+    this.#addToQueue(message);
+    this.#render();
+  }
+
+  logAnimated(str) {
+    this.#ensureElement();
+    const message = Message.from(str, true);
+    this.#addToQueue(message);
+    this.#startAnimation(message);
+  }
+
+  #ensureElement() {
     if (!this.element) {
       this.element = document.getElementById(this.elementId);
       if (!this.element) {
         throw new LoggerError(`Element with id '${this.elementId}' not found.`);
       }
     }
-    this.#updatePanel(str);
   }
 
-  #updatePanel(str) {
-    this.messages.push(str);
-    const latest = this.messages
-      .toArray()
-      .map((message) => `<p>${message}</p>`)
+  #addToQueue(message) {
+    this.messages.push(message);
+    return this.messages.toArray().length - 1;
+  }
+
+  #startAnimation(message) {
+    if (message.animationStarted) return; // Don't restart
+    message.animationStarted = true;
+    this.printer
+      .print(message.messageText, (accumulated) => {
+        message.currentDisplay = accumulated;
+        this.#render();
+      })
+      .then(() => {
+        message.isAnimated = false;
+        message.currentDisplay = message.messageText;
+        this.#render();
+      });
+  }
+
+  #render() {
+    const messages = this.messages.toArray();
+    const latest = messages
+      .map((message) => `<p>${message.currentDisplay}</p>`)
       .join("");
     this.element.innerHTML = latest;
   }
