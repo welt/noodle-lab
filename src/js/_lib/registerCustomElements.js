@@ -24,6 +24,7 @@ import ErrorDialog from "../_components/ErrorDialog.js";
 import InfoDialog from "../_components/infoDialog.js";
 import GitHubLinkButton from "../_components/gitHubLinkButton.js";
 import RssFeedLinkButton from "../_components/rssFeedLinkButton.js";
+import DigitalRain from "../_components/digitalRain";
 
 export function registerCustomElements() {
   // Dialogs
@@ -78,4 +79,6 @@ export function registerCustomElements() {
     customElements.define("rss-feed-link-button", RssFeedLinkButton);
   if (!customElements.get("loading-spinner"))
     customElements.define("loading-spinner", LoadingSpinner);
+  if (!customElements.get("digital-rain"))
+    customElements.define("digital-rain", DigitalRain);
 }
