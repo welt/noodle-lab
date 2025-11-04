@@ -41,6 +41,23 @@ export default [
         __GITHUB_REPO_URL__: JSON.stringify(repoUrl),
       }),
       devMode ? noop() : outputManifest(manifestOpts),
+      devMode
+        ? noop()
+        : terser({
+            ecma: 2020,
+            mangle: { toplevel: true },
+            compress: {
+              module: true,
+              toplevel: true,
+              unsafe_arrows: true,
+              drop_console: false, // !! MessagePanel proxies console.log
+              drop_debugger: false,
+            },
+            output: {
+              quote_style: 1,
+              comments: false,
+            },
+          }),
     ],
     output: {
       entryFileNames: devMode ? "bundle.esm.js" : "bundle-[hash].esm.js",
@@ -49,25 +66,6 @@ export default [
       format: "es",
       dir: "./_site/js/",
       sourcemap: devMode ? "inline" : false,
-      plugins: [
-        devMode
-          ? noop()
-          : terser({
-              ecma: 2020,
-              mangle: { toplevel: false }, // For Firebug ;]
-              compress: {
-                module: true,
-                toplevel: true,
-                unsafe_arrows: true,
-                drop_console: false, // MessagePanel uses console.log
-                drop_debugger: false,
-              },
-              output: {
-                quote_style: 1,
-                comments: false,
-              },
-            }),
-      ],
     },
     watch: {
       include: "./src/js/**",
