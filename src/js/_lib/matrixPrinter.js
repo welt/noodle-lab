@@ -15,26 +15,25 @@ class MatrixPrinterError extends Error {
   }
 }
 
-const sleep = (ms, signal) =>
-  new Promise((resolve, reject) => {
+const sleep = (ms, signal) => {
+  if (!signal) return;
+  return new Promise((resolve, reject) => {
     const t = setTimeout(() => {
       if (signal) signal.removeEventListener("abort", onAbort);
       resolve();
     }, ms);
-
     const onAbort = () => {
       clearTimeout(t);
       signal.removeEventListener("abort", onAbort);
       reject(new MatrixPrinterError("Print cancelled"));
     };
-
-    if (!signal) return;
     if (signal.aborted) {
       clearTimeout(t);
       return reject(new MatrixPrinterError("Print cancelled"));
     }
     signal.addEventListener("abort", onAbort);
   });
+};
 
 export default class MatrixPrinter extends Printer {
   #abortController;

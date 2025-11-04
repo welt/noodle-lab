@@ -9,9 +9,7 @@ import { InfoFeature } from "./_components/infoFeature";
 import { registerCustomElements } from "./_lib/registerCustomElements.js";
 import BlogFeatureFacade from "./_components/blogFeature";
 import AudioLoopsApp from "./_components/audioLoops";
-
-const facades = [new BlogFeatureFacade()];
-facades.forEach((facade) => facade.init());
+import RainControls from "./_components/rainControls";
 
 const screenLogger = createScreenLogger(DumpToScreen, "message-panel");
 
@@ -44,6 +42,8 @@ function initialiseFeatures() {
 
 function init() {
   registerCustomElements();
+  const facades = [new BlogFeatureFacade(), new RainControls()];
+  facades.forEach((facade) => facade.init());
   localDebug.refresh();
   screenLogger();
   messages.hello();
