@@ -32,11 +32,12 @@
     <script>
       document.documentElement.className = document.documentElement.className.replace('no-js','js');
       const currentMode = localStorage.getItem('mode');
-      const prefersDarkScheme = window.matchMedia("(prefers-color-scheme: dark)").matches;
-      if (currentMode === 'dark' || (!currentMode && prefersDarkScheme)) {
+      if (currentMode === 'dark') {
         document.documentElement.classList.add('dark-mode');
         const firstToggleButton = document.querySelector('toggle-button');
         firstToggleButton && firstToggleButton.setAttribute('checked', 'checked');
+      } else {
+        document.documentElement.classList.remove('dark-mode');
       }
     </script>
   </body>

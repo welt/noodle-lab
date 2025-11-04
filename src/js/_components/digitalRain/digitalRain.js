@@ -22,7 +22,7 @@ export default class DigitalRain extends HTMLElement {
           position: absolute;
           inset: 0;
           z-index: 1;
-          pointer-events: none; /* wrapper doesn't intercept clicks */
+          pointer-events: none;
         }
         .overlay-controls {
           position: absolute;
@@ -33,7 +33,6 @@ export default class DigitalRain extends HTMLElement {
           align-items: center;
           pointer-events: none;
         }
-        /* allow slotted elements to receive pointer events */
         ::slotted(*) { pointer-events: auto; }
       </style>
       <style>
@@ -78,10 +77,16 @@ export default class DigitalRain extends HTMLElement {
         this.#renderer.start();
         this.dispatchEvent(new Event("play"));
       }
-      if (this.hasAttribute("theme")) {
-        this.#renderer.setTheme(this.getAttribute("theme"));
-      }
+      this.#renderer.setTheme(this.#getTheme());
     }
+  }
+
+  #getTheme() {
+    const attrValue = this.hasAttribute("theme") && this.getAttribute("theme");
+    const isDark = document.documentElement.classList.contains("dark-mode");
+    const storedMode = localStorage.getItem("mode");
+    const computedDark = isDark || storedMode === "dark";
+    return attrValue || (computedDark ? "matrix" : "helvetica");
   }
 
   attributeChangedCallback(name, _oldValue, _newValue) {
