@@ -1,7 +1,10 @@
+import DownloadControl from "./downloadControl.js";
+
 export default class RainControls {
   constructor() {
     this.rain = null;
     this.playBtn = null;
+    this.downloadControl = null;
     this.mq = window.matchMedia("(prefers-reduced-motion: reduce)");
     this.onPreferenceChange = this.#handlePrefersReducedMotionChange.bind(this);
     this.onChangeTheme = this.#handleChangeTheme.bind(this);
@@ -20,6 +23,10 @@ export default class RainControls {
     }
 
     this.playBtn = this.rain.querySelector(".play-toggle");
+
+    // Dependency-inject the DownloadControl and initialize it
+    this.downloadControl = new DownloadControl(this.rain);
+    await this.downloadControl.init();
 
     this.#bindEvents();
     this.#handlePrefersReducedMotionChange({ matches: this.mq.matches });
@@ -80,5 +87,9 @@ export default class RainControls {
 
   cleanup() {
     this.mq.removeEventListener("change", this.onPreferenceChange);
+    if (this.downloadControl) {
+      this.downloadControl.cleanup();
+      this.downloadControl = null;
+    }
   }
 }
