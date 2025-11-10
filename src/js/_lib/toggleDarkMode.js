@@ -31,13 +31,14 @@ export default function ToggleDarkMode(options = {}) {
 }
 
 ToggleDarkMode.prototype.setMode = function (event) {
-  if ("checked" in event.detail) {
-    document.documentElement.classList.toggle("dark-mode");
-    const mode = document.documentElement.classList.contains("dark-mode")
-      ? "dark"
-      : "light";
-    localStorage.setItem("mode", mode);
-  }
+  const isChecked =
+    event &&
+    event.detail &&
+    Object.prototype.hasOwnProperty.call(event.detail, "checked");
+  if (!isChecked) return;
+  const checked = Boolean(event.detail.checked);
+  document.documentElement.classList.toggle("dark-mode", checked);
+  localStorage.setItem("mode", checked ? "dark" : "light");
 };
 
 ToggleDarkMode.prototype.bindEvents = function () {

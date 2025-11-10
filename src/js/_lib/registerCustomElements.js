@@ -25,6 +25,7 @@ import InfoDialog from "../_components/infoDialog.js";
 import GitHubLinkButton from "../_components/gitHubLinkButton.js";
 import RssFeedLinkButton from "../_components/rssFeedLinkButton.js";
 import DigitalRain from "../_components/digitalRain";
+import ImageSwap from "../_components/imageSwap";
 
 export function registerCustomElements() {
   // Dialogs
@@ -81,4 +82,6 @@ export function registerCustomElements() {
     customElements.define("loading-spinner", LoadingSpinner);
   if (!customElements.get("digital-rain"))
     customElements.define("digital-rain", DigitalRain);
+  if (!customElements.get("image-swap"))
+    customElements.define("image-swap", ImageSwap);
 }
