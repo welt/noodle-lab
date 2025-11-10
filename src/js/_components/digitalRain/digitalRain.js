@@ -35,10 +35,6 @@ export default class DigitalRain extends HTMLElement {
         }
         ::slotted(*) { pointer-events: auto; }
       </style>
-      <style>
-        :host { display: block; width: 100%; height: 100%; }
-        canvas { width: 100%; height: 100%; display: block; }
-      </style>
       <canvas part="canvas"></canvas>
       <div part="overlay" class="overlay">
         <div class="overlay-controls"><slot name="controls"></slot></div>
