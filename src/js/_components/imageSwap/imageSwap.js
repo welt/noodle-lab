@@ -43,7 +43,7 @@ export default class ImageSwap extends HTMLElement {
 
   #handleEvent(event) {
     if (!event || event.type !== "toggle-button") return;
-    const hasDetail = Object.hasOwn(event?.detail ?? {}, "checked")`;
+    const hasDetail = Object.hasOwn(event?.detail ?? {}, "checked");
     if (hasDetail) {
       const theme = Boolean(event.detail.checked) ? "matrix" : "helvetica";
       this.#updateDisplayedImage(theme);
