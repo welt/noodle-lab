@@ -6,6 +6,8 @@ import { render as renderMessage } from "./render.js";
 
 export default class BlogModal extends PlainModalDialog {
   #handleCloseClick = () => this.close();
+  #autoCloseTimer = null;
+  #autoCloseTime = 0;
 
   constructor() {
     super();
@@ -36,13 +38,17 @@ export default class BlogModal extends PlainModalDialog {
     if (this.dialog) {
       this.dialog.showModal();
     }
-    if (this.autoCloseTime) {
-      setTimeout(() => this.close(), this.autoCloseTime);
+    if (this.#autoCloseTime && this.#autoCloseTime > 0) {
+      this.#autoCloseTimer = setTimeout(() => this.close(), this.#autoCloseTime);
     }
   }
 
   autoClose(milliseconds) {
-    this.autoCloseTime = milliseconds;
+    this.#autoCloseTime = milliseconds;
+    if (this.#autoCloseTimer) {
+      clearTimeout(this.#autoCloseTimer);
+      this.#autoCloseTimer = null;
+    }
     return this;
   }
   
@@ -50,8 +56,9 @@ export default class BlogModal extends PlainModalDialog {
     if (this.dialog) {
       this.dialog.close();
     }
-    if (this.autoCloseTime) {
-      clearTimeout(this.autoCloseTime);
+    if (this.#autoCloseTimer) {
+      clearTimeout(this.#autoCloseTimer);
+      this.#autoCloseTimer = null;
     }
   }
 
