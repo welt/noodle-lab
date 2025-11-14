@@ -17,7 +17,7 @@ import CarbonReporter from "../_components/carbonReporter.js";
 import GitHubReporter from "../_components/gitHubReporter.js";
 import LoadingSpinner from "../_components/loadingSpinner.js";
 import RandomReporter from "../_components/randomReporter.js";
-import F1Reporter from "../_components/f1Reporter.js";
+import F1Reporter from "../_components/f1Reporter/classes/f1Reporter.js";
 import ToggleButton from "../_components/toggleButton.js";
 import RefreshButton from "../_components/refreshButton.js";
 import ErrorDialog from "../_components/ErrorDialog.js";
