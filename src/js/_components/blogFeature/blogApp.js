@@ -35,7 +35,7 @@ export default class BlogApp extends AppContract {
       this.service = service;
     } else {
       const res = cookies.getCookie(COOKIE_NAME);
-      const strategy = res ? JSON.parse(res) : { strategy: "memory" };
+      const strategy = res ? JSON.parse(res) : { strategy: "indexDB" };
       const repoInstance = this.getOrCreateRepository(strategy.strategy);
       const repoContext = new BlogRepositoryContext(repoInstance);
       this.service = new BlogPostService(repoContext);
@@ -95,7 +95,7 @@ export default class BlogApp extends AppContract {
   }
 
   #onPostSelected(e) {
-    this.modal.show(e.detail);
+    this.modal.autoClose(0).show(e.detail);
   }
 
   async #onSwitchStrategy(e) {
