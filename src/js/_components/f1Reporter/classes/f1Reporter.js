@@ -2,11 +2,9 @@
  * @file f1Reporter.js
  * Gets latest meeting details from OpenF1 API.
  */
-import mixinApply from '../../../_lib/mixinApply.js';
 import Reporter from "../../../_contracts/reporter.js";
 import formatTimestamp from "../../../_lib/formatTimestamp.js";
 import textUtils from "../../../_lib/textUtils.js";
-import F1Winners from './f1Winners.js';
 
 const url = new URL("https://api.openf1.org/v1/sessions");
 
@@ -30,6 +28,7 @@ export default class F1Reporter extends Reporter {
   async render(data) {
     const oData = this.#lastRaceSession(Array.isArray(data) ? data : []);
     const podium = await this.getWinners(oData);
+    const lewisInfo = await this.findDriver44(oData);
 
     this.classList.add(...styles);
 
@@ -53,7 +52,8 @@ export default class F1Reporter extends Reporter {
       </dl>
     `;
 
-    this.innerHTML += this.formatPodiumHtml(Array.isArray(podium) ? podium : []);
+    this.innerHTML += this.getPodiumHtml(Array.isArray(podium) ? podium : []);
+    this.innerHTML += this.getDriver44Html(lewisInfo);
   }
 
   async connectedCallback() {
@@ -72,4 +72,3 @@ export default class F1Reporter extends Reporter {
     );
   }
 }
-mixinApply(F1Reporter, F1Winners);
