@@ -1,7 +1,11 @@
 import FetchCache from './fetchCache';
 import { F1FetchError } from './errors.js';
 
-const fetchCache = FetchCache.getInstance();
+const cacheOptions = {
+  expiryTimeInMs: 1000 * 60 * 60 * 24, // 24 hours
+  cacheName: "f1-api-cache",
+};
+const fetchCache = FetchCache.getInstance(cacheOptions);
 
 /**
  * fetchJson(url, { timeout, options })
