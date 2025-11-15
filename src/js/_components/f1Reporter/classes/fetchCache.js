@@ -1,8 +1,10 @@
 import CacheApiCache from '../../../_lib/cacheApiCache.js';
 
 export default class FetchCache extends CacheApiCache {
-  constructor() {
-    super();
+  static #instance = null;
+
+  constructor(options = {}) {
+    super(options);
   }
 
   async getCachedData(key) {
@@ -21,11 +23,11 @@ export default class FetchCache extends CacheApiCache {
     return super.setCachedData(key, data);
   }
 
-  static getInstance() {
-    if (!this._instance) {
-      this._instance = new this();
-      Object.freeze(this._instance);
+  static getInstance(options = {}) {
+    if (!this.#instance) {
+      this.#instance = new this(options);
+      Object.freeze(this.#instance);
     }
-    return this._instance;
+    return this.#instance;
   }
 }
