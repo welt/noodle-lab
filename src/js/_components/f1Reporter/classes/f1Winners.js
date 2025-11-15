@@ -1,4 +1,5 @@
 import { F1ReporterError } from './errors';
+import fetchJson from './fetchJson.js';
 
 export default {
   /**
@@ -16,7 +17,7 @@ export default {
       "position<": "3",
     });
 
-    const resultsRes = await fetch(url.toString());
+    const resultsRes = await fetchJson(url.toString());
     const results = await resultsRes.json();
 
     if (!Array.isArray(results) || results.length === 0) {
@@ -32,7 +33,7 @@ export default {
       session_key: sessionKey,
     });
 
-    const driversRes = await fetch(url.toString());
+    const driversRes = await fetchJson(url.toString());
     const drivers = await driversRes.json();
 
     const driversIndexed = new Map(drivers.map((driver) => [driver.driver_number, driver]));
@@ -46,6 +47,7 @@ export default {
         position: result.position,
         driver_number: result.driver_number,
         name,
+        gap_to_leader: result.gap_to_leader,
       };
     });
 
@@ -55,21 +57,23 @@ export default {
    * @param {Array<Object>} podium
    * @returns {string} HTML for the podium list
    */
-  formatPodiumHtml(podium = []) {
+  getPodiumHtml(podium = []) {
     if (!Array.isArray(podium) || podium.length === 0) {
       return `<section class="podium"><h3>Podium</h3><p>No podium data available.</p></section>`;
     }
 
-    const items = podium
+    const winners = podium
       .sort((a, b) => a.position - b.position)
-      .map((p) => {
-        const pos = Number.isFinite(p.position) ? p.position : '';
-        const number = p.driver_number ? `#${p.driver_number}` : '';
-        const name = p.name ?? 'Unknown driver';
+      .map((driver) => {
+        const pos = Number.isFinite(driver.position) ? driver.position : '';
+        const number = driver.driver_number ? `#${driver.driver_number}` : '';
+        const name = driver.name ?? 'Unknown driver';
+        const gapToLeader = driver.gap_to_leader ? driver.gap_to_leader : '';
         return `<li class="podium__item podium__pos--${pos}">
           <span class="podium__position">${pos}</span>
           <span class="podium__name">${name}</span>
           <span class="podium__number">${number}</span>
+          <span class="podium__gap_to_leader">${gapToLeader}</span>
         </li>`;
       })
       .join('');
@@ -77,7 +81,7 @@ export default {
     return `<section class="podium">
       <h3>Podium</h3>
       <ol class="podium__list">
-        ${items}
+        ${winners}
       </ol>
     </section>`;
   }
