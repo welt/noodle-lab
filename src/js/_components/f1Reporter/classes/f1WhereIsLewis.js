@@ -57,14 +57,16 @@ export default {
     const gapToLeader = driverInfo.gap_to_leader ?? '';
 
     return `
-      <h3>How did Lewis do?</h3>
-      <ol class="podium__list driver-44">
-        <li>
-          <span class="podium__position">${posOrStatus}</span>
-          <span class="podium__name">${name}</span>
-          <span class="podium__number">#44</span>
-          <span class="podium__gap_to_leader">${gapToLeader}</span>
-        </li>
-      </ol>`;
+      <div class="f1-info">
+        <h3>How did Lewis do?</h3>
+        <ol class="podium__list driver-44">
+          <li>
+            <span class="podium__position">${posOrStatus}</span>
+            <span class="podium__name">${name}</span>
+            <span class="podium__number">#44</span>
+            <span class="podium__gap_to_leader">${gapToLeader}</span>
+          </li>
+        </ol>
+      </div>`;
   },
 };

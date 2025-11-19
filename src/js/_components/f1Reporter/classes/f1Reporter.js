@@ -41,15 +41,17 @@ export default class F1Reporter extends Reporter {
     }
 
     this.innerHTML = `
-      <h2>Latest F1 Meeting</h2>
-      <dl>
-        <dt>Meeting Name:</dt>
-        <dd>${oData.country_name}, ${oData.location}</dd>
-        <dt>Circuit Name:</dt>
-        <dd><em>${textUtils.toTitleCase(oData.circuit_short_name)}</em></dd>
-        <dt>Meeting Date:</dt>
-        <dd>${formatTimestamp(oData.date_start)}</dd>
-      </dl>
+      <div class="f1-info">
+        <h2>Latest F1 Meeting</h2>
+        <dl>
+          <dt>Meeting Name:</dt>
+          <dd>${oData.country_name}, ${oData.location}</dd>
+          <dt>Circuit Name:</dt>
+          <dd><em>${textUtils.toTitleCase(oData.circuit_short_name)}</em></dd>
+          <dt>Meeting Date:</dt>
+          <dd>${formatTimestamp(oData.date_start)}</dd>
+        </dl>
+      </div>
     `;
 
     this.innerHTML += this.getPodiumHtml(Array.isArray(podium) ? podium : []);

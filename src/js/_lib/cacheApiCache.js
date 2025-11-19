@@ -4,7 +4,6 @@
  * @see https://developer.mozilla.org/en-US/docs/Web/API/Cache
  * @extends Cache
  */
-import isObject from "./isObject";
 import Cache from "../_contracts/cache";
 
 const defaults = {
@@ -43,14 +42,45 @@ export default class CacheApiCache extends Cache {
   }
 
   async setCachedData(uri, data) {
-    if (data === null || (!isObject(data) && !Array.isArray(data))) {
-      throw new TypeError("Data must be an object or array.");
-    }
     const cache = await caches.open(this.options.cacheName);
-    const response = new Response(JSON.stringify(data), {
-      headers: { "x-cache-timestamp": Date.now().toString() },
-    });
-    await cache.put(uri, response);
+    const timestamp = String(Date.now());
+
+    if (data instanceof Response) {
+      try {
+        const cloned = data.clone();
+        const bodyBuffer = await cloned.arrayBuffer();
+        const headers = new Headers(cloned.headers);
+        headers.set('x-cache-timestamp', timestamp);
+        const resp = new Response(bodyBuffer, {
+          status: cloned.status,
+          statusText: cloned.statusText,
+          headers,
+        });
+        await cache.put(uri, resp);
+        return true;
+      } catch (err) {
+        console.warn('CacheApiCache.setCachedData (Response) failed', err);
+        return false;
+      }
+    }
+
+    if (data === null || (typeof data !== 'object')) {
+      throw new TypeError('Cache data must be an object or array.');
+    }
+
+    try {
+      const body = JSON.stringify(data);
+      const headers = new Headers({
+        'content-type': 'application/json',
+        'x-cache-timestamp': timestamp,
+      });
+      const resp = new Response(body, { headers });
+      await cache.put(uri, resp);
+      return true;
+    } catch (err) {
+      console.warn('CacheApiCache.setCachedData (JSON) failed', err);
+      return false;
+    }
   }
 
   get options() {

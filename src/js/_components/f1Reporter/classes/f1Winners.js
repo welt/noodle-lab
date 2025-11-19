@@ -78,11 +78,11 @@ export default {
       })
       .join('');
 
-    return `<section class="podium">
+    return `<div class="f1-info podium">
       <h3>Podium</h3>
       <ol class="podium__list">
         ${winners}
       </ol>
-    </section>`;
+    </div>`;
   }
 };
