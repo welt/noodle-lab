@@ -19,66 +19,86 @@ export default class CacheApiCache extends Cache {
     this.#options = { ...defaults, ...options };
   }
 
+  /**
+   * Retrieve cached JSON for a URI.
+   * Returns the parsed object/array,
+   * or null if not present/invalid/expired.
+   */
   async getCachedData(uri) {
-    const cache = await caches.open(this.options.cacheName);
+    const { cacheName, expiryTimeInMs } = this.options;
+
+    let cache;
+    try {
+      cache = await caches.open(cacheName);
+    } catch (err) {
+      console.warn("CacheApiCache.getCachedData: failed to open cache", err);
+      return null;
+    }
+
     const response = await cache.match(uri);
-    if (!response) {
-      return null;
-    }
 
-    const cachedTimestamp = response.headers.get("x-cache-timestamp");
-    if (!cachedTimestamp) {
-      return null;
-    }
+    if (!response) return null;
 
-    const now = Date.now();
-    if (now - cachedTimestamp >= this.options.expiryTimeInMs) {
+    const timestamp = response.headers.get("x-cache-timestamp");
+    const cachedTimestamp = timestamp ? Number(timestamp) : NaN;
+    
+    if (!Number.isFinite(cachedTimestamp)) {
       await cache.delete(uri);
       return null;
     }
 
-    console.log(`Found cached data for ${uri}`);
-    return response.json();
-  }
-
-  async setCachedData(uri, data) {
-    const cache = await caches.open(this.options.cacheName);
-    const timestamp = String(Date.now());
-
-    if (data instanceof Response) {
-      try {
-        const cloned = data.clone();
-        const bodyBuffer = await cloned.arrayBuffer();
-        const headers = new Headers(cloned.headers);
-        headers.set('x-cache-timestamp', timestamp);
-        const resp = new Response(bodyBuffer, {
-          status: cloned.status,
-          statusText: cloned.statusText,
-          headers,
-        });
-        await cache.put(uri, resp);
-        return true;
-      } catch (err) {
-        console.warn('CacheApiCache.setCachedData (Response) failed', err);
-        return false;
-      }
+    const age = Date.now() - cachedTimestamp;
+    if (age > expiryTimeInMs) {
+      await cache.delete(uri);
+      return null;
     }
 
-    if (data === null || (typeof data !== 'object')) {
-      throw new TypeError('Cache data must be an object or array.');
+    const contentType = response.headers.get("content-type") || "";
+    if (!contentType.includes("application/json")) {
+      await cache.delete(uri);
+      return null;
     }
 
     try {
-      const body = JSON.stringify(data);
-      const headers = new Headers({
-        'content-type': 'application/json',
-        'x-cache-timestamp': timestamp,
-      });
-      const resp = new Response(body, { headers });
-      await cache.put(uri, resp);
+      return await response.json();
+    } catch (err) {
+      console.warn("CacheApiCache.getCachedData: failed to parse cached JSON, evicting", err);
+      await cache.delete(uri);
+      return null;
+    }
+  }
+
+  /**
+   * Stores JSON-serializable object or array with key `uri`.
+   */
+  async setCachedData(uri, data) {
+    const { cacheName } = this.options;
+
+    if (data === null || typeof data !== "object") {
+      throw new TypeError("CacheApiCache only accepts plain objects or arrays.");
+    }
+
+    let body;
+    try {
+      body = JSON.stringify(data);
+    } catch (err) {
+      throw new TypeError("CacheApiCache data must be JSON-serializable.");
+    }
+
+    const timestamp = String(Date.now());
+    const headers = new Headers({
+      "content-type": "application/json",
+      "x-cache-timestamp": timestamp,
+    });
+
+    const response = new Response(body, { headers });
+
+    try {
+      const cache = await caches.open(cacheName);
+      await cache.put(uri, response);
       return true;
     } catch (err) {
-      console.warn('CacheApiCache.setCachedData (JSON) failed', err);
+      console.warn("CacheApiCache.setCachedData: failed to write to cache", err);
       return false;
     }
   }
