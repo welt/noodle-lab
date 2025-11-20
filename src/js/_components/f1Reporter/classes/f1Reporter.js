@@ -41,7 +41,7 @@ export default class F1Reporter extends Reporter {
     }
 
     this.innerHTML = `
-      <div class="f1-info">
+      <div class="f1-reporter__meeting-details">
         <h2>Latest F1 Meeting</h2>
         <dl>
           <dt>Meeting Name:</dt>
