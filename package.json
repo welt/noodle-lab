@@ -1,6 +1,6 @@
 {
   "name": "noodle-lab",
-  "version": "2.2.49",
+  "version": "2.2.50",
   "description": "Noodling around project",
   "main": "eleventy.config.js",
   "type": "module",
@@ -31,7 +31,7 @@
     "dotenv": "^17.2.3",
     "eslint": "^9.39.1",
     "eslint-plugin-import": "^2.32.0",
-    "eslint-plugin-jest": "^29.1.0",
+    "eslint-plugin-jest": "^29.2.0",
     "fake-indexeddb": "^6.2.5",
     "globals": "^16.5.0",
     "jest": "^30.2.0",
