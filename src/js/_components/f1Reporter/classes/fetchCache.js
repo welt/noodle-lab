@@ -12,7 +12,7 @@ export default class FetchCache extends CacheApiCache {
     if (cached instanceof Response) {
       return cached.clone();
     }
-    return null;
+    return cached; 
   }
 
   async setCachedData(key, data) {

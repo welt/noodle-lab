@@ -12,8 +12,7 @@ export default {
     let url = new URL('https://api.openf1.org/v1/session_result');
     url.search = new URLSearchParams({ session_key: sessionKey });
 
-    const resultsRes = await fetchJson(url.toString());
-    const results = await resultsRes.json();
+    const results = await fetchJson(url.toString());
     if (!Array.isArray(results) || results.length === 0) return null;
 
     const result = results.find((r) => Number(r.driver_number) === 44);
@@ -21,10 +20,11 @@ export default {
 
     url = new URL('https://api.openf1.org/v1/drivers');
     url.search = new URLSearchParams({ session_key: sessionKey });
-    const driversRes = await fetchJson(url.toString());
-    const drivers = await driversRes.json();
 
-    const driversIndexed = new Map((drivers || []).map((d) => [Number(d.driver_number), d]));
+    const drivers = await fetchJson(url.toString());
+    const driversArray = Array.isArray(drivers) ? drivers : [];
+    const driversIndexed = new Map(driversArray.map((d) => [Number(d.driver_number), d]));
+
     const driver = driversIndexed.get(Number(result.driver_number));
     const name =
       driver?.full_name ??
@@ -50,9 +50,13 @@ export default {
     }
 
     const statusKeys = ['dnf', 'dns', 'dsq'];
-    const trueStatuses = statusKeys.filter((k) => Boolean(driverInfo[k]));
+    const trueStatuses = statusKeys.filter(
+      (key) => Boolean(driverInfo[key]),
+    );
 
-    const posOrStatus = trueStatuses.length > 0 ? trueStatuses.join(', ') : (driverInfo.position ?? 'N/A');
+    const posOrStatus = trueStatuses.length > 0
+      ? trueStatuses.join(', ')
+      : (driverInfo.position ?? 'N/A');
     const name = driverInfo.name ?? 'Unknown driver';
     const gapToLeader = driverInfo.gap_to_leader ?? '';
 
