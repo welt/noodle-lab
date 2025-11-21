@@ -27,38 +27,38 @@ export default async function fetchJson(url, { timeout = 3000, options = {} } = 
   try {
     res = await fetch(url, { ...options, signal });
 
-    if (res.ok) {
+    if (!res.ok) {
+      let bodyText = null;
       try {
-        await fetchCache.setCachedData(url, res.clone());
-      } catch (cacheErr) {
-        console.warn('F1 fetchJson: cache set failed', cacheErr);
+        bodyText = await res.text();
+      } catch (_) {
+        //
       }
+      throw new F1FetchError(`HTTP ${res.status}`, {
+        status: res.status,
+        statusText: res.statusText,
+        url: res.url,
+        body: bodyText,
+      });
     }
+
+    const jsonData = await res.json();
+    
+    try {
+      await fetchCache.setCachedData(url, jsonData);
+    } catch (cacheErr) {
+      console.warn('F1 fetchJson: cache set failed', cacheErr);
+    }
+    
+    return jsonData;
   } catch (err) {
     if (timer) clearTimeout(timer);
     if (err.name === "AbortError") {
       throw new F1FetchError("Request timed out", { url, cause: err });
     }
-    throw new F1FetchError("Network error", { url, cause: err });
+    throw err;
   } finally {
     if (timer) clearTimeout(timer);
   }
-
-  if (!res.ok) {
-    let bodyText = null;
-    try {
-      bodyText = await res.text();
-    } catch (_) {
-      //
-    }
-    throw new F1FetchError(`HTTP ${res.status}`, {
-      status: res.status,
-      statusText: res.statusText,
-      url: res.url,
-      body: bodyText,
-    });
-  }
-
-  return res;
 }
 

@@ -7,8 +7,12 @@ export default {
    * @returns {Promise<Array<Object>>}
   */
   async getWinners(session = {}) {
-    let url;
+    // Guard: ensure we have a session object with a session_key.
+    if (!session || !session.session_key) {
+      throw new F1ReporterError("No session available to fetch winners.");
+    }
 
+    let url;
     const sessionKey = session.session_key;
 
     url = new URL('https://api.openf1.org/v1/session_result');
@@ -17,26 +21,24 @@ export default {
       "position<": "3",
     });
 
-    const resultsRes = await fetchJson(url.toString());
-    const results = await resultsRes.json();
+    // fetchJson now returns parsed JSON (not a Response)
+    const results = await fetchJson(url.toString());
 
     if (!Array.isArray(results) || results.length === 0) {
-      throw new F1ReporterError(
-        "No results found for the latest race.",
-      );
+      throw new F1ReporterError("No results found for the latest race.");
     }
 
-    results.sort((a, b) => a.position - b.position);
+    results.sort((a, b) => (Number(a.position) || Infinity) - (Number(b.position) || Infinity));
 
     url = new URL('https://api.openf1.org/v1/drivers');
     url.search = new URLSearchParams({
       session_key: sessionKey,
     });
 
-    const driversRes = await fetchJson(url.toString());
-    const drivers = await driversRes.json();
+    const drivers = await fetchJson(url.toString());
+    const driversArray = Array.isArray(drivers) ? drivers : [];
 
-    const driversIndexed = new Map(drivers.map((driver) => [driver.driver_number, driver]));
+    const driversIndexed = new Map(driversArray.map((driver) => [driver.driver_number, driver]));
 
     const podium = results.map((result) => {
       const driver = driversIndexed.get(result.driver_number);

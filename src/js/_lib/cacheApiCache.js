@@ -23,6 +23,8 @@ export default class CacheApiCache extends Cache {
    * Retrieve cached JSON for a URI.
    * Returns the parsed object/array,
    * or null if not present/invalid/expired.
+   * @param {string} uri 
+   * @returns {Promise<Object|Array|null>}
    */
   async getCachedData(uri) {
     const { cacheName, expiryTimeInMs } = this.options;
@@ -70,6 +72,9 @@ export default class CacheApiCache extends Cache {
 
   /**
    * Stores JSON-serializable object or array with key `uri`.
+   * @param {string} uri
+   * @param {Object|Array} data
+   * @returns {Promise<boolean>}
    */
   async setCachedData(uri, data) {
     const { cacheName } = this.options;
