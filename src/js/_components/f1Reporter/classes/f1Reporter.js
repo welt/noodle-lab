@@ -7,7 +7,8 @@ import formatTimestamp from "../../../_lib/formatTimestamp.js";
 import textUtils from "../../../_lib/textUtils.js";
 import fetchJson from "./fetchJson.js";
 
-const url = new URL("https://api.openf1.org/v1/sessions");
+const baseUrl = "https://api.openf1.org";
+const url = new URL(`${baseUrl}/v1/sessions`);
 
 const params = new URLSearchParams({
   year: "2025",
@@ -66,6 +67,14 @@ export default class F1Reporter extends Reporter {
     this.innerHTML += this.getDriver44Html(lewisInfo);
   }
 
+  async refresh() {
+    url.search = params;
+    this.src = url;
+    await this.deleteCachesByPrefix(baseUrl);
+    await this.render(await fetchJson(this.src.toString()));
+    console.log('F1Reporter: data refreshed and cache cleared...');
+  }
+  
   async connectedCallback() {
     url.search = params;
     this.src = url;
@@ -77,26 +86,26 @@ export default class F1Reporter extends Reporter {
    * @returns {Object|null}
    */
   #lastRaceSession(results) {
-  if (!Array.isArray(results) || results.length === 0) {
-    return null;
+    if (!Array.isArray(results) || results.length === 0) {
+      return null;
+    }
+
+    const raceSessions = results
+      .filter(session => session.session_type === "Race")
+      .sort((a, b) => {
+        const aTime = new Date(a.date_start).getTime();
+        const bTime = new Date(b.date_start).getTime();
+        return bTime - aTime;
+      });
+
+    return raceSessions.length > 0 ? raceSessions[0] : null;
   }
 
-  const raceSessions = results
-    .filter(session => session.session_type === "Race")
-    .sort((a, b) => {
-      const aTime = new Date(a.date_start).getTime();
-      const bTime = new Date(b.date_start).getTime();
-      return bTime - aTime;
-    });
-
-  return raceSessions.length > 0 ? raceSessions[0] : null;
-}
-
-/**
- * Fetch sessions from previous meetings for a completed race
- * @param {Object} currentData - Current failed data
- * @returns {Promise<Array>}
- */
+  /**
+   * Fetch sessions from previous meetings for a completed race
+   * @param {Object} currentData - Current failed data
+   * @returns {Promise<Array>}
+   */
   async #fetchPreviousMeetingSessions() {
     const prevParams = new URLSearchParams({
       year: "2025",
