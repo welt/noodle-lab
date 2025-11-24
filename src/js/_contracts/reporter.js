@@ -62,7 +62,7 @@ export default class Reporter extends HTMLElement {
       console.log(`Refreshing ${this.constructor.name}…`);
     } catch (error) {
       console.error(`Error in ${this.constructor.name} class:`, error);
-      throw error;
+      await this.render(null);
     }
   }
 

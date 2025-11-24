@@ -7,7 +7,6 @@ export default {
    * @returns {Promise<Array<Object>>}
   */
   async getWinners(session = {}) {
-    // Guard: ensure we have a session object with a session_key.
     if (!session || !session.session_key) {
       throw new F1ReporterError("No session available to fetch winners.");
     }
@@ -21,7 +20,6 @@ export default {
       "position<": "3",
     });
 
-    // fetchJson now returns parsed JSON (not a Response)
     const results = await fetchJson(url.toString());
 
     if (!Array.isArray(results) || results.length === 0) {
@@ -81,7 +79,7 @@ export default {
       .join('');
 
     return `<div class="f1-info podium">
-      <h3>Podium</h3>
+      <h3>Top three</h3>
       <ol class="podium__list">
         ${winners}
       </ol>

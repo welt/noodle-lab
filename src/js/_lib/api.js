@@ -22,6 +22,7 @@ const defaultOptions = {
 };
 
 const _privateFields = new WeakMap();
+const API_TIMEOUT_MS = 30000; // 30 seconds
 
 /**
  * Wrapper function with same signature as Fetch.
@@ -33,6 +34,7 @@ export default function Api(uri, options = {}) {
   if (!uri) {
     throw new ApiError("URI is required");
   }
+
   const { useCache, cacheStrategy, ...fetchOptions } = {
     ...defaultOptions,
     ...options,
@@ -51,16 +53,27 @@ Api.prototype.getData = async function () {
   const cachedData = useCache && (await cache.getCachedData(uri));
   if (cachedData) return cachedData;
 
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT_MS);
+
   let response, data;
+
   try {
-    response = await fetch(request);
+    response = await fetch(request, { signal: controller.signal });
   } catch (networkError) {
-    console.error("Network error:", networkError);
+    console.error("API network error:", networkError);
+    clearTimeout(timeoutId);
+    if (networkError.name === "AbortError") {
+      throw new ApiError("Request timed out after 30 seconds", { uri });
+    }
     throw new ApiError("Network error during API request", {
       cause: networkError,
       uri,
     });
   }
+
+  clearTimeout(timeoutId);
+
   if (!response.ok) {
     console.error("API response not OK:", response.status, response.statusText);
     throw new ApiError("Network response was not ok", {
@@ -69,20 +82,22 @@ Api.prototype.getData = async function () {
       uri,
     });
   }
+
   try {
     data = await response.json();
   } catch (jsonError) {
-    console.error("JSON parse error:", jsonError);
+    console.error("API JSON parse error:", jsonError);
     throw new ApiError("Failed to parse API response", {
       cause: jsonError,
       uri,
     });
   }
+
   if (useCache) {
     try {
       await cache.setCachedData(uri, data);
     } catch (cacheError) {
-      console.warn("Failed to cache API data:", cacheError);
+      console.warn("API failed to cache data:", cacheError);
     }
   }
   return data;
