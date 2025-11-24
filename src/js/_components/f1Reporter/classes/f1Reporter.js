@@ -17,48 +17,45 @@ const params = new URLSearchParams({
 
 const styles = ["reporter", "reporter--f1"];
 
-export default class F1Reporter extends Reporter {
-  constructor() {
-    super();
-    this.handleRefresh = this.#refresh.bind(this);
-  }
+const SESSION_TYPE = "Race";
 
+export default class F1Reporter extends Reporter {
   /**
    * @param {Array<JSON>} data - OpenF1 API response data.
    */
   async render(data) {
     try {
-      let oData = this.#lastRaceSession(Array.isArray(data) ? data : []);
+      this.classList.add(...styles);
 
-      if (!oData) {
-        const allSessions = await this.#fetchPreviousMeetingSessions();
-        oData = this.#lastRaceSession(allSessions);
+      // Try latest meeting first, then search all meetings
+      let session = this.#lastSession(Array.isArray(data) ? data : []);
+      
+      if (!session) {
+        const allSessions = await this.#fetchAllPreviousSessions();
+        session = this.#lastSession(allSessions);
       }
 
-      if (!oData) {
-        this.classList.add(...styles);
+      if (!session) {
         this.innerHTML = `
-        <h2>Latest F1 Meeting</h2>
-        <p>No session data available.</p>
+          <h2>Latest F1 Meeting</h2>
+          <p>No session data available.</p>
         `;
         return;
       }
-      
-      const podium = await this.getWinners(oData);
-      const lewisInfo = await this.findDriver44(oData);
 
-      this.classList.add(...styles);
+      const podium = await this.getWinners(session);
+      const lewisInfo = await this.findDriver44(session);
 
       this.innerHTML = `
         <div class="f1-reporter__meeting-details">
-          <h2>Latest F1 Race</h2>
+          <h2>Latest F1 Result: <span class="f1-reporter__session-type">${session.session_type}</span></h2>
           <dl>
             <dt>Meeting Name:</dt>
-            <dd>${oData.country_name}, ${oData.location}</dd>
+            <dd>${session.country_name}, ${session.location}</dd>
             <dt>Circuit Name:</dt>
-            <dd><em>${textUtils.toTitleCase(oData.circuit_short_name)}</em></dd>
+            <dd><em>${textUtils.toTitleCase(session.circuit_short_name)}</em></dd>
             <dt>Meeting Date:</dt>
-            <dd>${formatTimestamp(oData.date_start)}</dd>
+            <dd>${formatTimestamp(session.date_start)}</dd>
           </dl>
         </div>
       `;
@@ -66,66 +63,47 @@ export default class F1Reporter extends Reporter {
       this.innerHTML += this.getPodiumHtml(Array.isArray(podium) ? podium : []);
       this.innerHTML += this.getDriver44Html(lewisInfo);
     } catch (err) {
-      console.error('F1Reporter: render failed', err);
       this.classList.add(...styles);
       this.innerHTML = `
-      <h2>Latest F1 Meeting</h2>
-      <p>No session data.</p>
+        <h2>Latest F1 Meeting</h2>
+        <p>No session data.</p>
       `;
     }
   }
 
-  async #refresh() {
-    url.search = params;
-    this.src = url;
+  async emptyCaches() {
     try {
       await this.deleteCachesByPrefix(baseUrl);
-      const data = await fetchJson(this.src.toString());
-      await this.render(data);
-      console.log('F1Reporter: data refreshed and cache cleared...');
     } catch (err) {
-      console.error('F1Reporter: failed to refresh data', err);
+      console.error('F1Reporter: failed to empty caches', err);
     }
   }
-  
+
   async connectedCallback() {
     url.search = params;
     this.src = url;
-    this.addEventListener('refresh-f1', this.handleRefresh);
     try {
       await super.connectedCallback();
     } catch (err) {
       console.error('F1Reporter: failed to load initial data', err);
       this.classList.add(...styles);
       this.innerHTML = `
-      <h2>Latest F1 Meeting</h2>
+      <h2>Latest F1 Results</h2>
       <p>No session data.</p>
       `;
     }
   }
 
-  disconnectedCallback() {
-    this.removeEventListener('refresh-f1', this.handleRefresh);
-  }
-
-  /**
-   * @param {Array<Object>} sessions
-   * @returns {Object|null}
-   */
-  #lastRaceSession(results) {
+  #lastSession(results) {
     if (!Array.isArray(results) || results.length === 0) {
       return null;
     }
-
-    const raceSessions = results
-      .filter(session => session.session_type === "Race")
-      .sort((a, b) => {
-        const aTime = new Date(a.date_start).getTime();
-        const bTime = new Date(b.date_start).getTime();
-        return bTime - aTime;
-      });
-
-    return raceSessions.length > 0 ? raceSessions[0] : null;
+    
+    return results.reduce((latest, current) => {
+      const currentTime = new Date(current.date_start).getTime();
+      const latestTime = new Date(latest.date_start).getTime();
+      return currentTime > latestTime ? current : latest;
+    });
   }
 
   /**
@@ -133,16 +111,9 @@ export default class F1Reporter extends Reporter {
    * @param {Object} currentData - Current failed data
    * @returns {Promise<Array>}
    */
-  async #fetchPreviousMeetingSessions() {
-    const prevParams = new URLSearchParams({
-      year: "2025",
-    });
-
-    const prevUrl = new URL("https://api.openf1.org/v1/sessions");
-    prevUrl.search = prevParams;
-
+  async #fetchAllPreviousSessions() {
     try {
-      return await fetchJson(prevUrl.toString());
+      return await fetchJson("https://api.openf1.org/v1/sessions");
     } catch (err) {
       console.warn('F1Reporter: failed to fetch previous sessions', err);
       return [];
