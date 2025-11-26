@@ -1,5 +1,5 @@
 /**
- * @file matrixPrinter.worker.js
+ * @file worker-matrix-printer.js
  *
  * Types a message character-by-character and
  * posts message objects back to the main thread:
