@@ -85,12 +85,14 @@ export default class MatrixPrinter extends Printer {
 
     if (this.#currentPromise) {
       this.#runId++;
-      this.#currentCallback = null;
       this.#worker?.postMessage({ cmd: "stop" });
+      this.#cleanup();
     }
 
     this.#currentCallback = callback;
-    const runId = ++this.#runId;
+
+    this.#runId = this.#runId + 1;
+    const runId = this.#runId;
 
     return new Promise((resolve, reject) => {
       this.#currentResolve = resolve;
