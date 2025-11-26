@@ -4,6 +4,7 @@
  * Custom element <pixel-mangler> destroys image data.
  */
 import ImageProcessor from './imageProcessor';
+import { WorkerError } from './errors';
 
 const WORKER_PATH = "workers/worker.pixel-mangler.js";
 
