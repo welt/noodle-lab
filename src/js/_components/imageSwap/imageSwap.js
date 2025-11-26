@@ -13,10 +13,9 @@ export default class ImageSwap extends HTMLElement {
     this.attachShadow({ mode: "open" });
     this.shadowRoot.innerHTML = `
       <style>
-        :host { display: block; width: 100%; height: 100%; position: relative; }
+        :host { width: 100%; height: 100%; position: relative; }
         ::slotted(img) {
           aspect-ratio: auto 309 / 422;
-          display: block;
           height: 100%;
           object-fit: cover;
           width: 100%;
