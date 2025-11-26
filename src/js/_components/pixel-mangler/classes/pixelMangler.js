@@ -54,7 +54,7 @@ export default class PixelMangler extends HTMLElement {
       this.#imageProcessor.init();
       this.#imageProcessor.getAndSendData({ 
         ...PROCESSING_DEFAULTS, 
-        colorMode: theme 
+        colourMode: theme 
       });
     } catch (err) {
       if (err instanceof WorkerError) {
@@ -75,7 +75,7 @@ export default class PixelMangler extends HTMLElement {
     const theme = this.#findTheme(event);
     this.#imageProcessor.getAndSendData({ 
       ...PROCESSING_DEFAULTS, 
-      colorMode: theme 
+      colourMode: theme 
     });
   }
 
