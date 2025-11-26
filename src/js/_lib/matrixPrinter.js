@@ -45,17 +45,31 @@ export default class MatrixPrinter extends Printer {
   #handleWorkerMessage(event) {
     const { type, text, runId } = event.data;
 
+    // Ignore messages from old runs
     if (runId !== this.#runId) return;
 
-    if (type === "update" && typeof this.#currentCallback === "function") {
-      this.#currentCallback(text);
-    } else if (type === "done") {
-      this.#currentResolve?.(text);
-      this.#currentPromise = null;
-    } else if (type === "error") {
-      this.#currentReject?.(new MatrixPrinterError(event.data.message));
-      this.#currentPromise = null;
-    }
+    const handlers = {
+      update: () => {
+        this.#currentCallback?.(text);
+      },
+      done: () => {
+        this.#currentResolve?.(text);
+        this.#cleanup();
+      },
+      error: () => {
+        this.#currentReject?.(new MatrixPrinterError(event.data.message));
+        this.#cleanup();
+      }
+    };
+
+    handlers[type]?.();
+  }
+  
+  #cleanup() {
+    this.#currentPromise = null;
+    this.#currentCallback = null;
+    this.#currentResolve = null;
+    this.#currentReject = null;
   }
 
   #handleWorkerError(error) {
@@ -69,9 +83,9 @@ export default class MatrixPrinter extends Printer {
   async print(message, callback) {
     message = message == null ? "" : String(message);
 
-    // Cancel previous print if different message
     if (this.#currentPromise) {
       this.#runId++;
+      this.#currentCallback = null;
       this.#worker?.postMessage({ cmd: "stop" });
     }
 
