@@ -48,6 +48,7 @@ export default class F1Reporter extends Reporter {
 
       this.innerHTML = `
         <div class="f1-reporter__meeting-details">
+          <!-- data from OpenF1 https://openf1.org/ -->
           <h2>Latest F1 Result: <span class="f1-reporter__session-type">${session.session_type}</span></h2>
           <dl>
             <dt>Meeting Name:</dt>
