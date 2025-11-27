@@ -14,6 +14,12 @@ export default async function (eleventyConfig) {
   eleventyConfig.addShortcode("year", () => {
     return String(new Date().getFullYear());
   });
+  eleventyConfig.addShortcode("nonce", () => {
+    const nonce = Array.from(crypto.getRandomValues(new Uint8Array(16)))
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("");
+    return nonce;
+  });
 
   return {
     dir: {
