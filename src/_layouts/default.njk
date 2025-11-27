@@ -29,7 +29,7 @@
     {% else %}
       <script type="module" src="/js/bundle.esm.js" async></script>
     {% endif %}
-    <script>
+    <script nonce="{% nonce %}">
       document.documentElement.className = document.documentElement.className.replace('no-js','js');
       const currentMode = localStorage.getItem('mode');
       if (currentMode === 'dark') {
