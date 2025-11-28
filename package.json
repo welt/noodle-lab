@@ -1,6 +1,6 @@
 {
   "name": "noodle-lab",
-  "version": "2.2.59",
+  "version": "2.2.60",
   "description": "Noodling around project",
   "main": "eleventy.config.js",
   "type": "module",
