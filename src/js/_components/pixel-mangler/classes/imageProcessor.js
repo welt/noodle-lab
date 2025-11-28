@@ -4,12 +4,12 @@
  * @dependency worker.pixel-mangler.js
  * Handles image processing in web worker.
  */
-import { WorkerError } from './errors';
+import { WorkerError } from "./errors";
 
 /**
  * Constructor for ImageProcessor
- * @param {HTMLCanvasElement} canvas 
- * @param {HTMLImageElement} image 
+ * @param {HTMLCanvasElement} canvas
+ * @param {HTMLImageElement} image
  * @param {string} workerPath - relative path to worker script (from host)
  * @throws {WorkerError} if worker fails to load
  * @returns {ImageProcessor}
@@ -19,7 +19,7 @@ export default function ImageProcessor(canvas, image, workerPath) {
   this.image = image;
   this.imageData = null;
   try {
-    this.worker = new Worker(workerPath);
+    this.worker = new Worker(workerPath, { type: "module" });
   } catch (err) {
     throw new WorkerError(`Failed to load worker from ${workerPath}`);
   }
@@ -31,9 +31,9 @@ export default function ImageProcessor(canvas, image, workerPath) {
  */
 ImageProcessor.prototype.init = function () {
   if (!this.worker) {
-    throw new WorkerError('Worker not available');
+    throw new WorkerError("Worker not available");
   }
-  this.ctx = this.canvas.getContext('2d');
+  this.ctx = this.canvas.getContext("2d");
   this.worker.onmessage = this.handleWorkerMessage.bind(this);
 };
 
@@ -46,15 +46,25 @@ ImageProcessor.prototype.init = function () {
  * @param {string} options.colourMode - drak/light mode theme support
  * @throws {WorkerError} if worker is not available
  */
-ImageProcessor.prototype.getAndSendData = function({ delay = 10, batchSize = 100, colourMode = 'dark' } = {}) {
+ImageProcessor.prototype.getAndSendData = function ({
+  delay = 10,
+  batchSize = 100,
+  colourMode = "dark",
+  strategy = "gaussian",
+} = {}) {
   if (!this.worker) {
-    throw new WorkerError('Cannot send image data without worker');
+    throw new WorkerError("Cannot send image data without worker");
   }
 
   const image = this.image;
   const start = () => {
     this.ctx.drawImage(image, 0, 0, this.canvas.width, this.canvas.height);
-    this.imageData = this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
+    this.imageData = this.ctx.getImageData(
+      0,
+      0,
+      this.canvas.width,
+      this.canvas.height,
+    );
     this.ctx.putImageData(this.imageData, 0, 0);
 
     this.worker.postMessage({
@@ -63,6 +73,7 @@ ImageProcessor.prototype.getAndSendData = function({ delay = 10, batchSize = 100
       delay,
       batchSize,
       colourMode,
+      strategy,
     });
   };
 
@@ -75,12 +86,15 @@ ImageProcessor.prototype.getAndSendData = function({ delay = 10, batchSize = 100
  * @param {MessageEvent} event - message event from worker
  * @returns {void}
  */
-ImageProcessor.prototype.handleWorkerMessage = function(event) {
+ImageProcessor.prototype.handleWorkerMessage = function (event) {
   const msg = event.data;
   if (!msg) return;
 
   const handlers = {
-    start: (msg) => console.log(`📣 PixelMangler starting job: totalPixels = ${msg.totalPixels}, modifyCount = ${msg.modifyCount}, colourMode = ${msg.colourMode}`),
+    start: (msg) =>
+      console.log(
+        `📣 PixelMangler starting job: totalPixels = ${msg.totalPixels}, modifyCount = ${msg.modifyCount}, colourMode = ${msg.colourMode}, distribution = ${msg.distribution}`,
+      ),
     batch: (msg) => {
       if (!Array.isArray(msg.updates) || !this.imageData) return;
       const pixels = this.imageData.data;
@@ -92,8 +106,8 @@ ImageProcessor.prototype.handleWorkerMessage = function(event) {
       }
       this.ctx.putImageData(this.imageData, 0, 0);
     },
-    done: () => console.log('🐍 PixelMangler finished job'),
-    imageData: (msg) => this.ctx.putImageData(msg, 0, 0)
+    done: () => console.log("🐍 PixelMangler finished job"),
+    imageData: (msg) => this.ctx.putImageData(msg, 0, 0),
   };
 
   (handlers[msg.type] || handlers.imageData)(msg);

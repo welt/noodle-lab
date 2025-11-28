@@ -15,10 +15,10 @@ export default class BlogEditor extends HTMLElement {
       <form data-blog-editor-form>
         <fieldset>
           <legend>New Post</legend>
-          <label for="title">Title:</label>
+          <label>Title:
             <input type="text" name="title" required />
           </label>
-          <label for="content">Content:</label>
+          <label>Content:
             <textarea name="content" required></textarea>
           </label>
           <button type="submit" class="button">Save</button>
