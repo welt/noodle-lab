@@ -50,7 +50,7 @@ export default [
               module: true,
               toplevel: true,
               unsafe_arrows: true,
-              drop_console: false, // !! MessagePanel proxies console.log
+              drop_console: false,
               drop_debugger: false,
             },
             output: {
@@ -69,6 +69,41 @@ export default [
     },
     watch: {
       include: "./src/js/**",
+      clearScreen: false,
+    },
+  },
+  {
+    input: "./src/js/_components/audioLoops/index.js",
+    plugins: [
+      nodeResolve(),
+      devMode ? noop() : outputManifest(manifestOpts),
+      devMode
+        ? noop()
+        : terser({
+            ecma: 2020,
+            mangle: { toplevel: true },
+            compress: {
+              module: true,
+              toplevel: true,
+              unsafe_arrows: true,
+              drop_console: false,
+              drop_debugger: false,
+            },
+            output: {
+              quote_style: 1,
+              comments: false,
+            },
+          }),
+    ],
+    output: {
+      entryFileNames: devMode ? "audioLoops.js" : "audioLoops-[hash].esm.js",
+      generatedCode: "es2015",
+      format: "es",
+      dir: "./_site/js/audio-loops/",
+      sourcemap: devMode ? "inline" : false,
+    },
+    watch: {
+      include: "./src/js/_components/audioLoops/**",
       clearScreen: false,
     },
   },

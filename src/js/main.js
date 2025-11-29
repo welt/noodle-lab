@@ -35,9 +35,6 @@ function initialiseFeatures() {
 
   const infoFeature = new InfoFeature({ modal: infoDialog });
   infoFeature.init();
-
-  const audioLoopsApp = new AudioLoopsApp();
-  audioLoopsApp.init();
 }
 
 function init() {
