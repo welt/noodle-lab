@@ -1,6 +1,6 @@
 /**
  * @file audioLoopsCard.js
- * Audio Loops card custom element
+ * Audio Loops card custom element - fully self-contained
  */
 const styles = ["audio-loops-card", "card", "grid-item"];
 
@@ -8,14 +8,32 @@ export default class AudioLoopsCard extends HTMLElement {
   #controller;
   #handleDelegatedEvent = this.handleDelegatedEvent.bind(this);
 
-  connectedCallback() {
+  async connectedCallback() {
     this.classList.add(...styles);
-    this.render();
-    this.addEventListener("click", this.#handleDelegatedEvent);
+    try {
+      await this.#initializeController();
+      this.render();
+      this.addEventListener("click", this.#handleDelegatedEvent);
+    } catch (err) {
+      console.error("[AudioLoopsCard] Initialization failed:", err);
+      this.innerHTML = "<p>Error loading audio component</p>";
+    }
   }
 
   disconnectedCallback() {
     this.removeEventListener("click", this.#handleDelegatedEvent);
+  }
+
+  async #initializeController() {
+    const [{ default: AudioLoopsController }, { default: AudioSourceFetcher }] =
+      await Promise.all([
+        import("./audioLoopsController.js"),
+        import("./utils/AudioSourceFetcher.js"),
+      ]);
+
+    const audioContext = new AudioContext();
+    const fetcher = new AudioSourceFetcher(audioContext);
+    this.#controller = new AudioLoopsController(audioContext, fetcher);
   }
 
   callController(action, ...args) {
@@ -101,9 +119,5 @@ export default class AudioLoopsCard extends HTMLElement {
           data-source="tipi">Stop</button>
       </fieldset>
     `;
-  }
-
-  setController(controller) {
-    this.#controller = controller;
   }
 }
