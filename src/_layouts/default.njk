@@ -26,8 +26,10 @@
     {% include 'footer.njk' %}
     {% if (meta.env === 'production') %}
       <script type="module" src="/js/{{manifest['main.js']}}" async></script>
+      <script type="module" src="/js/audio-loops/{{manifest['audioLoops.js']}}" async></script>
     {% else %}
       <script type="module" src="/js/bundle.esm.js" async></script>
+      <script type="module" src="/js/audio-loops/audioLoops.js" async></script>
     {% endif %}
     <script nonce="{% nonce %}">
       document.documentElement.className = document.documentElement.className.replace('no-js','js');
