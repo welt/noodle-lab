@@ -26,7 +26,7 @@ console.log(">>>> Log enabled:", logEnabled);
 // Options for creating hash manifest of the outputs.
 const manifestOpts = {
   isMerge: true,
-  fileName: "../../src/_data/manifest.json",
+  fileName: path.resolve("./src/_data/manifest.json"),
 };
 
 const noop = () => {};
