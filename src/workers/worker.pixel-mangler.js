@@ -13,7 +13,7 @@ const defaultOptions = {
   batchSize: 200,
   colourMode: "dark",
   strategy: "gaussian",
-  manglePercentage: 35,
+  manglePercentage: 30,
 };
 
 const colourModes = {
