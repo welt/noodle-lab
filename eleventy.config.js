@@ -12,6 +12,10 @@ export default async function (eleventyConfig) {
     "./src/js/_components/audioLoops/**/*.js",
     "./_site/js/audio-loops/",
   );
+  eleventyConfig.addPassthroughCopy(
+    "./src/js/_components/digitalRain/**/*.js",
+    "./_site/js/digital-rain/",
+  );
   eleventyConfig.addWatchTarget("./src/js/");
   eleventyConfig.addWatchTarget("./src/scss/");
   eleventyConfig.addFilter("date", dateFilter);
