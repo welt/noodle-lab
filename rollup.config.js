@@ -99,7 +99,7 @@ export default [
       entryFileNames: devMode ? "audioLoops.js" : "audioLoops-[hash].esm.js",
       generatedCode: "es2015",
       format: "es",
-      dir: "./_site/js/audio-loops/",
+      dir: "./_site/js/audioLoops/",
       sourcemap: devMode ? "inline" : false,
     },
     watch: {
@@ -134,7 +134,7 @@ export default [
       entryFileNames: devMode ? "digitalRain.js" : "digitalRain-[hash].esm.js",
       generatedCode: "es2015",
       format: "es",
-      dir: "./_site/js/digital-rain/",
+      dir: "./_site/js/digitalRain/",
       sourcemap: devMode ? "inline" : false,
     },
     watch: {
