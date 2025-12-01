@@ -2,8 +2,6 @@
  * @file digitalRain.js
  * Matrix Rain effect
  */
-import Stage from "./classes/stage.js";
-import Renderer from "./classes/renderer.js";
 
 export default class DigitalRain extends HTMLElement {
   #canvas;
@@ -57,7 +55,29 @@ export default class DigitalRain extends HTMLElement {
     ];
   }
 
-  connectedCallback() {
+  async connectedCallback() {
+    try {
+      await this.#initializeRenderer();
+      if (this.hasAttribute("autoplay")) {
+        this.#renderer.start();
+        this.dispatchEvent(new Event("play"));
+      }
+      this.#renderer.setTheme(this.#getTheme());
+    } catch (err) {
+      console.error("[DigitalRain] Initialization failed:", err);
+    }
+  }
+
+  /**
+   * Dynamically import and initialize renderer dependencies
+   * @private
+   */
+  async #initializeRenderer() {
+    const [{ default: Stage }, { default: Renderer }] = await Promise.all([
+      import("./classes/stage.js"),
+      import("./classes/renderer.js"),
+    ]);
+
     if (!this.#stage) this.#stage = new Stage(this.#canvas);
     if (!this.#renderer) {
       const { fontSize, speed, charInterval, colSpacing } =
@@ -69,11 +89,6 @@ export default class DigitalRain extends HTMLElement {
         charInterval,
         columnSpacing: colSpacing,
       });
-      if (this.hasAttribute("autoplay")) {
-        this.#renderer.start();
-        this.dispatchEvent(new Event("play"));
-      }
-      this.#renderer.setTheme(this.#getTheme());
     }
   }
 
@@ -138,23 +153,19 @@ export default class DigitalRain extends HTMLElement {
     return !!(this.#renderer && this.#renderer.isRunning);
   }
 
-  #initRenderer() {
-    if (!this.#stage) this.#stage = new Stage(this.#canvas);
-    if (!this.#renderer) {
-      const { fontSize, speed, charInterval, colSpacing } =
-        this.#readAttributes();
-      this.#renderer = new Renderer({
-        stage: this.#stage,
-        fontSize,
-        speed,
-        charInterval,
-        columnSpacing: colSpacing,
-      });
-    }
+  async #initRenderer() {
+    await this.#initializeRenderer();
   }
 
   play() {
-    this.#initRenderer();
+    if (!this.#renderer) {
+      return this.#initRenderer()
+        .then(() => {
+          this.#renderer.start();
+          this.dispatchEvent(new Event("play"));
+        })
+        .catch((err) => Promise.reject(err));
+    }
     if (this.playing) return Promise.resolve();
     try {
       this.#renderer.start();

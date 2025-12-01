@@ -14,13 +14,15 @@
 
 .blog-strategy-switch select {
   -webkit-appearance: none;
-  border: 1px solid transparent;
+  background-color: $color-back;
+  border: 1px solid $color-fore;
   border-radius: 4px;
-  color: Whitesmoke;
-  font-size: 0.6rem;
+  color: $color-fore;
+  font-size: 0.7rem;
+  font-weight: 700;
   margin-left: 0.5em;
   padding-left: 0.5em;
   padding-right: 0.5em;
-  padding-top: 0.5em;
-  padding-bottom: 0.5em;
+  padding-top: 0.1em;
+  padding-bottom: 0.1em;
 }

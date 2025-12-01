@@ -107,4 +107,39 @@ export default [
       clearScreen: false,
     },
   },
+  {
+    input: "./src/js/_components/digitalRain/index.js",
+    plugins: [
+      nodeResolve(),
+      devMode ? noop() : outputManifest(manifestOpts),
+      devMode
+        ? noop()
+        : terser({
+            ecma: 2020,
+            mangle: { toplevel: true },
+            compress: {
+              module: true,
+              toplevel: true,
+              unsafe_arrows: true,
+              drop_console: false,
+              drop_debugger: false,
+            },
+            output: {
+              quote_style: 1,
+              comments: false,
+            },
+          }),
+    ],
+    output: {
+      entryFileNames: devMode ? "digitalRain.js" : "digitalRain-[hash].esm.js",
+      generatedCode: "es2015",
+      format: "es",
+      dir: "./_site/js/digital-rain/",
+      sourcemap: devMode ? "inline" : false,
+    },
+    watch: {
+      include: "./src/js/_components/digitalRain/**",
+      clearScreen: false,
+    },
+  },
 ];

@@ -49,8 +49,10 @@
       color: $color-darkmode-fore;
       border-color: $color-darkmode-fore;
     }
-    
+
     .blog-strategy-switch select {
+      background-color: $color-darkmode-back;
+      border: 1px solid $color-darkmode-fore;
       color: $color-darkmode-fore;
     }
   }
