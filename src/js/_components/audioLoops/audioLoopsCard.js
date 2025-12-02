@@ -8,16 +8,10 @@ export default class AudioLoopsCard extends HTMLElement {
   #controller;
   #handleDelegatedEvent = this.handleDelegatedEvent.bind(this);
 
-  async connectedCallback() {
+  connectedCallback() {
     this.classList.add(...styles);
-    try {
-      await this.#initializeController();
-      this.render();
-      this.addEventListener("click", this.#handleDelegatedEvent);
-    } catch (err) {
-      console.error("[AudioLoopsCard] Initialization failed:", err);
-      this.innerHTML = "<p>Error loading audio component</p>";
-    }
+    this.render();
+    this.addEventListener("click", this.#handleDelegatedEvent);
   }
 
   disconnectedCallback() {
@@ -25,6 +19,8 @@ export default class AudioLoopsCard extends HTMLElement {
   }
 
   async #initializeController() {
+    if (this.#controller) return;
+
     const [{ default: AudioLoopsController }, { default: AudioSourceFetcher }] =
       await Promise.all([
         import("./audioLoopsController.js"),
@@ -45,50 +41,56 @@ export default class AudioLoopsCard extends HTMLElement {
 
   async handleDelegatedEvent(event) {
     const button = event.target.closest("button[data-action]");
-    if (button) {
-      const action = button.getAttribute("data-action");
-      const source = button.getAttribute("data-source");
-      if (!action || !source) return;
+    if (!button) return;
 
-      const actions = {
-        togglePlay: async (btn, src) => {
-          const state = this.callController("getState", src);
-          let label, ariaPressed;
-
-          if (state?.isPlaying) {
-            this.callController("pause", src);
-            label = "Play";
-            ariaPressed = "false";
-          } else if (state?.pauseTime) {
-            this.callController("resume", src);
-            label = "Pause";
-            ariaPressed = "true";
-          } else {
-            await this.callController("play", src);
-            label = "Pause";
-            ariaPressed = "true";
-          }
-
-          btn.textContent = label;
-          btn.setAttribute("aria-pressed", ariaPressed);
-        },
-        stop: (btn, src) => {
-          this.callController("stop", src);
-          const toggleBtn = this.querySelector(
-            `button[data-action="togglePlay"][data-source="${src}"]`,
-          );
-          if (toggleBtn) {
-            toggleBtn.textContent = "Play";
-            toggleBtn.setAttribute("aria-pressed", "false");
-          }
-        },
-      };
-
-      if (actions[action]) {
-        await actions[action].call(this, button, source);
-      }
-      return;
+    try {
+      await this.#initializeController();
+    } catch (err) {
+      console.error("[AudioLoopsCard] Initialization failed:", err);
+      this.innerHTML = "<p>Error loading audio component</p>";
     }
+    const action = button.getAttribute("data-action");
+    const source = button.getAttribute("data-source");
+    if (!action || !source) return;
+
+    const actions = {
+      togglePlay: async (btn, src) => {
+        const state = this.callController("getState", src);
+        let label, ariaPressed;
+
+        if (state?.isPlaying) {
+          this.callController("pause", src);
+          label = "Play";
+          ariaPressed = "false";
+        } else if (state?.pauseTime) {
+          this.callController("resume", src);
+          label = "Pause";
+          ariaPressed = "true";
+        } else {
+          await this.callController("play", src);
+          label = "Pause";
+          ariaPressed = "true";
+        }
+
+        btn.textContent = label;
+        btn.setAttribute("aria-pressed", ariaPressed);
+      },
+      stop: (btn, src) => {
+        this.callController("stop", src);
+        const toggleBtn = this.querySelector(
+          `button[data-action="togglePlay"][data-source="${src}"]`,
+        );
+        if (toggleBtn) {
+          toggleBtn.textContent = "Play";
+          toggleBtn.setAttribute("aria-pressed", "false");
+        }
+      },
+    };
+
+    if (actions[action]) {
+      await actions[action].call(this, button, source);
+    }
+    return;
   }
 
   render() {
