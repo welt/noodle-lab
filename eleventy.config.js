@@ -8,10 +8,6 @@ export default async function (eleventyConfig) {
   eleventyConfig.addPassthroughCopy("./src/favicon.ico");
   eleventyConfig.addPassthroughCopy("./src/media/**/*.{mp3,mp4,webm,jpg,png}");
   eleventyConfig.addPassthroughCopy("./src/workers/**/*.js");
-  eleventyConfig.addPassthroughCopy(
-    "./src/js/_components/audioLoops/**/*.js",
-    "./_site/js/audio-loops/",
-  );
   eleventyConfig.addWatchTarget("./src/js/");
   eleventyConfig.addWatchTarget("./src/scss/");
   eleventyConfig.addFilter("date", dateFilter);
