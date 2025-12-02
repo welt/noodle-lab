@@ -182,7 +182,7 @@ export default [
       entryFileNames: devMode ? "digitalRain.js" : "digitalRain-[hash].esm.js",
       generatedCode: "es2015",
       format: "es",
-      dir: "./_site/js/digitalRain/workers",
+      dir: "./_site/js/digitalRain",
       sourcemap: devMode ? "inline" : false,
     },
     watch: {
