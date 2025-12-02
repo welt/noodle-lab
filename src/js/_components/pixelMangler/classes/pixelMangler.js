@@ -3,79 +3,77 @@
  * @dependency ImageProcessor
  * Custom element <pixel-mangler> destroys image data.
  */
-import ImageProcessor from './imageProcessor';
-import { WorkerError } from './errors';
+import ImageProcessor from "./imageProcessor";
+import { WorkerError } from "./errors";
 
-const WORKER_PATH = "workers/worker.pixel-mangler.js";
+const WORKER_PATH = "/js/pixelMangler/workers/worker.pixel-mangler.js";
 
 const PROCESSING_DEFAULTS = {
   delay: 200,
-  batchSize: 50
+  batchSize: 50,
 };
 
 export default class PixelMangler extends HTMLElement {
-  #boundHandler;
-  #imageProcessor;
+  #controller;
+  #boundHandler = this.#handleEvent.bind(this);
 
-  constructor() {
-    super();
-    this.attachShadow({ mode: "open" });
-    this.shadowRoot.innerHTML = `
-      <style>
-        :host { width: 100%; height: 100%; }
-        slot { display: none; }
-        canvas { aspect-ratio: auto 309 / 422; object-fit: cover; width: 100%; height: 100%; display: block; }
-      </style>
-      <slot></slot>
-      <canvas data-mangler-canvas width="400" height="533"></canvas>
-    `;
-    this.#boundHandler = this.#handleEvent.bind(this);
-  }
-
-  get canvas() {
-    return this.shadowRoot.querySelector('canvas');
-  }
-
-  connectedCallback() {
+  async connectedCallback() {
     const img = this.#findImage();
     if (!img) {
-      console.warn('PixelMangler: destructible image not found');
+      console.warn("PixelMangler: destructible image not found");
       return;
     }
-    if (!this.canvas) {
-      console.warn('PixelMangler: pixel mangling needs a canvas in shadow DOM');
-      return;
+    if (!this.querySelector("canvas")) {
+      this.attachShadow({ mode: "open" });
+      this.shadowRoot.innerHTML = `
+        <style>
+          :host { width: 100%; height: 100%; }
+          slot { display: none; }
+          canvas { aspect-ratio: auto 309 / 422; object-fit: cover; width: 100%; height: 100%; display: block; }
+        </style>
+        <slot></slot>
+        <canvas data-mangler-canvas width="400" height="533"></canvas>
+      `;
     }
-  
-    const theme = this.#getFallbackTheme();
 
     try {
-      this.#imageProcessor = new ImageProcessor(this.canvas, img, WORKER_PATH);
-      this.#imageProcessor.init();
-      this.#imageProcessor.getAndSendData({ 
-        ...PROCESSING_DEFAULTS, 
-        colourMode: theme 
-      });
+      await this.#initializeController(img);
+      document.addEventListener("toggle-button", this.#boundHandler);
     } catch (err) {
       if (err instanceof WorkerError) {
         console.warn(`PixelMangler: ${err.message}`);
       } else {
-        throw err;
+        console.error("PixelMangler: initialization failed", err);
       }
     }
-    document.addEventListener("toggle-button", this.#boundHandler);
+  }
+
+  async #initializeController(img) {
+    const canvas = this.shadowRoot?.querySelector("canvas");
+    if (!canvas) {
+      throw new WorkerError("pixel mangling needs a canvas in shadow DOM");
+    }
+
+    this.#controller = new ImageProcessor(canvas, img, WORKER_PATH);
+    this.#controller.init();
+
+    const theme = this.#getFallbackTheme();
+    this.#controller.getAndSendData({
+      ...PROCESSING_DEFAULTS,
+      colourMode: theme,
+    });
   }
 
   #findImage() {
-    return this.querySelector('img');
+    return this.querySelector("img");
   }
 
   #handleEvent(event) {
-    if (!event || event.type !== "toggle-button") return;
+    if (!event || event.type !== "toggle-button" || !this.#controller) return;
     const theme = this.#findTheme(event);
-    this.#imageProcessor.getAndSendData({ 
-      ...PROCESSING_DEFAULTS, 
-      colourMode: theme 
+    this.#controller.getAndSendData({
+      ...PROCESSING_DEFAULTS,
+      colourMode: theme,
     });
   }
 
@@ -98,7 +96,7 @@ export default class PixelMangler extends HTMLElement {
     try {
       document.removeEventListener("toggle-button", this.#boundHandler);
     } catch (err) {
-      console.warn('PixelMangler: cleanup failed', err);
+      console.warn("PixelMangler: cleanup failed", err);
     }
   }
 }

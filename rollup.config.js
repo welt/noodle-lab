@@ -53,6 +53,30 @@ const digitalRainManifestOpts = {
   },
 };
 
+const workerManifestOpts = {
+  isMerge: true,
+  fileName: path.resolve("./src/_data/manifest.json"),
+  generate: (keyValueDecorator, seed) => (chunks, bundle) => {
+    const manifest = { ...seed };
+    chunks.forEach(({ fileName }) => {
+      manifest["worker.pixel-mangler.js"] = fileName;
+    });
+    return manifest;
+  },
+};
+
+const pixelManglerManifestOpts = {
+  isMerge: true,
+  fileName: path.resolve("./src/_data/manifest.json"),
+  generate: (keyValueDecorator, seed) => (chunks, bundle) => {
+    const manifest = { ...seed };
+    chunks.forEach(({ fileName }) => {
+      manifest["pixelMangler.js"] = fileName;
+    });
+    return manifest;
+  },
+};
+
 const noop = () => {};
 
 export default [
@@ -158,11 +182,85 @@ export default [
       entryFileNames: devMode ? "digitalRain.js" : "digitalRain-[hash].esm.js",
       generatedCode: "es2015",
       format: "es",
-      dir: "./_site/js/digitalRain/",
+      dir: "./_site/js/digitalRain/workers",
       sourcemap: devMode ? "inline" : false,
     },
     watch: {
       include: "./src/js/_components/digitalRain/**",
+      clearScreen: false,
+    },
+  },
+  {
+    input: "./src/js/_components/pixelMangler/index.js",
+    plugins: [
+      nodeResolve(),
+      devMode ? noop() : outputManifest(pixelManglerManifestOpts),
+      devMode
+        ? noop()
+        : terser({
+            ecma: 2020,
+            mangle: { toplevel: true },
+            compress: {
+              module: true,
+              toplevel: true,
+              unsafe_arrows: true,
+              drop_console: false,
+              drop_debugger: false,
+            },
+            output: {
+              quote_style: 1,
+              comments: false,
+            },
+          }),
+    ],
+    output: {
+      entryFileNames: devMode
+        ? "pixelMangler.js"
+        : "pixelMangler-[hash].esm.js",
+      generatedCode: "es2015",
+      format: "es",
+      dir: "./_site/js/pixelMangler/",
+      sourcemap: devMode ? "inline" : false,
+    },
+    watch: {
+      include: "./src/js/_components/pixelMangler/**",
+      clearScreen: false,
+    },
+  },
+  {
+    input: "./src/js/_components/pixelMangler/workers/worker.pixel-mangler.js",
+    plugins: [
+      nodeResolve(),
+      devMode ? noop() : outputManifest(workerManifestOpts),
+      devMode
+        ? noop()
+        : terser({
+            ecma: 2020,
+            mangle: { toplevel: true },
+            compress: {
+              module: true,
+              toplevel: true,
+              unsafe_arrows: true,
+              drop_console: false,
+              drop_debugger: false,
+            },
+            output: {
+              quote_style: 1,
+              comments: false,
+            },
+          }),
+    ],
+    output: {
+      entryFileNames: devMode
+        ? "worker.pixel-mangler.js"
+        : "worker.pixel-mangler-[hash].js",
+      generatedCode: "es2015",
+      format: "es",
+      dir: "./_site/js/pixelMangler/workers/",
+      sourcemap: devMode ? "inline" : false,
+    },
+    watch: {
+      include: "./src/workers/**",
       clearScreen: false,
     },
   },
