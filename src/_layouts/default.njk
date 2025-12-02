@@ -33,10 +33,10 @@
       <script type="module" src="/js/digitalRain/{{manifest['digitalRain.js']}}" async></script>
       <script type="module" src="/js/pixelMangler/{{manifest['pixelMangler.js']}}" async></script>
     {% else %}
-      <script type="module" src="/js/bundle.esm.js" async></script>
-      <script type="module" src="/js/audioLoops/audioLoops.js" async></script>
-      <script type="module" src="/js/digitalRain/digitalRain.js" async></script>
-      <script type="module" src="/js/pixelMangler/pixelMangler.js" async></script>
+      <script type="module" src="/js/bundle.esm.js" defer></script>
+      <script type="module" src="/js/audioLoops/audioLoops.js" defer></script>
+      <script type="module" src="/js/digitalRain/digitalRain.js" defer></script>
+      <script type="module" src="/js/pixelMangler/pixelMangler.js" defer></script>
     {% endif %}
     <script nonce="{% nonce %}">
       document.documentElement.className = document.documentElement.className.replace('no-js','js');
