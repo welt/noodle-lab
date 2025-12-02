@@ -28,7 +28,7 @@ export default class AudioLoopsCard extends HTMLElement {
     const [{ default: AudioLoopsController }, { default: AudioSourceFetcher }] =
       await Promise.all([
         import("./audioLoopsController.js"),
-        import("./utils/AudioSourceFetcher.js"),
+        import("./utils/audioSourceFetcher.js"),
       ]);
 
     const audioContext = new AudioContext();

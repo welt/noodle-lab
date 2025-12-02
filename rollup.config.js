@@ -53,18 +53,6 @@ const digitalRainManifestOpts = {
   },
 };
 
-const workerManifestOpts = {
-  isMerge: true,
-  fileName: path.resolve("./src/_data/manifest.json"),
-  generate: (keyValueDecorator, seed) => (chunks, bundle) => {
-    const manifest = { ...seed };
-    chunks.forEach(({ fileName }) => {
-      manifest["worker.pixel-mangler.js"] = fileName;
-    });
-    return manifest;
-  },
-};
-
 const pixelManglerManifestOpts = {
   isMerge: true,
   fileName: path.resolve("./src/_data/manifest.json"),
@@ -72,18 +60,6 @@ const pixelManglerManifestOpts = {
     const manifest = { ...seed };
     chunks.forEach(({ fileName }) => {
       manifest["pixelMangler.js"] = fileName;
-    });
-    return manifest;
-  },
-};
-
-const workerDecoderManifestOpts = {
-  isMerge: true,
-  fileName: path.resolve("./src/_data/manifest.json"),
-  generate: (keyValueDecorator, seed) => (chunks, bundle) => {
-    const manifest = { ...seed };
-    chunks.forEach(({ fileName }) => {
-      manifest["worker.audio-decoder.js"] = fileName;
     });
     return manifest;
   },
@@ -243,7 +219,6 @@ export default [
     input: "./src/js/_components/pixelMangler/workers/worker.pixel-mangler.js",
     plugins: [
       nodeResolve(),
-      devMode ? noop() : outputManifest(workerManifestOpts),
       devMode
         ? noop()
         : terser({
@@ -263,9 +238,7 @@ export default [
           }),
     ],
     output: {
-      entryFileNames: devMode
-        ? "worker.pixel-mangler.js"
-        : "worker.pixel-mangler-[hash].js",
+      entryFileNames: "worker.pixel-mangler.js",
       generatedCode: "es2015",
       format: "es",
       dir: "./_site/js/pixelMangler/workers/",
@@ -273,43 +246,6 @@ export default [
     },
     watch: {
       include: "./src/workers/**",
-      clearScreen: false,
-    },
-  },
-  {
-    input: "./src/js/_components/audioLoops/workers/worker.audio-decoder.js",
-    plugins: [
-      nodeResolve(),
-      devMode ? noop() : outputManifest(workerDecoderManifestOpts),
-      devMode
-        ? noop()
-        : terser({
-            ecma: 2020,
-            mangle: { toplevel: true },
-            compress: {
-              module: true,
-              toplevel: true,
-              unsafe_arrows: true,
-              drop_console: false,
-              drop_debugger: false,
-            },
-            output: {
-              quote_style: 1,
-              comments: false,
-            },
-          }),
-    ],
-    output: {
-      entryFileNames: devMode
-        ? "worker.audio-decoder.js"
-        : "worker.audio-decoder-[hash].js",
-      generatedCode: "es2015",
-      format: "es",
-      dir: "./_site/js/audioLoops/workers/",
-      sourcemap: devMode ? "inline" : false,
-    },
-    watch: {
-      include: "./src/js/_components/audioLoops/workers/**",
       clearScreen: false,
     },
   },
