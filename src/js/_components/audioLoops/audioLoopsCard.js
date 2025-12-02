@@ -48,7 +48,9 @@ export default class AudioLoopsCard extends HTMLElement {
     } catch (err) {
       console.error("[AudioLoopsCard] Initialization failed:", err);
       this.innerHTML = "<p>Error loading audio component</p>";
+      return;
     }
+
     const action = button.getAttribute("data-action");
     const source = button.getAttribute("data-source");
     if (!action || !source) return;
