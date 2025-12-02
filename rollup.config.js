@@ -77,6 +77,18 @@ const pixelManglerManifestOpts = {
   },
 };
 
+const workerDecoderManifestOpts = {
+  isMerge: true,
+  fileName: path.resolve("./src/_data/manifest.json"),
+  generate: (keyValueDecorator, seed) => (chunks, bundle) => {
+    const manifest = { ...seed };
+    chunks.forEach(({ fileName }) => {
+      manifest["worker.audio-decoder.js"] = fileName;
+    });
+    return manifest;
+  },
+};
+
 const noop = () => {};
 
 export default [
@@ -261,6 +273,43 @@ export default [
     },
     watch: {
       include: "./src/workers/**",
+      clearScreen: false,
+    },
+  },
+  {
+    input: "./src/js/_components/audioLoops/workers/worker.audio-decoder.js",
+    plugins: [
+      nodeResolve(),
+      devMode ? noop() : outputManifest(workerDecoderManifestOpts),
+      devMode
+        ? noop()
+        : terser({
+            ecma: 2020,
+            mangle: { toplevel: true },
+            compress: {
+              module: true,
+              toplevel: true,
+              unsafe_arrows: true,
+              drop_console: false,
+              drop_debugger: false,
+            },
+            output: {
+              quote_style: 1,
+              comments: false,
+            },
+          }),
+    ],
+    output: {
+      entryFileNames: devMode
+        ? "worker.audio-decoder.js"
+        : "worker.audio-decoder-[hash].js",
+      generatedCode: "es2015",
+      format: "es",
+      dir: "./_site/js/audioLoops/workers/",
+      sourcemap: devMode ? "inline" : false,
+    },
+    watch: {
+      include: "./src/js/_components/audioLoops/workers/**",
       clearScreen: false,
     },
   },
