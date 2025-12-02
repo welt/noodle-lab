@@ -13,6 +13,36 @@ export default class AudioSourceFetcher extends Fetcher {
     super();
     this.audioContext = audioContext;
     this.cache = new Map();
+    this.#initWorker();
+  }
+
+  #initWorker() {
+    this.worker = new Worker(
+      new URL(
+        "/js/audioLoops/workers/worker.audio-decoder.js",
+        import.meta.url,
+      ),
+      { type: "module" },
+    );
+    this.messageId = 0;
+    this.pendingRequests = new Map();
+
+    this.worker.onmessage = (event) => {
+      const { id, success, error, audioBuffer } = event.data;
+      const request = this.pendingRequests.get(id);
+      if (!request) return;
+
+      if (success) {
+        request.resolve(audioBuffer);
+      } else {
+        request.reject(new AudioLoopsFetcherError(error));
+      }
+      this.pendingRequests.delete(id);
+    };
+
+    this.worker.onerror = (error) => {
+      console.error("Worker error:", error);
+    };
   }
 
   /**
@@ -35,7 +65,15 @@ export default class AudioSourceFetcher extends Fetcher {
         );
       }
       const arrayBuffer = await response.arrayBuffer();
-      const audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer);
+
+      const id = this.messageId++;
+      const audioBuffer = await new Promise((resolve, reject) => {
+        this.pendingRequests.set(id, { resolve, reject });
+        this.worker.postMessage({ id, type: "decode", arrayBuffer }, [
+          arrayBuffer,
+        ]);
+      });
+
       this.cache.set(url, audioBuffer);
       return audioBuffer;
     } catch (error) {
