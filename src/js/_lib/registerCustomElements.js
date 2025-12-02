@@ -24,9 +24,8 @@ import ErrorDialog from "../_components/ErrorDialog.js";
 import InfoDialog from "../_components/infoDialog.js";
 import GitHubLinkButton from "../_components/gitHubLinkButton.js";
 import RssFeedLinkButton from "../_components/rssFeedLinkButton.js";
-import DigitalRain from "../_components/digitalRain";
 import ImageSwap from "../_components/imageSwap";
-import PixelMangler from '../_components/pixel-mangler';
+import PixelMangler from "../_components/pixel-mangler";
 
 export function registerCustomElements() {
   // Dialogs
@@ -81,10 +80,8 @@ export function registerCustomElements() {
     customElements.define("rss-feed-link-button", RssFeedLinkButton);
   if (!customElements.get("loading-spinner"))
     customElements.define("loading-spinner", LoadingSpinner);
-  if (!customElements.get("digital-rain"))
-    customElements.define("digital-rain", DigitalRain);
   if (!customElements.get("image-swap"))
     customElements.define("image-swap", ImageSwap);
   if (!customElements.get("pixel-mangler"))
-    customElements.define("pixel-mangler", PixelMangler)
+    customElements.define("pixel-mangler", PixelMangler);
 }

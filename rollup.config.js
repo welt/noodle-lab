@@ -29,6 +29,30 @@ const manifestOpts = {
   fileName: path.resolve("./src/_data/manifest.json"),
 };
 
+const audioLoopsManifestOpts = {
+  isMerge: true,
+  fileName: path.resolve("./src/_data/manifest.json"),
+  generate: (keyValueDecorator, seed) => (chunks, bundle) => {
+    const manifest = { ...seed };
+    chunks.forEach(({ fileName }) => {
+      manifest["audioLoops.js"] = fileName;
+    });
+    return manifest;
+  },
+};
+
+const digitalRainManifestOpts = {
+  isMerge: true,
+  fileName: path.resolve("./src/_data/manifest.json"),
+  generate: (keyValueDecorator, seed) => (chunks, bundle) => {
+    const manifest = { ...seed };
+    chunks.forEach(({ fileName }) => {
+      manifest["digitalRain.js"] = fileName;
+    });
+    return manifest;
+  },
+};
+
 const noop = () => {};
 
 export default [
@@ -76,7 +100,7 @@ export default [
     input: "./src/js/_components/audioLoops/index.js",
     plugins: [
       nodeResolve(),
-      devMode ? noop() : outputManifest(manifestOpts),
+      devMode ? noop() : outputManifest(audioLoopsManifestOpts),
       devMode
         ? noop()
         : terser({
@@ -111,7 +135,7 @@ export default [
     input: "./src/js/_components/digitalRain/index.js",
     plugins: [
       nodeResolve(),
-      devMode ? noop() : outputManifest(manifestOpts),
+      devMode ? noop() : outputManifest(digitalRainManifestOpts),
       devMode
         ? noop()
         : terser({
