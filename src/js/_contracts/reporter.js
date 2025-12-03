@@ -67,8 +67,13 @@ export default class Reporter extends HTMLElement {
   }
 
   async connectedCallback() {
-    await this.refresh();
     document.addEventListener(eventName, this.refresh);
+
+    if ("requestIdleCallback" in window) {
+      requestIdleCallback(() => this.refresh(), { timeout: 2000 });
+    } else {
+      setTimeout(() => this.refresh(), 1000);
+    }
   }
 
   disconnectedCallback() {
