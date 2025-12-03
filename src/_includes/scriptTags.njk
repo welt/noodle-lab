@@ -1,0 +1,9 @@
+{% if (meta.env === 'production') %}
+  {% for script in scripts %}
+    <script type="module" src="{{script.path}}{{manifest[script.prod]}}" defer></script>
+  {% endfor %}
+{% else %}
+  {% for script in scripts %}
+    <script type="module" src="{{script.path}}{{script.dev}}" defer></script>
+  {% endfor %}
+{% endif %}

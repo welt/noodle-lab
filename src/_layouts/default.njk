@@ -27,42 +27,8 @@
       {{ content | safe }}
     </main>
     {% include 'footer.njk' %}
+    {% include 'scriptTags.njk' %}
     <script nonce="{% nonce %}">
-      requestAnimationFrame(() => {
-        {% if (meta.env === 'production') %}
-        const modules = [
-          '/js/{{manifest['main.js']}}',
-          '/js/audioLoops/{{manifest['audioLoops.js']}}',
-          '/js/digitalRain/{{manifest['digitalRain.js']}}',
-          '/js/pixelMangler/{{manifest['pixelMangler.js']}}'
-        ];
-        {% else %}
-        const modules = [
-          '/js/bundle.esm.js',
-          '/js/audioLoops/audioLoops.js',
-          '/js/digitalRain/digitalRain.js',
-          '/js/pixelMangler/pixelMangler.js',
-        ];
-        {% endif %}
-        async function loadComponents() {
-          const results = await Promise.allSettled(
-            modules.map((module) => import(module)),
-          );
-          results.forEach((res, i) => {
-            if (res.status === 'rejected') {
-              console.warn('Failed to load module', modules[i], res.reason);
-            }
-          });
-        }
-        const runLoader = () => {
-          if ('requestIdleCallback' in window) {
-            requestIdleCallback(loadComponents, { timeout: 2000 });
-          } else {
-            setTimeout(loadComponents, 200);
-          }
-        };
-        runLoader();
-      });
       document.documentElement.className = document.documentElement.className.replace('no-js','js');
       const currentMode = localStorage.getItem('mode');
       if (currentMode === 'dark') {
