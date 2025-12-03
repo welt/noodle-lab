@@ -1,3 +1,4 @@
+import fs from "fs";
 import dateFilter from "./scripts/dateFilter.js";
 import dotenv from "dotenv";
 dotenv.config();
@@ -20,6 +21,7 @@ export default async function (eleventyConfig) {
       .join("");
     return nonce;
   });
+  eleventyConfig.addFilter("fsRead", (path) => fs.readFileSync(path, "utf8"));
 
   return {
     dir: {

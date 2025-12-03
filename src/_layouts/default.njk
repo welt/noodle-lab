@@ -11,9 +11,10 @@
     {% endif %}
     <link rel="canonical" href="{{meta.siteUrl}}{{page.url}}">
     <link rel="me" href="https://indieweb.social/@welt">
-        {% for url, type in preloads %}
+    {% for url, type in preloads %}
       <link rel="{{type}}" href="{{url}}">
     {% endfor %}
+    <style>{{ 'src/scss/critical.css' | fsRead }}</style>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="color-scheme" content="dark light">
@@ -27,18 +28,42 @@
       {{ content | safe }}
     </main>
     {% include 'footer.njk' %}
-    {% if (meta.env === 'production') %}
-      <script type="module" src="/js/{{manifest['main.js']}}" async></script>
-      <script type="module" src="/js/audioLoops/{{manifest['audioLoops.js']}}" async></script>
-      <script type="module" src="/js/digitalRain/{{manifest['digitalRain.js']}}" async></script>
-      <script type="module" src="/js/pixelMangler/{{manifest['pixelMangler.js']}}" async></script>
-    {% else %}
-      <script type="module" src="/js/bundle.esm.js" defer></script>
-      <script type="module" src="/js/audioLoops/audioLoops.js" defer></script>
-      <script type="module" src="/js/digitalRain/digitalRain.js" defer></script>
-      <script type="module" src="/js/pixelMangler/pixelMangler.js" defer></script>
-    {% endif %}
     <script nonce="{% nonce %}">
+      requestAnimationFrame(() => {
+        {% if (meta.env === 'production') %}
+        const modules = [
+          '/js/{{manifest['main.js']}}',
+          '/js/audioLoops/{{manifest['audioLoops.js']}}',
+          '/js/digitalRain/{{manifest['digitalRain.js']}}',
+          '/js/pixelMangler/{{manifest['pixelMangler.js']}}'
+        ];
+        {% else %}
+        const modules = [
+          '/js/bundle.esm.js',
+          '/js/audioLoops/audioLoops.js',
+          '/js/digitalRain/digitalRain.js',
+          '/js/pixelMangler/pixelMangler.js',
+        ];
+        {% endif %}
+        async function loadComponents() {
+          const results = await Promise.allSettled(
+            modules.map((module) => import(module)),
+          );
+          results.forEach((res, i) => {
+            if (res.status === 'rejected') {
+              console.warn('Failed to load module', modules[i], res.reason);
+            }
+          });
+        }
+        const runLoader = () => {
+          if ('requestIdleCallback' in window) {
+            requestIdleCallback(loadComponents, { timeout: 2000 });
+          } else {
+            setTimeout(loadComponents, 200);
+          }
+        };
+        runLoader();
+      });
       document.documentElement.className = document.documentElement.className.replace('no-js','js');
       const currentMode = localStorage.getItem('mode');
       if (currentMode === 'dark') {
