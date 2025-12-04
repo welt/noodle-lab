@@ -9,8 +9,15 @@ import CookieCache from "./cookieCache";
 import LocalCache from "./localCache";
 import MemoryCache from "./memoryCache"; // !! This cache can not persist on page refresh.
 import SessionCache from "./sessionCache";
-import { ApiError } from "./errors.js";
 /* eslint-enable no-unused-vars */
+
+class ApiError extends Error {
+  constructor(message = "API error", details = {}) {
+    super(message);
+    this.name = "ApiError";
+    this.details = details;
+  }
+}
 
 const defaultOptions = {
   method: "GET",

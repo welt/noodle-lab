@@ -21,6 +21,7 @@ export default class MatrixPrinter extends Printer {
   #currentPromise;
   #currentResolve;
   #currentReject;
+  #currentCallback;
 
   constructor(delay = TIME_BETWEEN_CHARS_MS) {
     super();
@@ -59,12 +60,12 @@ export default class MatrixPrinter extends Printer {
       error: () => {
         this.#currentReject?.(new MatrixPrinterError(event.data.message));
         this.#cleanup();
-      }
+      },
     };
 
     handlers[type]?.();
   }
-  
+
   #cleanup() {
     this.#currentPromise = null;
     this.#currentCallback = null;
@@ -78,21 +79,18 @@ export default class MatrixPrinter extends Printer {
     this.#currentPromise = null;
   }
 
-  #currentCallback;
-
   async print(message, callback) {
     message = message == null ? "" : String(message);
 
+    this.#runId = this.#runId + 1;
+    const runId = this.#runId;
+
     if (this.#currentPromise) {
-      this.#runId++;
       this.#worker?.postMessage({ cmd: "stop" });
       this.#cleanup();
     }
 
     this.#currentCallback = callback;
-
-    this.#runId = this.#runId + 1;
-    const runId = this.#runId;
 
     return new Promise((resolve, reject) => {
       this.#currentResolve = resolve;
@@ -110,7 +108,7 @@ export default class MatrixPrinter extends Printer {
 
   cancel() {
     if (this.#currentPromise) {
-      this.#runId++;
+      this.#runId = this.#runId + 1;
       this.#worker?.postMessage({ cmd: "stop" });
       this.#currentReject?.(new MatrixPrinterError("Print cancelled"));
       this.#currentPromise = null;
