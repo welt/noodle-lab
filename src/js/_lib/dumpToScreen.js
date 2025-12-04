@@ -8,6 +8,7 @@ import MatrixPrinter from "./matrixPrinter";
 import Message from "./message";
 
 const MAX_MESSAGE_QUEUE = 4;
+const TIME_BETWEEN_CHARS_MS = 50;
 
 const shouldIgnoreError = (e) =>
   e instanceof Error &&
@@ -22,13 +23,15 @@ class LoggerError extends Error {
 }
 
 export default class DumpToScreen extends Logger {
+  #animationRunning = false;
+
   constructor(elementId, queueLength = MAX_MESSAGE_QUEUE, printer = null) {
     super();
     this.elementId = elementId;
     this.messages = new Fifo(queueLength);
     this.element = document.getElementById(this.elementId);
-    this.printer = printer || new MatrixPrinter(20);
-    this.#ensureElement(); // ?element logic is dodgy - refactor
+    this.printer = printer || new MatrixPrinter(TIME_BETWEEN_CHARS_MS);
+    this.#ensureElement();
   }
 
   setPrinter(printer) {
@@ -60,12 +63,19 @@ export default class DumpToScreen extends Logger {
     this.#ensureElement();
     const message = Message.from(str, true);
     this.#addToQueue(message);
-    void this.#startAnimation(message);
+    return this.#startAnimation(message);
   }
 
   async #startAnimation(message) {
     if (message.animationStarted) return;
+
+    while (this.#animationRunning) {
+      await new Promise((resolve) => setTimeout(resolve, 10));
+    }
+
+    this.#animationRunning = true;
     message.animationStarted = true;
+
     try {
       await this.printer.print(message.messageText, (accumulated) => {
         message.currentDisplay = accumulated;
@@ -77,6 +87,8 @@ export default class DumpToScreen extends Logger {
     } catch (e) {
       if (shouldIgnoreError(e)) return;
       console.error(e);
+    } finally {
+      this.#animationRunning = false;
     }
   }
 

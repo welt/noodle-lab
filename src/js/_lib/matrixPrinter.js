@@ -46,7 +46,6 @@ export default class MatrixPrinter extends Printer {
   #handleWorkerMessage(event) {
     const { type, text, runId } = event.data;
 
-    // Ignore messages from old runs
     if (runId !== this.#runId) return;
 
     const handlers = {
@@ -87,8 +86,9 @@ export default class MatrixPrinter extends Printer {
 
     if (this.#currentPromise) {
       this.#worker?.postMessage({ cmd: "stop" });
-      this.#cleanup();
     }
+
+    this.#cleanup();
 
     this.#currentCallback = callback;
 
