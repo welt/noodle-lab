@@ -71,7 +71,6 @@ async function runPrint(rawMessage, rawDelay, runId) {
     safePost({ type: "update", text: acc, runId });
     await new Promise((res) => setTimeout(res, delay));
     if (currentRunId !== runId) {
-      safePost({ type: "update", text: "", runId });
       return;
     }
   }
