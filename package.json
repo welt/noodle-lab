@@ -51,7 +51,6 @@
     "cssnano": "^7.1.2",
     "postcss-advanced-variables": "^5.0.0",
     "postcss-assets": "^6.0.0",
-    "postcss-color-function": "^4.1.0",
     "postcss-hash": "^3.0.0",
     "postcss-map-get": "^0.3.0",
     "postcss-nested": "^7.0.2",

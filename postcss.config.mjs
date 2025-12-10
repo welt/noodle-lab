@@ -7,7 +7,6 @@
 import { readFile } from "fs/promises";
 import path from "path";
 import postcssAdvancedVariables from "postcss-advanced-variables";
-import postcssColorFunction from "postcss-color-function";
 import postcssMpaGet from "postcss-map-get";
 import postcssNested from "postcss-nested";
 import postcssSortMediaQueries from "postcss-sort-media-queries";
@@ -31,7 +30,6 @@ export default function (cfg) {
     parser: scss ? "postcss-scss" : false,
     plugins: [
       postcssAdvancedVariables({ variables }),
-      postcssColorFunction({ preserveCustomProps: true }),
       postcssMpaGet(),
       postcssNested(),
       postcssSortMediaQueries(),
