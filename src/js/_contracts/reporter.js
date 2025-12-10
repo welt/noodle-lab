@@ -11,24 +11,27 @@ import Api from "../_lib/api.js";
 const eventName = "refresh";
 
 const warning = (_strings, name) =>
-  `"src" attribute was not found on <${name} /> elemnent.\nUsing default…`;
+  `"src" attribute was not found on <${name} /> element.\nUsing default…`;
 
 /**
  * Contract for Reporter classes.
  * @extends HTMLElement
  */
 export default class Reporter extends HTMLElement {
+  #src;
+  #isConnected = false;
+
   static get observedAttributes() {
     return ["src"];
   }
 
   set src(value) {
-    this._src = value;
+    this.#src = value;
     this.setAttribute("src", value);
   }
 
   get src() {
-    return this._src;
+    return this.#src;
   }
 
   constructor() {
@@ -36,11 +39,9 @@ export default class Reporter extends HTMLElement {
     if (new.target === Reporter) {
       throw new Error("Cannot instantiate abstract Reporter class directly.");
     }
-    this._src = this.getAttribute("src");
-    if (!this._src) console.warn(warning`${this.localName}`);
+    this.#src = this.getAttribute("src");
+    if (!this.#src) console.warn(warning`${this.localName}`);
     this.refresh = this.refresh.bind(this);
-
-    this._isConnected = false;
   }
 
   renderSkeleton() {
@@ -65,18 +66,18 @@ export default class Reporter extends HTMLElement {
       const api = new Api(this.src);
       const data = await api.getData();
 
-      if (!this._isConnected) return;
+      if (!this.#isConnected) return;
 
       this.render(data);
       console.log(`Refreshing ${this.constructor.name}…`);
     } catch (error) {
       console.error(`Error in ${this.constructor.name} class:`, error);
-      if (this._isConnected) await this.render(null);
+      if (this.#isConnected) await this.render(null);
     }
   }
 
   async connectedCallback() {
-    this._isConnected = true;
+    this.#isConnected = true;
     document.addEventListener(eventName, this.refresh);
 
     try {
@@ -93,7 +94,7 @@ export default class Reporter extends HTMLElement {
   }
 
   disconnectedCallback() {
-    this._isConnected = false;
+    this.#isConnected = false;
     document.removeEventListener(eventName, this.refresh);
   }
 }
