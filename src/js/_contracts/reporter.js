@@ -39,6 +39,12 @@ export default class Reporter extends HTMLElement {
     this._src = this.getAttribute("src");
     if (!this._src) console.warn(warning`${this.localName}`);
     this.refresh = this.refresh.bind(this);
+
+    this._isConnected = false;
+  }
+
+  renderSkeleton() {
+    // Default: do nothing. Subclasses should override.
   }
 
   /**
@@ -58,16 +64,26 @@ export default class Reporter extends HTMLElement {
     try {
       const api = new Api(this.src);
       const data = await api.getData();
+
+      if (!this._isConnected) return;
+
       this.render(data);
       console.log(`Refreshing ${this.constructor.name}…`);
     } catch (error) {
       console.error(`Error in ${this.constructor.name} class:`, error);
-      await this.render(null);
+      if (this._isConnected) await this.render(null);
     }
   }
 
   async connectedCallback() {
+    this._isConnected = true;
     document.addEventListener(eventName, this.refresh);
+
+    try {
+      this.renderSkeleton();
+    } catch (e) {
+      console.error("Error rendering skeleton:", e);
+    }
 
     if ("requestIdleCallback" in window) {
       requestIdleCallback(() => this.refresh(), { timeout: 2000 });
@@ -77,6 +93,7 @@ export default class Reporter extends HTMLElement {
   }
 
   disconnectedCallback() {
+    this._isConnected = false;
     document.removeEventListener(eventName, this.refresh);
   }
 }

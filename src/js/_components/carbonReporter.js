@@ -15,20 +15,33 @@ export default class CarbonReporter extends Reporter {
     this.src = src;
   }
 
+  renderSkeleton() {
+    this.classList.add(...styles, "is-loading");
+    this.innerHTML = `
+      <h2>UK Carbon Intensity</h2>
+      <div class="carbon-content">Loading…</div>
+    `;
+  }
+
   /**
    * @param {Object} data - Carbon Intensity API response data.
+   * Efficiently patch only the relevant DOM node.
    */
   render(data) {
-    const [values] = Object.values(data);
-    let htmlContent = "<h2>UK Carbon Intensity</h2>";
+    this.classList.add(...styles);
+    this.classList.remove("is-loading");
 
-    if (values.length > 0) {
-      const firstObject = values[0];
-      htmlContent += this.generateHtml(firstObject);
+    const container = this.querySelector(".carbon-content");
+    if (!container) return;
+
+    const [values] = Object.values(data || {});
+    if (data === null || !values || values.length === 0) {
+      container.textContent = "Unavailable";
+      return;
     }
 
-    this.classList.add(...styles);
-    this.innerHTML = htmlContent;
+    const firstObject = values[0];
+    container.innerHTML = this.generateHtml(firstObject);
   }
 
   /**

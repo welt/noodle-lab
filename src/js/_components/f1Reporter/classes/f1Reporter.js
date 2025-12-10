@@ -3,9 +3,13 @@
  * Gets latest meeting details from OpenF1 API.
  */
 import Reporter from "../../../_contracts/reporter.js";
-import formatTimestamp from "../../../_lib/formatTimestamp.js";
-import textUtils from "../../../_lib/textUtils.js";
+import deleteCachesByPrefix from "../../../_lib/deleteCachesByPrefix.js";
+import F1WhereIsLewis from "./f1WhereIsLewis.js";
+import F1Winners from "./f1Winners.js";
 import fetchJson from "./fetchJson.js";
+import formatTimestamp from "../../../_lib/formatTimestamp.js";
+import mixinApply from "../../../_lib/mixinApply.js";
+import textUtils from "../../../_lib/textUtils.js";
 
 const baseUrl = "https://api.openf1.org";
 const url = new URL(`${baseUrl}/v1/sessions`);
@@ -17,17 +21,24 @@ const params = new URLSearchParams({
 
 const styles = ["reporter", "reporter--f1"];
 
-const SESSION_TYPE = "Race";
+class F1Reporter extends Reporter {
+  constructor() {
+    super();
+  }
 
-export default class F1Reporter extends Reporter {
-  /**
-   * @param {Array<JSON>} data - OpenF1 API response data.
-   */
+  renderSkeleton() {
+    this.classList.add(...styles, "is-loading");
+    this.innerHTML = `
+      <h2>Latest F1 Meeting</h2>
+      <div class="f1-content">Loading…</div>
+    `;
+  }
+
   async render(data) {
     try {
       this.classList.add(...styles);
+      this.classList.remove("is-loading");
 
-      // Try latest meeting first, then search all meetings
       let session = this.#lastSession(Array.isArray(data) ? data : []);
       
       if (!session) {
@@ -65,6 +76,7 @@ export default class F1Reporter extends Reporter {
       this.innerHTML += this.getDriver44Html(lewisInfo);
     } catch (err) {
       this.classList.add(...styles);
+      this.classList.remove("is-loading");
       this.innerHTML = `
         <h2>Latest F1 Meeting</h2>
         <p>No session data.</p>
@@ -83,16 +95,8 @@ export default class F1Reporter extends Reporter {
   async connectedCallback() {
     url.search = params;
     this.src = url;
-    try {
-      await super.connectedCallback();
-    } catch (err) {
-      console.error('F1Reporter: failed to load initial data', err);
-      this.classList.add(...styles);
-      this.innerHTML = `
-      <h2>Latest F1 Results</h2>
-      <p>No session data.</p>
-      `;
-    }
+    
+    await super.connectedCallback();
   }
 
   #lastSession(results) {
@@ -107,11 +111,6 @@ export default class F1Reporter extends Reporter {
     });
   }
 
-  /**
-   * Fetch sessions from previous meetings for a completed race
-   * @param {Object} currentData - Current failed data
-   * @returns {Promise<Array>}
-   */
   async #fetchAllPreviousSessions() {
     try {
       return await fetchJson("https://api.openf1.org/v1/sessions");
@@ -121,3 +120,8 @@ export default class F1Reporter extends Reporter {
     }
   }
 }
+
+// Apply mixins
+mixinApply(F1Reporter, [F1Winners, F1WhereIsLewis, deleteCachesByPrefix]);
+
+export default F1Reporter;
