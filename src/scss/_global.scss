@@ -4,6 +4,7 @@ html {
 
 body {
   background-color: $color-back;
+  box-sizing: border-box;
   color: $color-fore;
   font-family: $fontFaceMain;
 }

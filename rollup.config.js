@@ -32,7 +32,7 @@ const manifestOpts = {
 const audioLoopsManifestOpts = {
   isMerge: true,
   fileName: path.resolve("./src/_data/manifest.json"),
-  generate: (keyValueDecorator, seed) => (chunks, bundle) => {
+  generate: (_keyValueDecorator, seed) => (chunks, _bundle) => {
     const manifest = { ...seed };
     chunks.forEach(({ fileName }) => {
       manifest["audioLoops.js"] = fileName;
@@ -44,7 +44,7 @@ const audioLoopsManifestOpts = {
 const digitalRainManifestOpts = {
   isMerge: true,
   fileName: path.resolve("./src/_data/manifest.json"),
-  generate: (keyValueDecorator, seed) => (chunks, bundle) => {
+  generate: (_keyValueDecorator, seed) => (chunks, _bundle) => {
     const manifest = { ...seed };
     chunks.forEach(({ fileName }) => {
       manifest["digitalRain.js"] = fileName;
@@ -56,10 +56,22 @@ const digitalRainManifestOpts = {
 const pixelManglerManifestOpts = {
   isMerge: true,
   fileName: path.resolve("./src/_data/manifest.json"),
-  generate: (keyValueDecorator, seed) => (chunks, bundle) => {
+  generate: (_keyValueDecorator, seed) => (chunks, _bundle) => {
     const manifest = { ...seed };
     chunks.forEach(({ fileName }) => {
       manifest["pixelMangler.js"] = fileName;
+    });
+    return manifest;
+  },
+};
+
+const seasideAudioManifestOpts = {
+  isMerge: true,
+  fileName: path.resolve("./src/_data/manifest.json"),
+  generate: (_keyValueDecorator, seed) => (chunks, _bundle) => {
+    const manifest = { ...seed };
+    chunks.forEach(({ fileName }) => {
+      manifest["seasideAudio.js"] = fileName;
     });
     return manifest;
   },
@@ -246,6 +258,43 @@ export default [
     },
     watch: {
       include: "./src/workers/**",
+      clearScreen: false,
+    },
+  },
+  {
+    input: "./src/js/_components/seasideAudio/index.js",
+    plugins: [
+      nodeResolve(),
+      devMode ? noop() : outputManifest(seasideAudioManifestOpts),
+      devMode
+        ? noop()
+        : terser({
+            ecma: 2020,
+            mangle: { toplevel: true },
+            compress: {
+              module: true,
+              toplevel: true,
+              unsafe_arrows: true,
+              drop_console: false,
+              drop_debugger: false,
+            },
+            output: {
+              quote_style: 1,
+              comments: false,
+            },
+          }),
+    ],
+    output: {
+      entryFileNames: devMode
+        ? "seasideAudio.js"
+        : "seasideAudio-[hash].esm.js",
+      generatedCode: "es2015",
+      format: "es",
+      dir: "./_site/js/seasideAudio/",
+      sourcemap: devMode ? "inline" : false,
+    },
+    watch: {
+      include: "./src/js/_components/seasideAudio/**",
       clearScreen: false,
     },
   },

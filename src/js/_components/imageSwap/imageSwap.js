@@ -7,7 +7,7 @@ export default class ImageSwap extends HTMLElement {
   #imageOriginalSrc;
   #imageAltSrc;
   #boundHandler;
-  #isReady;
+  #currentLoadPromise = Promise.resolve();
 
   constructor() {
     super();
@@ -27,7 +27,6 @@ export default class ImageSwap extends HTMLElement {
     this.#imageOriginalSrc = "";
     this.#imageAltSrc = "";
     this.#boundHandler = this.#handleEvent.bind(this);
-    this.#isReady = Promise.resolve();
   }
 
   static get observedAttributes() {
@@ -35,7 +34,7 @@ export default class ImageSwap extends HTMLElement {
   }
 
   get loaded() {
-    return this.#isReady;
+    return this.#currentLoadPromise;
   }
 
   connectedCallback() {
@@ -78,8 +77,8 @@ export default class ImageSwap extends HTMLElement {
     const src = theme === "matrix" ? this.#imageAltSrc : this.#imageOriginalSrc;
     
     if (!src || originalImg.src === src) return;
-    
-    this.#isReady = new Promise((resolve) => {
+
+    this.#currentLoadPromise = new Promise((resolve) => {
       const img = new Image();
       img.onload = () => {
         originalImg.src = src;
