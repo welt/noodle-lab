@@ -38,15 +38,33 @@ ImageProcessor.prototype.init = function () {
 };
 
 /**
+ * Draws image to canvas
+ * @returns {Promise<void>}
+ */
+ImageProcessor.prototype.drawImage = function () {
+  return new Promise((resolve) => {
+    const draw = () => {
+      this.ctx.drawImage(this.image, 0, 0, this.canvas.width, this.canvas.height);
+      resolve();
+    };
+
+    this.image.complete && this.image.naturalWidth !== 0
+      ? draw()
+      : (this.image.onload = draw);
+  });
+};
+
+/**
  * gets image data, renders it to canvas for analysis
  * then sends metadata to worker for processing
  * @param {Object} options - processing options
  * @param {number} options.delay - delay between batches in ms
  * @param {number} options.batchSize - number of pixels to process per batch
- * @param {string} options.colourMode - drak/light mode theme support
+ * @param {string} options.colourMode - dark/light mode theme support
+ * @param {string} options.strategy - processing strategy
  * @throws {WorkerError} if worker is not available
  */
-ImageProcessor.prototype.getAndSendData = function ({
+ImageProcessor.prototype.getAndSendData = async function ({
   delay = 10,
   batchSize = 100,
   colourMode = "dark",
@@ -56,29 +74,23 @@ ImageProcessor.prototype.getAndSendData = function ({
     throw new WorkerError("Cannot send image data without worker");
   }
 
-  const image = this.image;
-  const start = () => {
-    this.ctx.drawImage(image, 0, 0, this.canvas.width, this.canvas.height);
-    this.imageData = this.ctx.getImageData(
-      0,
-      0,
-      this.canvas.width,
-      this.canvas.height,
-    );
-    this.ctx.putImageData(this.imageData, 0, 0);
+  await this.drawImage();
+  
+  this.imageData = this.ctx.getImageData(
+    0,
+    0,
+    this.canvas.width,
+    this.canvas.height,
+  );
 
-    this.worker.postMessage({
-      width: this.canvas.width,
-      height: this.canvas.height,
-      delay,
-      batchSize,
-      colourMode,
-      strategy,
-    });
-  };
-
-  image.onload = start;
-  if (image.complete && image.naturalWidth !== 0) start();
+  this.worker.postMessage({
+    width: this.canvas.width,
+    height: this.canvas.height,
+    delay,
+    batchSize,
+    colourMode,
+    strategy,
+  });
 };
 
 /**
