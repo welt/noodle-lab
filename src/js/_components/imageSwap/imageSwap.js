@@ -7,6 +7,7 @@ export default class ImageSwap extends HTMLElement {
   #imageOriginalSrc;
   #imageAltSrc;
   #boundHandler;
+  #isReady;
 
   constructor() {
     super();
@@ -24,67 +25,72 @@ export default class ImageSwap extends HTMLElement {
       <slot></slot>
     `;
     this.#imageOriginalSrc = "";
-    this.#boundHandler = null;
+    this.#imageAltSrc = "";
+    this.#boundHandler = this.#handleEvent.bind(this);
+    this.#isReady = Promise.resolve();
   }
 
   static get observedAttributes() {
     return ["src"];
   }
 
+  get loaded() {
+    return this.#isReady;
+  }
+
   connectedCallback() {
     const img = this.querySelector("img");
     if (img) this.#imageOriginalSrc = img.src;
     this.#imageAltSrc = this.getAttribute("src") || "";
-    this.#boundHandler = this.#handleEvent.bind(this);
     document.addEventListener("toggle-button", this.#boundHandler);
     this.#updateDisplayedImage();
   }
 
+  attributeChangedCallback(attributeName, _oldValue, _newValue) {
+    if (attributeName === "src") {
+      this.#imageAltSrc = this.getAttribute("src") || "";
+      this.#updateDisplayedImage();
+    }
+  }
+
   #handleEvent(event) {
     if (!event || event.type !== "toggle-button") return;
+    
     const hasDetail = Object.hasOwn(event?.detail ?? {}, "checked");
-    if (hasDetail) {
-      const theme = Boolean(event.detail.checked) ? "matrix" : "helvetica";
-      this.#updateDisplayedImage(theme);
-      return;
-    }
-    this.#updateDisplayedImage();
+    const theme = hasDetail 
+      ? (event.detail.checked ? "matrix" : "helvetica")
+      : this.#getTheme();
+    
+    this.#updateDisplayedImage(theme);
   }
 
   #getTheme() {
     const isDark = document.documentElement.classList.contains("dark-mode");
     const storedMode = localStorage.getItem("mode");
-    const computedDark = isDark || storedMode === "dark";
-    return computedDark ? "matrix" : "helvetica";
-  }
-
-  attributeChangedCallback(attributeName, _oldValue, _newValue) {
-    if (attributeName !== "src") return;
-    if (attributeName === "src") {
-      this.#imageAltSrc = this.getAttribute("src") || "";
-      this.#updateDisplayedImage();
-      return;
-    }
+    return (isDark || storedMode === "dark") ? "matrix" : "helvetica";
   }
 
   #updateDisplayedImage(themeOverride) {
     const originalImg = this.querySelector("img");
     if (!originalImg) return;
+    
     const theme = themeOverride || this.#getTheme();
     const src = theme === "matrix" ? this.#imageAltSrc : this.#imageOriginalSrc;
-    if (!src) return;
-    if (originalImg.src === src) return;
-    const img = new Image();
-    img.onload = () => {
-      originalImg.src = src;
-    };
-    img.src = src;
+    
+    if (!src || originalImg.src === src) return;
+    
+    this.#isReady = new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => {
+        originalImg.src = src;
+        resolve();
+      };
+      img.onerror = resolve;
+      img.src = src;
+    });
   }
 
   disconnectedCallback() {
-    if (this.#boundHandler) {
-      document.removeEventListener("toggle-button", this.#boundHandler);
-      this.#boundHandler = null;
-    }
+    document.removeEventListener("toggle-button", this.#boundHandler);
   }
 }

@@ -90,11 +90,44 @@ export default class PixelMangler extends HTMLElement {
 
     this.#controller = new ImageProcessor(canvas, img, WORKER_PATH);
     this.#controller.init();
+    
+    await this.#waitForImage(img);
     await this.#controller.drawImage();
 
     if (shouldProcess) {
       this.#startProcessing();
     }
+  }
+
+  async #waitForImage(img) {
+    const parent = img.parentElement;
+    
+    if (parent?.tagName === 'IMAGE-SWAP' && parent.loaded) {
+      await parent.loaded;
+      return;
+    }
+    
+    if (img.complete && img.naturalWidth !== 0) {
+      return;
+    }
+    
+    return new Promise((resolve) => {
+      img.addEventListener('load', resolve, { once: true });
+    });
+  }
+
+  async #handleEvent(event) {
+    if (!event || event.type !== "toggle-button" || !this.#controller) return;
+    
+    const img = this.#findImage();
+    await this.#waitForImage(img);
+    await this.#controller.drawImage();
+    
+    const theme = this.#findTheme(event);
+    this.#controller.getAndSendData({
+      ...PROCESSING_DEFAULTS,
+      colourMode: theme,
+    });
   }
 
   #startProcessing() {
@@ -107,16 +140,6 @@ export default class PixelMangler extends HTMLElement {
 
   #findImage() {
     return this.querySelector("img");
-  }
-
-  #handleEvent(event) {
-    if (!event || event.type !== "toggle-button" || !this.#controller) return;
-    
-    const theme = this.#findTheme(event);
-    this.#controller.getAndSendData({
-      ...PROCESSING_DEFAULTS,
-      colourMode: theme,
-    });
   }
 
   #findTheme(event) {
