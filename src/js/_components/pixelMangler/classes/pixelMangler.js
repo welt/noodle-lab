@@ -7,7 +7,6 @@ import ImageProcessor from "./imageProcessor";
 import { WorkerError } from "./errors";
 
 const WORKER_PATH = "/js/pixelMangler/workers/worker.pixel-mangler.js";
-
 const PROCESSING_DEFAULTS = {
   delay: 200,
   batchSize: 50,
@@ -16,6 +15,8 @@ const PROCESSING_DEFAULTS = {
 export default class PixelMangler extends HTMLElement {
   #controller;
   #boundHandler = this.#handleEvent.bind(this);
+  #boundTriggerHandler = this.#handleTriggerEvent.bind(this);
+  #triggerEventName;
 
   async connectedCallback() {
     const img = this.#findImage();
@@ -23,40 +24,80 @@ export default class PixelMangler extends HTMLElement {
       console.warn("PixelMangler: destructible image not found");
       return;
     }
-    if (!this.querySelector("canvas")) {
-      this.attachShadow({ mode: "open" });
-      this.shadowRoot.innerHTML = `
-        <style>
-          :host { width: 100%; height: 100%; }
-          slot { display: none; }
-          canvas { aspect-ratio: auto 309 / 422; object-fit: cover; width: 100%; height: 100%; display: block; }
-        </style>
-        <slot></slot>
-        <canvas data-mangler-canvas width="400" height="533"></canvas>
-      `;
+
+    if (!this.shadowRoot) {
+      this.#attachShadow();
     }
 
+    this.#triggerEventName = this.getAttribute("trigger");
+
     try {
-      await this.#initializeController(img);
+      await this.#initialiseController(img, !this.#triggerEventName);
       document.addEventListener("toggle-button", this.#boundHandler);
-    } catch (err) {
-      if (err instanceof WorkerError) {
-        console.warn(`PixelMangler: ${err.message}`);
-      } else {
-        console.error("PixelMangler: initialization failed", err);
+      
+      if (this.#triggerEventName) {
+        document.addEventListener(
+          this.#triggerEventName,
+          this.#boundTriggerHandler,
+        );
       }
+    } catch (err) {
+      this.#handleError(err);
     }
   }
 
-  async #initializeController(img) {
-    const canvas = this.shadowRoot?.querySelector("canvas");
+  #attachShadow() {
+    this.attachShadow({ mode: "open" });
+    this.shadowRoot.innerHTML = `
+      <style>
+        :host { width: 100%; height: 100%; }
+        slot { display: none; }
+        canvas { aspect-ratio: auto 309 / 422; object-fit: cover; width: 100%; height: 100%; display: block; }
+      </style>
+      <slot></slot>
+      <canvas data-mangler-canvas width="400" height="533"></canvas>
+    `;
+  }
+
+  async #handleTriggerEvent(event) {
+    if (!this.#triggerEventName || event.type !== this.#triggerEventName) return;
+
+    document.removeEventListener(
+      this.#triggerEventName,
+      this.#boundTriggerHandler,
+    );
+
+    const theme = this.#getFallbackTheme();
+    this.#controller.getAndSendData({
+      ...PROCESSING_DEFAULTS,
+      colourMode: theme,
+    });
+  }
+
+  #handleError(err) {
+    if (err instanceof WorkerError) {
+      console.warn(`PixelMangler: ${err.message}`);
+    } else {
+      console.error("PixelMangler: initialization failed", err);
+    }
+  }
+
+  async #initialiseController(img, shouldProcess = true) {
+    const canvas = this.shadowRoot.querySelector("canvas");
     if (!canvas) {
       throw new WorkerError("pixel mangling needs a canvas in shadow DOM");
     }
 
     this.#controller = new ImageProcessor(canvas, img, WORKER_PATH);
     this.#controller.init();
+    await this.#controller.drawImage();
 
+    if (shouldProcess) {
+      this.#startProcessing();
+    }
+  }
+
+  #startProcessing() {
     const theme = this.#getFallbackTheme();
     this.#controller.getAndSendData({
       ...PROCESSING_DEFAULTS,
@@ -70,6 +111,7 @@ export default class PixelMangler extends HTMLElement {
 
   #handleEvent(event) {
     if (!event || event.type !== "toggle-button" || !this.#controller) return;
+    
     const theme = this.#findTheme(event);
     this.#controller.getAndSendData({
       ...PROCESSING_DEFAULTS,
@@ -79,24 +121,25 @@ export default class PixelMangler extends HTMLElement {
 
   #findTheme(event) {
     const checked = event?.detail?.checked;
-    if (checked !== undefined) {
-      return checked ? "dark" : "light";
-    }
-    return this.#getFallbackTheme();
+    return checked !== undefined 
+      ? (checked ? "dark" : "light")
+      : this.#getFallbackTheme();
   }
 
   #getFallbackTheme() {
     const isDark = document.documentElement.classList.contains("dark-mode");
     const storedMode = localStorage.getItem("mode");
-    const computedDark = isDark || storedMode === "dark";
-    return computedDark ? "dark" : "light";
+    return (isDark || storedMode === "dark") ? "dark" : "light";
   }
 
   disconnectedCallback() {
-    try {
-      document.removeEventListener("toggle-button", this.#boundHandler);
-    } catch (err) {
-      console.warn("PixelMangler: cleanup failed", err);
+    document.removeEventListener("toggle-button", this.#boundHandler);
+    if (this.#triggerEventName) {
+      document.removeEventListener(
+        this.#triggerEventName,
+        this.#boundTriggerHandler,
+      );
     }
+    this.#controller = null;
   }
 }
