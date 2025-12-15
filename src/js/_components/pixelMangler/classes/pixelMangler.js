@@ -103,7 +103,7 @@ export default class PixelMangler extends HTMLElement {
     const parent = img.parentElement;
     
     if (parent?.tagName === 'IMAGE-SWAP' && parent.loaded) {
-      await parent.loaded;
+      if (parent.loaded instanceof Promise) await parent.loaded;
       return;
     }
     

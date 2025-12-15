@@ -41,9 +41,8 @@ export default class SeasideAudio extends HTMLElement {
 
   connectedCallback() {
     this.#controlsSlot = this.shadowRoot.querySelector('slot[name="controls"]');
-    if (this.#controlsSlot && !this.__seaside_slot_listening) {
+    if (this.#controlsSlot) {
       this.#controlsSlot.addEventListener('click', this.#boundHandler);
-      this.__seaside_slot_listening = true;
     }
   }
 
@@ -62,19 +61,32 @@ export default class SeasideAudio extends HTMLElement {
   }
 
   callController(action, ...args) {
-    if (this.#controller && typeof this.#controller[action] === 'function') {
-      return this.#controller[action](...args);
+    if (!this.#controller) {
+      console.warn(`[SeasideAudio] Controller not set: ${action}`);
+      return;
     }
-    console.warn(`[SeasideAudio] Controller not set or action missing: ${action}`);
+    const fn = this.#controller[action];
+    if (typeof fn !== 'function') {
+      console.warn(`[SeasideAudio] Controller action missing: ${action}`);
+      return;
+    }
+    return fn.apply(this.#controller, args);
   }
 
   async handleEvent(event) {
     const button = event.target.closest("button");
     if (!button) return;
 
+    try {
+      await this.#initializeController();
+    } catch (err) {
+      console.error("[SeasideAudio] Initialization failed:", err);
+      this.innerHTML = "<p>Error loading seaside audio component</p>";
+      return;
+    }
+
     if (!button.hasAttribute("data-action")) {
       try {
-        await this.#initializeController();
         await this.callController("play", "seaside");
         this.#emitPlaySeasideOnce();
       } catch (err) {
@@ -86,47 +98,33 @@ export default class SeasideAudio extends HTMLElement {
     const actionButton = button.closest("button[data-action]");
     if (!actionButton) return;
 
-    try {
-      await this.#initializeController();
-    } catch (err) {
-      console.error("[SeasideAudio] Initialization failed:", err);
-      this.innerHTML = "<p>Error loading seaside audio component</p>";
-      return;
-    }
-
     const action = actionButton.getAttribute("data-action");
     const source = actionButton.getAttribute("data-source");
     if (!action || !source) return;
 
-    const actions = {
-      togglePlay: async (btn, src) => {
-        const state = this.callController("getState", src);
-        let label, ariaPressed;
+    if (action === 'togglePlay') {
+      const state = this.callController("getState", source) || {};
+      let label = 'Play';
+      let ariaPressed = 'false';
 
-        if (state?.isPlaying) {
-          this.callController("pause", src);
-          label = "Play";
-          ariaPressed = "false";
-        } else if (state?.pauseTime) {
-          this.callController("resume", src);
-          label = "Pause";
-          ariaPressed = "true";
-        } else {
-          await this.callController("play", src);
-          this.#emitPlaySeasideOnce();
-          label = "Pause";
-          ariaPressed = "true";
-        }
+      if (state.isPlaying) {
+        this.callController("pause", source);
+        label = 'Play';
+        ariaPressed = 'false';
+      } else if (state.pauseTime) {
+        this.callController("resume", source);
+        label = 'Pause';
+        ariaPressed = 'true';
+      } else {
+        await this.callController("play", source);
+        this.#emitPlaySeasideOnce();
+        label = 'Pause';
+        ariaPressed = 'true';
+      }
 
-        btn.textContent = label;
-        btn.setAttribute("aria-pressed", ariaPressed);
-      },
-    };
-
-    if (actions[action]) {
-      await actions[action].call(this, actionButton, source);
+      actionButton.textContent = label;
+      actionButton.setAttribute('aria-pressed', ariaPressed);
     }
-    return;
   }
 
   #emitPlaySeasideOnce() {
@@ -136,10 +134,9 @@ export default class SeasideAudio extends HTMLElement {
   }
 
   disconnectedCallback() {
-    if (this.#controlsSlot && this.__seaside_slot_listening) {
+    if (this.#controlsSlot) {
       this.#controlsSlot.removeEventListener('click', this.#boundHandler);
       this.#controlsSlot = null;
-      this.__seaside_slot_listening = false;
     }
   }
 }

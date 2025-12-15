@@ -1,6 +1,6 @@
 /**
- * @file audioLoopsController.js
- * Controller for audio loops functionality.
+ * @file audioController.js
+ * Audio controller.
  */
 import { AudioControllerError } from "../errors";
 
@@ -15,7 +15,7 @@ export default class AudioController {
       startTime: 0,
       pauseTime: 0,
       isPlaying: false,
-      url: "/media/sandgrounder-restaurant.mp3",
+      url: "/media/seaside/sandgrounder-restaurant.mp3",
     },
   };
 

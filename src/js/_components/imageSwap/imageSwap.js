@@ -78,13 +78,13 @@ export default class ImageSwap extends HTMLElement {
     
     if (!src || originalImg.src === src) return;
 
-    this.#currentLoadPromise = new Promise((resolve) => {
+    this.#currentLoadPromise = new Promise((resolve, reject) => {
       const img = new Image();
       img.onload = () => {
         originalImg.src = src;
         resolve();
       };
-      img.onerror = resolve;
+      img.onerror = () => reject(new Error(`Failed to load image: ${src}`));
       img.src = src;
     });
   }
