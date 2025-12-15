@@ -29,7 +29,8 @@ metaDescription: "Plain old JavaScript objects."
     <!-- image: adder©{% year %} -->
     <img
       src="media/art-therapy/art-therapy.png"
-      height="422" width="317"
+      height="422"
+      width="317"
       alt="A bottle of milk"
       fetchpriority="high"
       loading="eager"
@@ -53,15 +54,24 @@ metaDescription: "Plain old JavaScript objects."
 </div>
 
 <div class="grid-item reporter reporter--seaside">
-  <pixel-mangler>
-    <image-swap src="media/seaside/seaside__matrix.png">
-      <!-- image: _welt©{% year %} -->
-      <img
-        src="media/seaside/seaside.png"
-        height="422"
-        width="317"
-        alt="Seaside scene with merry-go-round"
-      >
-    </image-swap>
-  </pixel-mangler>
+  <seaside-audio>
+    <pixel-mangler trigger="play-seaside">
+      <image-swap src="media/seaside/seaside__matrix.png">
+        <!-- image: _welt©{% year %} -->
+        <img
+          src="media/seaside/seaside.png"
+          height="422"
+          width="317"
+          alt="Seaside scene with merry-go-round"
+        >
+      </image-swap>
+    </pixel-mangler>
+    <button
+      slot="controls"
+      class="play-toggle button button--play-toggle"
+      data-action="togglePlay"
+      data-source="seaside"
+      aria-live="polite"
+      aria-pressed="false">Play</button>
+  </seaside-audio>
 </div>
