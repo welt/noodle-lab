@@ -19,5 +19,11 @@ export default function () {
       dev: "pixelMangler.js",
       path: "/js/pixelMangler/",
     },
+    {
+      name: "seasideAudio",
+      prod: "seasideAudio.js",
+      dev: "seasideAudio.js",
+      path: "/js/seasideAudio/",
+    },
   ];
 }

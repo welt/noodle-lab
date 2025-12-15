@@ -27,7 +27,7 @@ class DistributionStrategy {
    * @param {DistributionConfig} config
    * @returns {number[]} Array of pixel positions to modify
    */
-  generate(config) {
+  generate(_config) {
     throw new Error("generate() must be implemented by subclass");
   }
 }
@@ -56,7 +56,7 @@ export class DistributionGaussian extends DistributionStrategy {
     super("gaussian");
   }
   generate(config) {
-    const { totalPixels, modifyCount, width, height } = config;
+    const { modifyCount, width, height } = config;
     const centerX = width / 2;
     const centerY = height / 2;
     const stdDev = Math.min(width, height) / 4;
