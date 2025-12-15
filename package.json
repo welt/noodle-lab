@@ -1,6 +1,6 @@
 {
   "name": "noodle-lab",
-  "version": "2.4.19",
+  "version": "2.4.20",
   "description": "Noodling around project",
   "main": "eleventy.config.js",
   "type": "module",
@@ -40,7 +40,7 @@
     "postcss": "^8.5.6",
     "postcss-cli": "^11.0.1",
     "postcss-scss": "^4.0.9",
-    "rollup": "^4.53.3",
+    "rollup": "^4.53.4",
     "rollup-plugin-output-manifest": "^2.0.0",
     "whatwg-fetch": "^3.6.20"
   },
