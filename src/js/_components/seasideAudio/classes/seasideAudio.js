@@ -104,8 +104,8 @@ export default class SeasideAudio extends HTMLElement {
 
     if (action === 'togglePlay') {
       const state = this.callController("getState", source) || {};
-      let label = 'Play';
-      let ariaPressed = 'false';
+      let label;
+      let ariaPressed;
 
       if (state.isPlaying) {
         this.callController("pause", source);

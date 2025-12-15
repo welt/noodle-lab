@@ -13,7 +13,7 @@ export default class AudioController {
       buffer: null,
       source: null,
       startTime: 0,
-      pauseTime: 0,
+      pauseTime: null,
       isPlaying: false,
       url: "/media/seaside/sandgrounder-restaurant.mp3",
     },
@@ -98,7 +98,7 @@ export default class AudioController {
   }
 
   /**
-   * Pause the currently playing loop.
+   * Get the current state of a named source.
    * @param {string} name
    * @returns void
    */

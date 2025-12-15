@@ -40,7 +40,14 @@ export default class AudioSourceFetcher extends Fetcher {
       return audioBuffer;
     } catch (error) {
       console.error(`AudioSourceFetcher error for ${url}:`, error);
-      throw error;
+      if (error instanceof AudioFetcherError) {
+        throw error;
+      }
+      console.error(`AudioSourceFetcher error for ${url}:`, error);
+      throw new AudioFetcherError(
+        `Unexpected error while fetching or decoding audio from ${url}: ${error && error.message ? error.message : error}`,
+        { cause: error }
+      );
     }
   }
 
