@@ -4,7 +4,6 @@
  * @see https://developer.mozilla.org/en-US/docs/Web/API/Cache
  * @extends Cache
  */
-import isObject from "./isObject";
 import Cache from "../_contracts/cache";
 
 const defaults = {
@@ -20,37 +19,93 @@ export default class CacheApiCache extends Cache {
     this.#options = { ...defaults, ...options };
   }
 
+  /**
+   * Retrieve cached JSON for a URI.
+   * Returns the parsed object/array,
+   * or null if not present/invalid/expired.
+   * @param {string} uri 
+   * @returns {Promise<Object|Array|null>}
+   */
   async getCachedData(uri) {
-    const cache = await caches.open(this.options.cacheName);
+    const { cacheName, expiryTimeInMs } = this.options;
+
+    let cache;
+    try {
+      cache = await caches.open(cacheName);
+    } catch (err) {
+      console.warn("CacheApiCache.getCachedData: failed to open cache", err);
+      return null;
+    }
+
     const response = await cache.match(uri);
-    if (!response) {
-      return null;
-    }
 
-    const cachedTimestamp = response.headers.get("x-cache-timestamp");
-    if (!cachedTimestamp) {
-      return null;
-    }
+    if (!response) return null;
 
-    const now = Date.now();
-    if (now - cachedTimestamp >= this.options.expiryTimeInMs) {
+    const timestamp = response.headers.get("x-cache-timestamp");
+    const cachedTimestamp = timestamp ? Number(timestamp) : NaN;
+    
+    if (!Number.isFinite(cachedTimestamp)) {
       await cache.delete(uri);
       return null;
     }
 
-    console.log(`Found cached data for ${uri}`);
-    return response.json();
+    const age = Date.now() - cachedTimestamp;
+    if (age > expiryTimeInMs) {
+      await cache.delete(uri);
+      return null;
+    }
+
+    const contentType = response.headers.get("content-type") || "";
+    if (!contentType.includes("application/json")) {
+      await cache.delete(uri);
+      return null;
+    }
+
+    try {
+      return await response.json();
+    } catch (err) {
+      console.warn("CacheApiCache.getCachedData: failed to parse cached JSON, evicting", err);
+      await cache.delete(uri);
+      return null;
+    }
   }
 
+  /**
+   * Stores JSON-serializable object or array with key `uri`.
+   * @param {string} uri
+   * @param {Object|Array} data
+   * @returns {Promise<boolean>}
+   */
   async setCachedData(uri, data) {
-    if (data === null || (!isObject(data) && !Array.isArray(data))) {
-      throw new TypeError("Data must be an object or array.");
+    const { cacheName } = this.options;
+
+    if (data === null || typeof data !== "object") {
+      throw new TypeError("CacheApiCache only accepts plain objects or arrays.");
     }
-    const cache = await caches.open(this.options.cacheName);
-    const response = new Response(JSON.stringify(data), {
-      headers: { "x-cache-timestamp": Date.now().toString() },
+
+    let body;
+    try {
+      body = JSON.stringify(data);
+    } catch (err) {
+      throw new TypeError("CacheApiCache data must be JSON-serializable.");
+    }
+
+    const timestamp = String(Date.now());
+    const headers = new Headers({
+      "content-type": "application/json",
+      "x-cache-timestamp": timestamp,
     });
-    await cache.put(uri, response);
+
+    const response = new Response(body, { headers });
+
+    try {
+      const cache = await caches.open(cacheName);
+      await cache.put(uri, response);
+      return true;
+    } catch (err) {
+      console.warn("CacheApiCache.setCachedData: failed to write to cache", err);
+      return false;
+    }
   }
 
   get options() {

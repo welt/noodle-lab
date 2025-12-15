@@ -1,5 +1,5 @@
 /**
- * @file matrixPrinter.worker.js
+ * @file worker-matrix-printer.js
  *
  * Types a message character-by-character and
  * posts message objects back to the main thread:
@@ -71,7 +71,6 @@ async function runPrint(rawMessage, rawDelay, runId) {
     safePost({ type: "update", text: acc, runId });
     await new Promise((res) => setTimeout(res, delay));
     if (currentRunId !== runId) {
-      safePost({ type: "update", text: "", runId });
       return;
     }
   }

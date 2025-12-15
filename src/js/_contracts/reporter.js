@@ -11,24 +11,27 @@ import Api from "../_lib/api.js";
 const eventName = "refresh";
 
 const warning = (_strings, name) =>
-  `"src" attribute was not found on <${name} /> elemnent.\nUsing default…`;
+  `"src" attribute was not found on <${name} /> element.\nUsing default…`;
 
 /**
  * Contract for Reporter classes.
  * @extends HTMLElement
  */
 export default class Reporter extends HTMLElement {
+  #src;
+  #isConnected = false;
+
   static get observedAttributes() {
     return ["src"];
   }
 
   set src(value) {
-    this._src = value;
+    this.#src = value;
     this.setAttribute("src", value);
   }
 
   get src() {
-    return this._src;
+    return this.#src;
   }
 
   constructor() {
@@ -36,9 +39,13 @@ export default class Reporter extends HTMLElement {
     if (new.target === Reporter) {
       throw new Error("Cannot instantiate abstract Reporter class directly.");
     }
-    this._src = this.getAttribute("src");
-    if (!this._src) console.warn(warning`${this.localName}`);
+    this.#src = this.getAttribute("src");
+    if (!this.#src) console.warn(warning`${this.localName}`);
     this.refresh = this.refresh.bind(this);
+  }
+
+  renderSkeleton() {
+    // Default: do nothing. Subclasses should override.
   }
 
   /**
@@ -58,20 +65,36 @@ export default class Reporter extends HTMLElement {
     try {
       const api = new Api(this.src);
       const data = await api.getData();
+
+      if (!this.#isConnected) return;
+
       this.render(data);
       console.log(`Refreshing ${this.constructor.name}…`);
     } catch (error) {
       console.error(`Error in ${this.constructor.name} class:`, error);
-      throw error;
+      if (this.#isConnected) await this.render(null);
     }
   }
 
   async connectedCallback() {
-    await this.refresh();
+    this.#isConnected = true;
     document.addEventListener(eventName, this.refresh);
+
+    try {
+      this.renderSkeleton();
+    } catch (e) {
+      console.error("Error rendering skeleton:", e);
+    }
+
+    if ("requestIdleCallback" in window) {
+      requestIdleCallback(() => this.refresh(), { timeout: 2000 });
+    } else {
+      setTimeout(() => this.refresh(), 1000);
+    }
   }
 
   disconnectedCallback() {
+    this.#isConnected = false;
     document.removeEventListener(eventName, this.refresh);
   }
 }

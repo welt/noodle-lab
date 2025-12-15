@@ -6,7 +6,8 @@
  * @param {String} elementId - DOM id of the element to log messages to
  * @returns {Function}
  */
-import MatrixPrinter from "./matrixPrinter";
+
+const RANDOMNESS_PERCENTAGE = 9;
 
 const matrixTimeOptions = {
   year: "2-digit",
@@ -20,8 +21,7 @@ const matrixTimeOptions = {
 
 export default function createScreenLogger(DumpToScreenClass, elementId) {
   const screenDumper = new DumpToScreenClass(elementId);
-
-  screenDumper.setPrinter(new MatrixPrinter());
+  let animationInProgress = false;
 
   const originalConsoleLog = console.log;
 
@@ -45,14 +45,19 @@ export default function createScreenLogger(DumpToScreenClass, elementId) {
     return `Call trans opt: received. ${currentDate} REC:Log>`;
   };
 
+  const chanceOfMatrixMessage = RANDOMNESS_PERCENTAGE / 100;
+
   console.log = new Proxy(originalConsoleLog, {
     apply: function (target, thisArg, argumentsList) {
       const [str] = argumentsList;
       if (isScreenMethod(str)) {
         screenDumper.log(str);
-      }
-      if (Math.random() < 0.2) {
-        screenDumper.logAnimated(matrixMessage());
+        if (!animationInProgress && Math.random() < chanceOfMatrixMessage) {
+          animationInProgress = true;
+          screenDumper.logAnimated(matrixMessage()).finally(() => {
+            animationInProgress = false;
+          });
+        }
       }
       return Reflect.apply(target, thisArg, argumentsList);
     },

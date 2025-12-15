@@ -5,7 +5,7 @@
 import Printer from "../_contracts/printer";
 
 const TIME_BETWEEN_CHARS_MS = 50;
-const RESTART_DELAY_MS = 20; // !! kludge: delay between abort and restart
+const WORKER_PATH = "workers/worker.matrix-printer.js";
 
 class MatrixPrinterError extends Error {
   constructor(message = "Matrix Printer error", details = {}) {
@@ -15,83 +15,103 @@ class MatrixPrinterError extends Error {
   }
 }
 
-const sleep = (ms, signal) => {
-  if (!signal) return;
-  return new Promise((resolve, reject) => {
-    const t = setTimeout(() => {
-      if (signal) signal.removeEventListener("abort", onAbort);
-      resolve();
-    }, ms);
-    const onAbort = () => {
-      clearTimeout(t);
-      signal.removeEventListener("abort", onAbort);
-      reject(new MatrixPrinterError("Print cancelled"));
-    };
-    if (signal.aborted) {
-      clearTimeout(t);
-      return reject(new MatrixPrinterError("Print cancelled"));
-    }
-    signal.addEventListener("abort", onAbort);
-  });
-};
-
 export default class MatrixPrinter extends Printer {
-  #abortController;
-  #lastMessage;
+  #worker;
+  #runId;
+  #currentPromise;
+  #currentResolve;
+  #currentReject;
+  #currentCallback;
 
   constructor(delay = TIME_BETWEEN_CHARS_MS) {
     super();
     this.delay = delay;
-    this.#abortController = null;
-    this.#lastMessage = null;
+    this.#runId = 0;
+    this.#currentPromise = null;
+    this.#currentResolve = null;
+    this.#currentReject = null;
+    this.#initWorker();
   }
 
-  /**
-   * Yields accumulated string for teletype effect
-   * @param {string} message
-   */
-  static *incrementalCharacters(message) {
-    let acc = "";
-    for (const char of message) {
-      acc += char;
-      yield acc;
+  #initWorker() {
+    try {
+      this.#worker = new Worker(WORKER_PATH);
+      this.#worker.onmessage = this.#handleWorkerMessage.bind(this);
+      this.#worker.onerror = this.#handleWorkerError.bind(this);
+    } catch (err) {
+      console.error("Failed to initialize MatrixPrinter worker:", err);
     }
+  }
+
+  #handleWorkerMessage(event) {
+    const { type, text, runId } = event.data;
+
+    if (runId !== this.#runId) return;
+
+    const handlers = {
+      update: () => {
+        this.#currentCallback?.(text);
+      },
+      done: () => {
+        this.#currentResolve?.(text);
+        this.#cleanup();
+      },
+      error: () => {
+        this.#currentReject?.(new MatrixPrinterError(event.data.message));
+        this.#cleanup();
+      },
+    };
+
+    handlers[type]?.();
+  }
+
+  #cleanup() {
+    this.#currentPromise = null;
+    this.#currentCallback = null;
+    this.#currentResolve = null;
+    this.#currentReject = null;
+  }
+
+  #handleWorkerError(error) {
+    console.error("MatrixPrinter worker error:", error);
+    this.#currentReject?.(error);
+    this.#currentPromise = null;
   }
 
   async print(message, callback) {
     message = message == null ? "" : String(message);
 
-    // Only abort if the new message is different
-    if (this.#abortController) {
-      if (this.#lastMessage === message) return;
-      this.#abortController.abort();
-      this.#abortController = null;
-      await new Promise((res) => setTimeout(res, RESTART_DELAY_MS));
+    this.#runId = this.#runId + 1;
+    const runId = this.#runId;
+
+    if (this.#currentPromise) {
+      this.#worker?.postMessage({ cmd: "stop" });
     }
 
-    this.#lastMessage = message;
-    const abortController = new AbortController();
-    this.#abortController = abortController;
+    this.#cleanup();
 
-    try {
-      for (const partial of MatrixPrinter.incrementalCharacters(message)) {
-        if (typeof callback === "function") callback(partial);
-        await sleep(this.delay, abortController.signal);
-      }
-      return message;
-    } finally {
-      if (this.#abortController === abortController) {
-        this.#abortController = null;
-        this.#lastMessage = null;
-      }
-    }
+    this.#currentCallback = callback;
+
+    return new Promise((resolve, reject) => {
+      this.#currentResolve = resolve;
+      this.#currentReject = reject;
+      this.#currentPromise = { resolve, reject };
+
+      this.#worker?.postMessage({
+        cmd: "start",
+        message,
+        delay: this.delay,
+        runId,
+      });
+    });
   }
 
   cancel() {
-    if (this.#abortController) {
-      this.#abortController.abort();
-      this.#abortController = null;
-      this.#lastMessage = null;
+    if (this.#currentPromise) {
+      this.#runId = this.#runId + 1;
+      this.#worker?.postMessage({ cmd: "stop" });
+      this.#currentReject?.(new MatrixPrinterError("Print cancelled"));
+      this.#currentPromise = null;
     }
   }
 
@@ -99,3 +119,4 @@ export default class MatrixPrinter extends Printer {
     this.delay = delay;
   }
 }
+export { MatrixPrinter, MatrixPrinterError };

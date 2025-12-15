@@ -12,8 +12,8 @@ export default class BlogStrategySwitch extends HTMLElement {
     this.innerHTML = `
       <label>Blog storage:
         <select data-repo-strategy>
-          <option value="memory">In-memory</option>
           <option value="indexDB">IndexDB</option>
+          <option value="memory">In-memory</option>
         </select>
       </label>
     `;

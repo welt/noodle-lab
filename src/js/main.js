@@ -8,7 +8,6 @@ import { WeatherReporterFeature } from "./_components/weatherReporter";
 import { InfoFeature } from "./_components/infoFeature";
 import { registerCustomElements } from "./_lib/registerCustomElements.js";
 import BlogFeatureFacade from "./_components/blogFeature";
-import AudioLoopsApp from "./_components/audioLoops";
 import RainControls from "./_components/rainControls";
 
 const screenLogger = createScreenLogger(DumpToScreen, "message-panel");
@@ -35,9 +34,6 @@ function initialiseFeatures() {
 
   const infoFeature = new InfoFeature({ modal: infoDialog });
   infoFeature.init();
-
-  const audioLoopsApp = new AudioLoopsApp();
-  audioLoopsApp.init();
 }
 
 function init() {

@@ -1,0 +1,12 @@
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Establishment = "H"
+    X-Clacks-Overhead = "GNU Terry Pratchett"
+    Permissions-Policy = "browsing-topics=()"
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    function = "strip-non-html-headers"
+    X-Content-Type-Options = "nosniff"
+    X-Permitted-Cross-Domain-Policies = "none"
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://api.carbonintensity.org.uk https://api.openf1.org https://nominatim.openstreetmap.org https://api.open-meteo.com https://api.github.com;"

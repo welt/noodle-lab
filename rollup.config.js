@@ -26,7 +26,55 @@ console.log(">>>> Log enabled:", logEnabled);
 // Options for creating hash manifest of the outputs.
 const manifestOpts = {
   isMerge: true,
-  fileName: "../../src/_data/manifest.json",
+  fileName: path.resolve("./src/_data/manifest.json"),
+};
+
+const audioLoopsManifestOpts = {
+  isMerge: true,
+  fileName: path.resolve("./src/_data/manifest.json"),
+  generate: (_keyValueDecorator, seed) => (chunks, _bundle) => {
+    const manifest = { ...seed };
+    chunks.forEach(({ fileName }) => {
+      manifest["audioLoops.js"] = fileName;
+    });
+    return manifest;
+  },
+};
+
+const digitalRainManifestOpts = {
+  isMerge: true,
+  fileName: path.resolve("./src/_data/manifest.json"),
+  generate: (_keyValueDecorator, seed) => (chunks, _bundle) => {
+    const manifest = { ...seed };
+    chunks.forEach(({ fileName }) => {
+      manifest["digitalRain.js"] = fileName;
+    });
+    return manifest;
+  },
+};
+
+const pixelManglerManifestOpts = {
+  isMerge: true,
+  fileName: path.resolve("./src/_data/manifest.json"),
+  generate: (_keyValueDecorator, seed) => (chunks, _bundle) => {
+    const manifest = { ...seed };
+    chunks.forEach(({ fileName }) => {
+      manifest["pixelMangler.js"] = fileName;
+    });
+    return manifest;
+  },
+};
+
+const seasideAudioManifestOpts = {
+  isMerge: true,
+  fileName: path.resolve("./src/_data/manifest.json"),
+  generate: (_keyValueDecorator, seed) => (chunks, _bundle) => {
+    const manifest = { ...seed };
+    chunks.forEach(({ fileName }) => {
+      manifest["seasideAudio.js"] = fileName;
+    });
+    return manifest;
+  },
 };
 
 const noop = () => {};
@@ -50,7 +98,7 @@ export default [
               module: true,
               toplevel: true,
               unsafe_arrows: true,
-              drop_console: false, // !! MessagePanel proxies console.log
+              drop_console: false,
               drop_debugger: false,
             },
             output: {
@@ -69,6 +117,184 @@ export default [
     },
     watch: {
       include: "./src/js/**",
+      clearScreen: false,
+    },
+  },
+  {
+    input: "./src/js/_components/audioLoops/index.js",
+    plugins: [
+      nodeResolve(),
+      devMode ? noop() : outputManifest(audioLoopsManifestOpts),
+      devMode
+        ? noop()
+        : terser({
+            ecma: 2020,
+            mangle: { toplevel: true },
+            compress: {
+              module: true,
+              toplevel: true,
+              unsafe_arrows: true,
+              drop_console: false,
+              drop_debugger: false,
+            },
+            output: {
+              quote_style: 1,
+              comments: false,
+            },
+          }),
+    ],
+    output: {
+      entryFileNames: devMode ? "audioLoops.js" : "audioLoops-[hash].esm.js",
+      generatedCode: "es2015",
+      format: "es",
+      dir: "./_site/js/audioLoops/",
+      sourcemap: devMode ? "inline" : false,
+    },
+    watch: {
+      include: "./src/js/_components/audioLoops/**",
+      clearScreen: false,
+    },
+  },
+  {
+    input: "./src/js/_components/digitalRain/index.js",
+    plugins: [
+      nodeResolve(),
+      devMode ? noop() : outputManifest(digitalRainManifestOpts),
+      devMode
+        ? noop()
+        : terser({
+            ecma: 2020,
+            mangle: { toplevel: true },
+            compress: {
+              module: true,
+              toplevel: true,
+              unsafe_arrows: true,
+              drop_console: false,
+              drop_debugger: false,
+            },
+            output: {
+              quote_style: 1,
+              comments: false,
+            },
+          }),
+    ],
+    output: {
+      entryFileNames: devMode ? "digitalRain.js" : "digitalRain-[hash].esm.js",
+      generatedCode: "es2015",
+      format: "es",
+      dir: "./_site/js/digitalRain",
+      sourcemap: devMode ? "inline" : false,
+    },
+    watch: {
+      include: "./src/js/_components/digitalRain/**",
+      clearScreen: false,
+    },
+  },
+  {
+    input: "./src/js/_components/pixelMangler/index.js",
+    plugins: [
+      nodeResolve(),
+      devMode ? noop() : outputManifest(pixelManglerManifestOpts),
+      devMode
+        ? noop()
+        : terser({
+            ecma: 2020,
+            mangle: { toplevel: true },
+            compress: {
+              module: true,
+              toplevel: true,
+              unsafe_arrows: true,
+              drop_console: false,
+              drop_debugger: false,
+            },
+            output: {
+              quote_style: 1,
+              comments: false,
+            },
+          }),
+    ],
+    output: {
+      entryFileNames: devMode
+        ? "pixelMangler.js"
+        : "pixelMangler-[hash].esm.js",
+      generatedCode: "es2015",
+      format: "es",
+      dir: "./_site/js/pixelMangler/",
+      sourcemap: devMode ? "inline" : false,
+    },
+    watch: {
+      include: "./src/js/_components/pixelMangler/**",
+      clearScreen: false,
+    },
+  },
+  {
+    input: "./src/js/_components/pixelMangler/workers/worker.pixel-mangler.js",
+    plugins: [
+      nodeResolve(),
+      devMode
+        ? noop()
+        : terser({
+            ecma: 2020,
+            mangle: { toplevel: true },
+            compress: {
+              module: true,
+              toplevel: true,
+              unsafe_arrows: true,
+              drop_console: false,
+              drop_debugger: false,
+            },
+            output: {
+              quote_style: 1,
+              comments: false,
+            },
+          }),
+    ],
+    output: {
+      entryFileNames: "worker.pixel-mangler.js",
+      generatedCode: "es2015",
+      format: "es",
+      dir: "./_site/js/pixelMangler/workers/",
+      sourcemap: devMode ? "inline" : false,
+    },
+    watch: {
+      include: "./src/workers/**",
+      clearScreen: false,
+    },
+  },
+  {
+    input: "./src/js/_components/seasideAudio/index.js",
+    plugins: [
+      nodeResolve(),
+      devMode ? noop() : outputManifest(seasideAudioManifestOpts),
+      devMode
+        ? noop()
+        : terser({
+            ecma: 2020,
+            mangle: { toplevel: true },
+            compress: {
+              module: true,
+              toplevel: true,
+              unsafe_arrows: true,
+              drop_console: false,
+              drop_debugger: false,
+            },
+            output: {
+              quote_style: 1,
+              comments: false,
+            },
+          }),
+    ],
+    output: {
+      entryFileNames: devMode
+        ? "seasideAudio.js"
+        : "seasideAudio-[hash].esm.js",
+      generatedCode: "es2015",
+      format: "es",
+      dir: "./_site/js/seasideAudio/",
+      sourcemap: devMode ? "inline" : false,
+    },
+    watch: {
+      include: "./src/js/_components/seasideAudio/**",
       clearScreen: false,
     },
   },

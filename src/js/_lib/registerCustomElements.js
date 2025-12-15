@@ -17,14 +17,13 @@ import CarbonReporter from "../_components/carbonReporter.js";
 import GitHubReporter from "../_components/gitHubReporter.js";
 import LoadingSpinner from "../_components/loadingSpinner.js";
 import RandomReporter from "../_components/randomReporter.js";
-import F1Reporter from "../_components/f1Reporter.js";
+import F1Reporter from "../_components/f1Reporter";
 import ToggleButton from "../_components/toggleButton.js";
 import RefreshButton from "../_components/refreshButton.js";
 import ErrorDialog from "../_components/ErrorDialog.js";
 import InfoDialog from "../_components/infoDialog.js";
 import GitHubLinkButton from "../_components/gitHubLinkButton.js";
 import RssFeedLinkButton from "../_components/rssFeedLinkButton.js";
-import DigitalRain from "../_components/digitalRain";
 import ImageSwap from "../_components/imageSwap";
 
 export function registerCustomElements() {
@@ -80,8 +79,6 @@ export function registerCustomElements() {
     customElements.define("rss-feed-link-button", RssFeedLinkButton);
   if (!customElements.get("loading-spinner"))
     customElements.define("loading-spinner", LoadingSpinner);
-  if (!customElements.get("digital-rain"))
-    customElements.define("digital-rain", DigitalRain);
   if (!customElements.get("image-swap"))
     customElements.define("image-swap", ImageSwap);
 }

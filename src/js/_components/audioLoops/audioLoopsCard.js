@@ -1,6 +1,6 @@
 /**
  * @file audioLoopsCard.js
- * Audio Loops card custom element
+ * Audio Loops card custom element - fully self-contained
  */
 const styles = ["audio-loops-card", "card", "grid-item"];
 
@@ -18,6 +18,20 @@ export default class AudioLoopsCard extends HTMLElement {
     this.removeEventListener("click", this.#handleDelegatedEvent);
   }
 
+  async #initializeController() {
+    if (this.#controller) return;
+
+    const [{ default: AudioLoopsController }, { default: AudioSourceFetcher }] =
+      await Promise.all([
+        import("./audioLoopsController.js"),
+        import("./utils/audioSourceFetcher.js"),
+      ]);
+
+    const audioContext = new AudioContext();
+    const fetcher = new AudioSourceFetcher(audioContext);
+    this.#controller = new AudioLoopsController(audioContext, fetcher);
+  }
+
   callController(action, ...args) {
     if (this.#controller) {
       return this.#controller[action](...args);
@@ -27,50 +41,58 @@ export default class AudioLoopsCard extends HTMLElement {
 
   async handleDelegatedEvent(event) {
     const button = event.target.closest("button[data-action]");
-    if (button) {
-      const action = button.getAttribute("data-action");
-      const source = button.getAttribute("data-source");
-      if (!action || !source) return;
+    if (!button) return;
 
-      const actions = {
-        togglePlay: async (btn, src) => {
-          const state = this.callController("getState", src);
-          let label, ariaPressed;
-
-          if (state?.isPlaying) {
-            this.callController("pause", src);
-            label = "Play";
-            ariaPressed = "false";
-          } else if (state?.pauseTime) {
-            this.callController("resume", src);
-            label = "Pause";
-            ariaPressed = "true";
-          } else {
-            await this.callController("play", src);
-            label = "Pause";
-            ariaPressed = "true";
-          }
-
-          btn.textContent = label;
-          btn.setAttribute("aria-pressed", ariaPressed);
-        },
-        stop: (btn, src) => {
-          this.callController("stop", src);
-          const toggleBtn = this.querySelector(
-            `button[data-action="togglePlay"][data-source="${src}"]`,
-          );
-          if (toggleBtn) {
-            toggleBtn.textContent = "Play";
-            toggleBtn.setAttribute("aria-pressed", "false");
-          }
-        },
-      };
-
-      if (actions[action]) {
-        await actions[action].call(this, button, source);
-      }
+    try {
+      await this.#initializeController();
+    } catch (err) {
+      console.error("[AudioLoopsCard] Initialization failed:", err);
+      this.innerHTML = "<p>Error loading audio component</p>";
       return;
     }
+
+    const action = button.getAttribute("data-action");
+    const source = button.getAttribute("data-source");
+    if (!action || !source) return;
+
+    const actions = {
+      togglePlay: async (btn, src) => {
+        const state = this.callController("getState", src);
+        let label, ariaPressed;
+
+        if (state?.isPlaying) {
+          this.callController("pause", src);
+          label = "Play";
+          ariaPressed = "false";
+        } else if (state?.pauseTime) {
+          this.callController("resume", src);
+          label = "Pause";
+          ariaPressed = "true";
+        } else {
+          await this.callController("play", src);
+          label = "Pause";
+          ariaPressed = "true";
+        }
+
+        btn.textContent = label;
+        btn.setAttribute("aria-pressed", ariaPressed);
+      },
+      stop: (btn, src) => {
+        this.callController("stop", src);
+        const toggleBtn = this.querySelector(
+          `button[data-action="togglePlay"][data-source="${src}"]`,
+        );
+        if (toggleBtn) {
+          toggleBtn.textContent = "Play";
+          toggleBtn.setAttribute("aria-pressed", "false");
+        }
+      },
+    };
+
+    if (actions[action]) {
+      await actions[action].call(this, button, source);
+    }
+    return;
   }
 
   render() {
@@ -101,9 +123,5 @@ export default class AudioLoopsCard extends HTMLElement {
           data-source="tipi">Stop</button>
       </fieldset>
     `;
-  }
-
-  setController(controller) {
-    this.#controller = controller;
   }
 }
