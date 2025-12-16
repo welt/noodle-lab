@@ -40,7 +40,7 @@
     "postcss": "^8.5.6",
     "postcss-cli": "^11.0.1",
     "postcss-scss": "^4.0.9",
-    "rollup": "^4.53.4",
+    "rollup": "^4.53.5",
     "rollup-plugin-output-manifest": "^2.0.0",
     "whatwg-fetch": "^3.6.20"
   },
