@@ -29,8 +29,8 @@ describe("BlogStrategySwitch Custom Element", () => {
     const select = switcher.querySelector("[data-repo-strategy]");
     expect(select).not.toBeNull();
     expect(select.options.length).toBe(2);
-    expect(select.options[0].value).toBe("memory");
-    expect(select.options[1].value).toBe("indexDB");
+    expect(select.options[0].value).toBe("indexDB");
+    expect(select.options[1].value).toBe("memory");
   });
 
   it("emits switch-strategy event with correct detail on change", () => {
