@@ -12,7 +12,8 @@ export default async (_request, context) => {
   if (
     !contentType ||
     contentType.startsWith("text/html") ||
-    contentType.startsWith("text/plain")
+    contentType.startsWith("text/plain") ||
+    contentType.startsWith("application/xml")
   ) {
     return response;
   }
