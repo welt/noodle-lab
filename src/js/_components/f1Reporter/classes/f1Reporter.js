@@ -10,12 +10,14 @@ import fetchJson from "./fetchJson.js";
 import formatTimestamp from "../../../_lib/formatTimestamp.js";
 import mixinApply from "../../../_lib/mixinApply.js";
 import textUtils from "../../../_lib/textUtils.js";
+import DateTime from "../../../_lib/dateTime.js";
 
 const baseUrl = "https://api.openf1.org";
 const url = new URL(`${baseUrl}/v1/sessions`);
+const dateTime = new DateTime();
 
 const params = new URLSearchParams({
-  year: "2025",
+  year: dateTime.getCurrentYear(),
   meeting_key: "latest",
 });
 
@@ -40,7 +42,7 @@ class F1Reporter extends Reporter {
       this.classList.remove("is-loading");
 
       let session = this.#lastSession(Array.isArray(data) ? data : []);
-      
+
       if (!session) {
         const allSessions = await this.#fetchAllPreviousSessions();
         session = this.#lastSession(allSessions);
@@ -88,14 +90,14 @@ class F1Reporter extends Reporter {
     try {
       await this.deleteCachesByPrefix(baseUrl);
     } catch (err) {
-      console.error('F1Reporter: failed to empty caches', err);
+      console.error("F1Reporter: failed to empty caches", err);
     }
   }
 
   async connectedCallback() {
     url.search = params;
     this.src = url;
-    
+
     await super.connectedCallback();
   }
 
@@ -103,7 +105,7 @@ class F1Reporter extends Reporter {
     if (!Array.isArray(results) || results.length === 0) {
       return null;
     }
-    
+
     return results.reduce((latest, current) => {
       const currentTime = new Date(current.date_start).getTime();
       const latestTime = new Date(latest.date_start).getTime();
@@ -115,7 +117,7 @@ class F1Reporter extends Reporter {
     try {
       return await fetchJson("https://api.openf1.org/v1/sessions");
     } catch (err) {
-      console.warn('F1Reporter: failed to fetch previous sessions', err);
+      console.warn("F1Reporter: failed to fetch previous sessions", err);
       return [];
     }
   }
