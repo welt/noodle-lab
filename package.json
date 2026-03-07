@@ -54,6 +54,6 @@
     "postcss-hash": "^3.0.0",
     "postcss-map-get": "^0.3.0",
     "postcss-nested": "^7.0.2",
-    "postcss-sort-media-queries": "^6.1.0"
+    "postcss-sort-media-queries": "5.2.0"
   }
 }

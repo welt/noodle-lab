@@ -35,7 +35,17 @@ export default function (cfg) {
       postcssSortMediaQueries(),
       postcssAssets({ loadPaths: ["src/images/"] }),
       autoprefixer(),
-      dev ? noop() : cssnano(),
+      dev
+        ? noop()
+        : cssnano({
+            preset: [
+              "default",
+              {
+                discardUnused: false,
+                reduceIdents: false,
+              },
+            ],
+          }),
       dev
         ? noop()
         : postcssHash({
