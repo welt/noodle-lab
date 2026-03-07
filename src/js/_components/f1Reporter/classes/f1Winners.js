@@ -1,11 +1,15 @@
-import { F1ReporterError } from './errors';
-import fetchJson from './fetchJson.js';
+/**
+ * @file f1Winners.js
+ * Gets the winners of the latest F1 race from OpenF1 API.
+ */
+import { F1ReporterError } from "./errors";
+import fetchJson from "./fetchJson.js";
 
 export default {
   /**
    * @param {Object} session
    * @returns {Promise<Array<Object>>}
-  */
+   */
   async getWinners(session = {}) {
     if (!session || !session.session_key) {
       throw new F1ReporterError("No session available to fetch winners.");
@@ -14,7 +18,7 @@ export default {
     let url;
     const sessionKey = session.session_key;
 
-    url = new URL('https://api.openf1.org/v1/session_result');
+    url = new URL("https://api.openf1.org/v1/session_result");
     url.search = new URLSearchParams({
       session_key: sessionKey,
       "position<": "3",
@@ -26,9 +30,12 @@ export default {
       throw new F1ReporterError("No results found for the latest race.");
     }
 
-    results.sort((a, b) => (Number(a.position) || Infinity) - (Number(b.position) || Infinity));
+    results.sort(
+      (a, b) =>
+        (Number(a.position) || Infinity) - (Number(b.position) || Infinity),
+    );
 
-    url = new URL('https://api.openf1.org/v1/drivers');
+    url = new URL("https://api.openf1.org/v1/drivers");
     url.search = new URLSearchParams({
       session_key: sessionKey,
     });
@@ -36,13 +43,17 @@ export default {
     const drivers = await fetchJson(url.toString());
     const driversArray = Array.isArray(drivers) ? drivers : [];
 
-    const driversIndexed = new Map(driversArray.map((driver) => [driver.driver_number, driver]));
+    const driversIndexed = new Map(
+      driversArray.map((driver) => [driver.driver_number, driver]),
+    );
 
     const podium = results.map((result) => {
       const driver = driversIndexed.get(result.driver_number);
       const name =
         driver?.full_name ??
-        (driver ? `${driver.first_name} ${driver.last_name}` : `Driver ${result.driver_number}`);
+        (driver
+          ? `${driver.first_name} ${driver.last_name}`
+          : `Driver ${result.driver_number}`);
       return {
         position: result.position,
         driver_number: result.driver_number,
@@ -65,10 +76,10 @@ export default {
     const winners = podium
       .sort((a, b) => a.position - b.position)
       .map((driver) => {
-        const pos = Number.isFinite(driver.position) ? driver.position : '';
-        const number = driver.driver_number ? `#${driver.driver_number}` : '';
-        const name = driver.name ?? 'Unknown driver';
-        const gapToLeader = driver.gap_to_leader ? driver.gap_to_leader : '';
+        const pos = Number.isFinite(driver.position) ? driver.position : "";
+        const number = driver.driver_number ? `#${driver.driver_number}` : "";
+        const name = driver.name ?? "Unknown driver";
+        const gapToLeader = driver.gap_to_leader ? driver.gap_to_leader : "";
         return `<li class="podium__item podium__pos--${pos}">
           <span class="podium__position">${pos}</span>
           <span class="podium__name">${name}</span>
@@ -76,7 +87,7 @@ export default {
           <span class="podium__gap_to_leader">${gapToLeader}</span>
         </li>`;
       })
-      .join('');
+      .join("");
 
     return `<div class="f1-info podium">
       <h3>Top three</h3>
@@ -84,5 +95,5 @@ export default {
         ${winners}
       </ol>
     </div>`;
-  }
+  },
 };
