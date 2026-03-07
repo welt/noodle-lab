@@ -274,8 +274,11 @@ class F1Reporter extends Reporter {
         value: textUtils.toTitleCase(session.circuit_short_name || ""),
         emphasized: true,
       },
-      { label: "Meeting Date (Your Local Time):", value: userLocal },
-      { label: "Meeting Date (Race Local Time):", value: raceLocal },
+      {
+        label: "Meeting Date:",
+        value: this.#buildDateWithDetails(raceLocal, userLocal, startTime),
+        isHtml: true,
+      },
     ]);
 
     div.appendChild(h2);
@@ -285,19 +288,51 @@ class F1Reporter extends Reporter {
   }
 
   /**
+   * Builds date display with details/summary for local time.
+   * @param {string} raceLocal - Race local time string
+   * @param {string} userLocal - User local time string
+   * @param {string} startTime - ISO datetime for time element
+   * @returns {string}
+   */
+  #buildDateWithDetails(raceLocal, userLocal, startTime) {
+    const time = document.createElement("time");
+    time.setAttribute("datetime", startTime);
+    time.textContent = raceLocal;
+
+    const details = document.createElement("details");
+    const summary = document.createElement("summary");
+    summary.textContent = "Show your local time";
+
+    const localTime = document.createElement("time");
+    localTime.setAttribute("datetime", startTime);
+    localTime.textContent = userLocal;
+
+    details.appendChild(summary);
+    details.appendChild(localTime);
+
+    const wrapper = document.createElement("div");
+    wrapper.appendChild(time);
+    wrapper.appendChild(details);
+
+    return wrapper.innerHTML;
+  }
+
+  /**
    * Builds a definition list from items.
-   * @param {Array<{label: string, value: string, emphasized?: boolean}>} items
+   * @param {Array<{label: string, value: string, emphasized?: boolean, isHtml?: boolean}>} items
    * @returns {HTMLDListElement}
    */
   #buildDefinitionList(items) {
     const dl = document.createElement("dl");
 
-    items.forEach(({ label, value, emphasized }) => {
+    items.forEach(({ label, value, emphasized, isHtml }) => {
       const dt = document.createElement("dt");
       dt.textContent = label;
 
       const dd = document.createElement("dd");
-      if (emphasized) {
+      if (isHtml) {
+        dd.innerHTML = value;
+      } else if (emphasized) {
         const em = document.createElement("em");
         em.textContent = value;
         dd.appendChild(em);
@@ -322,8 +357,4 @@ class F1Reporter extends Reporter {
   }
 }
 
-// Default instance with standard dependencies
 export default F1Reporter;
-
-// Also export the class for testing with custom dependencies
-export { F1Reporter };
