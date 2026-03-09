@@ -98,6 +98,7 @@ class F1Reporter extends Reporter {
     url.search = new URLSearchParams({
       year: this.#dateTime.getCurrentYear(),
       meeting_key: "latest",
+      session_type: "Race",
     });
     return url;
   }
@@ -121,7 +122,7 @@ class F1Reporter extends Reporter {
   }
 
   /**
-   * Finds latest session from an array of results.
+   * Finds latest Race session from an array of results.
    * @param {Array} sessions
    * @returns {Object|null}
    */
@@ -130,7 +131,14 @@ class F1Reporter extends Reporter {
       return null;
     }
 
-    return sessions.reduce((latest, current) => {
+    // Filter to only Race sessions
+    const raceSessions = sessions.filter((s) => s.session_type === "Race");
+
+    if (raceSessions.length === 0) {
+      return null;
+    }
+
+    return raceSessions.reduce((latest, current) => {
       const currentTime = new Date(current.date_start).getTime();
       const latestTime = new Date(latest.date_start).getTime();
       return currentTime > latestTime ? current : latest;
