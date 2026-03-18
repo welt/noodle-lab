@@ -62,10 +62,8 @@ class F1Reporter extends Reporter {
         return;
       }
 
-      const [podium, lewisInfo] = await Promise.all([
-        this.#fetchWinnersSafe(session),
-        this.#fetchDriver44Safe(session),
-      ]);
+      const podium = await this.#fetchWinnersSafe(session);
+      const lewisInfo = await this.#fetchDriver44Safe(session);
 
       this.innerHTML = this.#buildFullHtml(session, podium, lewisInfo);
     } catch (err) {
@@ -131,7 +129,6 @@ class F1Reporter extends Reporter {
       return null;
     }
 
-    // Filter to only Race sessions
     const raceSessions = sessions.filter((s) => s.session_type === "Race");
 
     if (raceSessions.length === 0) {
@@ -213,20 +210,12 @@ class F1Reporter extends Reporter {
    * @returns {string}
    */
   #buildFullHtml(session, podium, lewisInfo) {
+    const podiumArray = Array.isArray(podium) ? podium : [];
     return [
       this.#getMeetingDetailsHtml(session),
-      this.#winnersService.getPodiumHtml(this.#ensureArray(podium)),
+      this.#winnersService.getPodiumHtml(podiumArray),
       this.#driverService.getDriver44Html(lewisInfo),
     ].join("");
-  }
-
-  /**
-   * Ensures value is an array, returns empty array if not.
-   * @param {*} value
-   * @returns {Array}
-   */
-  #ensureArray(value) {
-    return Array.isArray(value) ? value : [];
   }
 
   /**
@@ -245,11 +234,10 @@ class F1Reporter extends Reporter {
    * @param {string} message
    */
   #renderError(message) {
-    this.innerHTML = `
-      <h2>Latest F1 Meeting</h2>
-      <p></p>
-    `;
-    this.querySelector("p").textContent = message;
+    this.innerHTML = this.#getSkeletonHtml().replace(
+      "Loading…",
+      `<p>${message}</p>`,
+    );
   }
 
   /**
@@ -261,8 +249,8 @@ class F1Reporter extends Reporter {
     const startTime = session.date_start || session.start_time;
     const gmtOffset = this.#parseGmtOffset(session.gmt_offset);
 
-    const userLocal = this.#dateTime.formatRaceStartUserLocal(startTime);
     const raceLocal = this.#dateTime.formatRaceStartLocal(startTime, gmtOffset);
+    const userLocal = this.#dateTime.formatRaceStartUserLocal(startTime);
 
     const div = document.createElement("div");
     div.className = "f1-reporter__meeting-details";
@@ -270,16 +258,16 @@ class F1Reporter extends Reporter {
     const h2 = document.createElement("h2");
     h2.innerHTML =
       'Latest F1 Result: <span class="f1-reporter__session-type"></span>';
-    h2.querySelector("span").textContent = session.session_type || "";
+    h2.querySelector("span").textContent = session.session_type ?? "";
 
     const dl = this.#buildDefinitionList([
       {
         label: "Meeting Name:",
-        value: `${session.country_name || ""}, ${session.location || ""}`,
+        value: `${session.country_name ?? ""}, ${session.location ?? ""}`,
       },
       {
         label: "Circuit Name:",
-        value: textUtils.toTitleCase(session.circuit_short_name || ""),
+        value: textUtils.toTitleCase(session.circuit_short_name ?? ""),
         emphasized: true,
       },
       {

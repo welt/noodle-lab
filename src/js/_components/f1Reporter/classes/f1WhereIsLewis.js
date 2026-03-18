@@ -4,6 +4,25 @@
  */
 import fetchJson from "./fetchJson.js";
 
+const LEWIS_DRIVER_NUMBER = 44;
+const BASE_URL = "https://api.openf1.org";
+
+/**
+ * Builds OpenF1 API URL with session key parameter.
+ * @param {string} endpoint - API endpoint path
+ * @param {string} sessionKey - Session key
+ * @param {Object} additionalParams - Optional additional query parameters
+ * @returns {string}
+ */
+function buildApiUrl(endpoint, sessionKey, additionalParams = {}) {
+  const url = new URL(`${BASE_URL}${endpoint}`);
+  url.search = new URLSearchParams({
+    session_key: sessionKey,
+    ...additionalParams,
+  });
+  return url.toString();
+}
+
 export default {
   /**
    * @param {Object} session
@@ -13,25 +32,32 @@ export default {
     const sessionKey = session.session_key;
     if (!sessionKey) return null;
 
-    let url = new URL("https://api.openf1.org/v1/session_result");
-    url.search = new URLSearchParams({ session_key: sessionKey });
-
-    const results = await fetchJson(url.toString());
+    const sessionResultUrl = buildApiUrl("/v1/session_result", sessionKey);
+    const results = await fetchJson(sessionResultUrl);
     if (!Array.isArray(results) || results.length === 0) return null;
 
-    const result = results.find((r) => Number(r.driver_number) === 44);
+    const result = results.find(
+      (r) => Number(r.driver_number) === LEWIS_DRIVER_NUMBER,
+    );
     if (!result) return null;
 
-    url = new URL("https://api.openf1.org/v1/drivers");
-    url.search = new URLSearchParams({ session_key: sessionKey });
+    let driver = null;
+    try {
+      const driversUrl = buildApiUrl("/v1/drivers", sessionKey);
+      const drivers = await fetchJson(driversUrl);
+      const driversArray = Array.isArray(drivers) ? drivers : [];
+      const driversIndexed = new Map(
+        driversArray.map((d) => [Number(d.driver_number), d]),
+      );
 
-    const drivers = await fetchJson(url.toString());
-    const driversArray = Array.isArray(drivers) ? drivers : [];
-    const driversIndexed = new Map(
-      driversArray.map((d) => [Number(d.driver_number), d]),
-    );
+      driver = driversIndexed.get(Number(result.driver_number)) ?? null;
+    } catch (err) {
+      console.warn(
+        "F1WhereIsLewis: failed to fetch driver details, using fallback name",
+        err,
+      );
+    }
 
-    const driver = driversIndexed.get(Number(result.driver_number));
     const name =
       driver?.full_name ??
       (driver
@@ -42,8 +68,8 @@ export default {
       position: Number.isFinite(Number(result.position))
         ? Number(result.position)
         : null,
-      name: name ?? null,
-      gap_to_leader: result.gap_to_leader ? result.gap_to_leader : null,
+      name,
+      gap_to_leader: result.gap_to_leader ?? null,
       dnf: Boolean(result.dnf),
       dns: Boolean(result.dns),
       dsq: Boolean(result.dsq),
